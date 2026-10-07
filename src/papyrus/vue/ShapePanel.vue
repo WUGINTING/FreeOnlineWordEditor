@@ -19,7 +19,7 @@ const tools = () => props.editor?.shapes;
 const WIDTHS = [0.25, 0.5, 0.75, 1, 1.5, 2.25, 3, 4.5, 6];
 const WRAPS: { value: WrapChoice; label: string }[] = [
   { value: 'inline', label: '與文字排列' },
-  { value: 'square', label: '矩形' },
+  { value: 'square', label: '矩形@@文繞圖' },
   { value: 'topAndBottom', label: '上及下' },
   { value: 'front', label: '文字在前' },
   { value: 'behind', label: '文字在後' },

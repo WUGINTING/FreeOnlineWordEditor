@@ -702,7 +702,7 @@ defineExpose({ save, download, editor, open: load, compat, startComment });
       <label class="dx-status-item">
         {{ tl('跳至') }}
         <input class="dx-page-input" type="number" min="1" :max="snapshot?.pageCount ?? 1" :placeholder="String(snapshot?.currentPage ?? 1)" :aria-label="tl('跳至頁碼')" @change="goToPage" @keydown.enter="!composing($event) && goToPage($event)" />
-        {{ tl('頁') }}
+        {{ tl('頁@@跳至') }}
       </label>
       <span v-if="counts" class="dx-status-item" :title="countTitle">
         {{ counts.selected ? tl('已選 {0}／共 {1} 字', n(counts.selected.words), n(counts.all.words)) : tl('字數 {0}', n(counts.all.words)) }}

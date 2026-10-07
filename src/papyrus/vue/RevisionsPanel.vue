@@ -105,7 +105,7 @@ function resolveOne(row: Row, accept: boolean) {
             <span class="dx-revs-author">{{ r.author }}</span>
             <span class="dx-revs-when">{{ r.when }}</span>
           </span>
-          <span v-if="r.excerpt" class="dx-revs-text" :class="{ 'dx-revs-deleted': r.label === tl('刪除') || r.label === tl('移出') }">{{ r.excerpt }}</span>
+          <span v-if="r.excerpt" class="dx-revs-text" :class="{ 'dx-revs-deleted': r.label === tl('刪除@@修訂') || r.label === tl('移出') }">{{ r.excerpt }}</span>
           <span class="dx-sr">{{ tl('第 {0} 處，共 {1} 處', i + 1, rows.length) }}</span>
         </button>
         <div v-if="editable" class="dx-revs-actions">

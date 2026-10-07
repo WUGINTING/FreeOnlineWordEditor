@@ -37,6 +37,8 @@ const walk = (dir) =>
 export function scanSource() {
   const texts = new Map();
   const templates = new Map();
+  /** The texts written directly inside tl('…'). */
+  const shown = new Set();
   const problems = [];
   const add = (text, where, always = false) => {
     if (!always && !CJK.test(text)) return;
@@ -51,6 +53,7 @@ export function scanSource() {
       if (ts.isStringLiteral(node) || ts.isNoSubstitutionTemplateLiteral(node)) {
         const call = node.parent;
         const givenToTl = ts.isCallExpression(call) && ts.isIdentifier(call.expression) && call.expression.text === 'tl' && call.arguments[0] === node;
+        if (givenToTl) shown.add(node.text);
         if (!ts.isImportDeclaration(call) && !ts.isExportDeclaration(call)) add(node.text, where(), givenToTl);
       } else if (ts.isTemplateExpression(node)) {
         const text = node.head.text + node.templateSpans.map((s, i) => `{${i}}${s.literal.text}`).join('');
@@ -85,7 +88,7 @@ export function scanSource() {
     };
     if (descriptor.template?.ast) visit(descriptor.template.ast);
   }
-  return { texts, templates, problems };
+  return { texts, templates, shown, problems };
 }
 
 /** The texts that are not interface text: text → why. */
@@ -112,8 +115,12 @@ const places = (text) => [...new Set((text.match(/\{\d+\}/g) ?? []))].sort().joi
  * the source no longer uses (`unused`), and translates with other {0} places than the source (`places`).
  */
 export async function check() {
-  const { texts, templates, problems } = scanSource();
+  const { texts, templates, shown, problems } = scanSource();
   const exempt = notInterface();
+  // A text that is document content in one place and shown in another is an interface text.
+  for (const text of exempt.keys()) {
+    if (shown.has(text)) problems.push(`not-interface.json lists a text that tl() is given (${texts.get(text)[0]}): ${JSON.stringify(text)}`);
+  }
   const keys = [...texts.keys()].filter((text) => !exempt.has(text));
   for (const [text, where] of templates) {
     if (!exempt.has(text)) problems.push(`${where[0]}: a template literal with Chinese text and values, neither through tl() nor listed: ${text.slice(0, 60)}`);
@@ -122,7 +129,8 @@ export async function check() {
   const languages = {};
   for (const [locale, catalog] of Object.entries(await catalogs())) {
     languages[locale] = {
-      missing: keys.filter((key) => !(key in catalog) || !String(catalog[key]).trim()),
+      // A text with a note (text@@note) may be nothing in a language: the words around it say it all.
+      missing: keys.filter((key) => !(key in catalog) || (!String(catalog[key]).trim() && !key.includes('@@'))),
       unused: Object.keys(catalog).filter((key) => !texts.has(key)),
       places: keys.filter((key) => key in catalog && places(key) !== places(String(catalog[key]))),
     };

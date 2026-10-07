@@ -19,7 +19,7 @@ export const MARGIN_PRESETS = [
   { id: 'normal', label: '標準', note: '上下 2.54 公分，左右 3.18 公分', tb: 1440, lr: 1800 },
   { id: 'narrow', label: '窄', note: '上下左右 1.27 公分', tb: 720, lr: 720 },
   { id: 'moderate', label: '適中', note: '上下 2.54 公分，左右 1.91 公分', tb: 1440, lr: 1080 },
-  { id: 'wide', label: '寬', note: '上下 2.54 公分，左右 5.08 公分', tb: 1440, lr: 2880 },
+  { id: 'wide', label: '寬@@邊界', note: '上下 2.54 公分，左右 5.08 公分', tb: 1440, lr: 2880 },
 ];
 
 /** Within half a millimetre (Word rounds its own values). */

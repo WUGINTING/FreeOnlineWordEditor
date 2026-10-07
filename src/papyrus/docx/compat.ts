@@ -53,11 +53,11 @@ const FIELD_NAMES: Record<string, string> = {
   TIME: '時間', CREATEDATE: '建立日期', SAVEDATE: '儲存日期', PRINTDATE: '列印日期', STYLEREF: '樣式參照',
   DOCPROPERTY: '文件屬性', AUTHOR: '作者', TITLE: '標題', FILENAME: '檔名', MERGEFIELD: '合併列印欄位',
   IF: '條件', FORMTEXT: '表單欄位', FORMCHECKBOX: '表單核取方塊', FORMDROPDOWN: '表單下拉清單', INDEX: '索引',
-  TA: '引文', TOA: '引文目錄', CITATION: '引文', BIBLIOGRAPHY: '參考文獻', LISTNUM: '清單編號', '=': '公式計算',
+  TA: '引文@@功能變數', TOA: '引文目錄', CITATION: '引文@@功能變數', BIBLIOGRAPHY: '參考文獻', LISTNUM: '清單編號', '=': '公式計算',
 };
 
 type Story = 'body' | 'hf' | 'notes';
-const STORY_NAME: Record<Story, string> = { body: '內文', hf: '頁首頁尾', notes: '註腳' };
+const STORY_NAME: Record<Story, string> = { body: '內文@@本文', hf: '頁首頁尾', notes: '註腳' };
 
 /** Counts per story, turned into "內文 2 處、頁首頁尾 1 處". */
 class Tally {
@@ -391,7 +391,7 @@ export async function scanCompat(zip: JSZip | null): Promise<CompatReport> {
 
   const revTotal = [...revisions.values()].reduce((s, n) => s + n, 0);
   if (revTotal) {
-    const names: [string, string][] = [['ins', tl('插入')], ['del', tl('刪除')], ['format', tl('格式變更')], ['paraMark', tl('段落標記')]];
+    const names: [string, string][] = [['ins', tl('插入@@修訂')], ['del', tl('刪除@@修訂')], ['format', tl('格式變更')], ['paraMark', tl('段落標記')]];
     const where = names.filter(([k]) => revisions.get(k)).map(([k, n]) => `${n} ${revisions.get(k)}`).join(tl('、'));
     add('revisions', tl('追蹤修訂'), tl('網頁上會標示出來，可逐一或全部接受／拒絕。按工具列「追蹤修訂」（Ctrl+Shift+E）開啟後，網頁上的輸入、刪除與格式變更也會記錄為修訂（作者與時間），在 Word 中可以看到；追蹤修訂開啟時，表格結構、分節與版面設定等少數變更會先擋下並說明。'), where, revTotal);
   }

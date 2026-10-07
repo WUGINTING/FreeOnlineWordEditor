@@ -71,7 +71,7 @@ export interface Revision extends RevisionInfo {
 }
 
 const KIND_LABEL: Record<RevisionKind, string> = {
-  ins: '插入', del: '刪除', format: '格式變更', paraFormat: '段落格式變更', paraMark: '段落標記',
+  ins: '插入@@修訂', del: '刪除@@修訂', format: '格式變更', paraFormat: '段落格式變更', paraMark: '段落標記',
 };
 
 export function revisionLabel(r: Revision): string {
@@ -426,7 +426,7 @@ function revisionDecorations(doc: PMNode, revs: Revision[], decos: Decoration[])
       decos.push(Decoration.widget(r.to, () => markWidget(r.mark!, title, style), { side: 1, key: `pm:${r.mark}:${r.author}`, ignoreSelection: true, rev: true }));
     } else if (r.kind === 'ins' && (isBreak(doc.nodeAt(r.from)) || doc.resolve(r.from).parent !== doc.resolve(r.to).parent)) {
       // A page break inside an insertion is shown as inserted too.
-      const title = describeRevision(r.move ? tl('移入') : tl('插入'), r);
+      const title = describeRevision(r.move ? tl('移入') : tl('插入@@修訂'), r);
       groupNodes(doc, r.from, r.to, (n, pos) => {
         if (isBreak(n) && layersOf(n).some((l) => l.id === r.layerId)) {
           decos.push(Decoration.node(pos, pos + 1, { class: 'dx-rev-ins dx-rev-break dx-rev-bar', title, style }, REV));

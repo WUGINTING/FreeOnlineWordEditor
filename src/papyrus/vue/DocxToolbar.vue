@@ -895,7 +895,7 @@ onBeforeUnmount(() => {
             <div class="dx-rlabel" aria-hidden="true">{{ tl('樣式') }}</div>
           </div>
 
-          <div class="dx-rgroup" role="group" :aria-label="tl('編輯')">
+          <div class="dx-rgroup" role="group" :aria-label="tl('編輯@@群組')">
             <div class="dx-rbody dx-stack">
               <button type="button" class="dx-sm" :title="tl('尋找 (Ctrl+F)')" @click="emit('find', false)">
                 <svg class="dx-ico" viewBox="0 0 24 24" v-html="ICONS.find" /><span>{{ tl('尋找') }}</span>
@@ -908,7 +908,7 @@ onBeforeUnmount(() => {
               </button>
 
             </div>
-            <div class="dx-rlabel" aria-hidden="true">{{ tl('編輯') }}</div>
+            <div class="dx-rlabel" aria-hidden="true">{{ tl('編輯@@群組') }}</div>
           </div>
         </div>
 
@@ -1161,7 +1161,7 @@ onBeforeUnmount(() => {
                 <button type="button" class="dx-big" :title="tl('欄（分欄）')" aria-haspopup="menu" :aria-expanded="menu === 'columns'" @click="toggleMenu('columns', $event)">
                   <svg class="dx-ico" viewBox="0 0 24 24" v-html="ICONS.columns" /><span>{{ tl('欄 ▾') }}</span>
                 </button>
-                <div v-if="menu === 'columns'" class="dx-menu dx-popup" role="menu" :aria-label="tl('欄')" @keydown="onMenuKey">
+                <div v-if="menu === 'columns'" class="dx-menu dx-popup" role="menu" :aria-label="tl('欄@@分欄選單')" @keydown="onMenuKey">
                   <button
                     v-for="(label, i) in [tl('一欄'), tl('二欄'), tl('三欄')]"
                     :key="label"

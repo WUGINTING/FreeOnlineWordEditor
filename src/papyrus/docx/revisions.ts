@@ -451,7 +451,7 @@ export function rocDate(date: string | null, dateUtc?: string | null): string {
 export function deletionDOM(xml: string): DOMOutputSpec | null {
   const d = deletedInfo(xml);
   if (!d) return null;
-  const verb = d.kind === 'moveFrom' ? tl('移出') : tl('刪除');
+  const verb = d.kind === 'moveFrom' ? tl('移出') : tl('刪除@@修訂');
   return ['span', {
     class: `dx-rev-del dx-rev-${d.kind}`,
     'data-text': d.text || ' ',
@@ -481,7 +481,7 @@ export function insertionAttrs(layers: string): Record<string, string> | null {
           class: `dx-rev-ins dx-rev-${ins.kind}`,
           // Said by screen readers that know it, besides the colour and underline (persona-300).
           role: 'insertion',
-          title: describeRevision(ins.kind === 'moveTo' ? tl('移入') : tl('插入'), ins.info),
+          title: describeRevision(ins.kind === 'moveTo' ? tl('移入') : tl('插入@@修訂'), ins.info),
           style: `--dx-rev:${authorColor(ins.info.author)}`,
         };
       }

@@ -380,8 +380,8 @@ function apply() {
         </label>
         <div class="dx-row">
           <label>
-            {{ tl('欄數') }}
-            <select v-model.number="columnCount" :aria-label="tl('欄數')">
+            {{ tl('欄數@@分欄') }}
+            <select v-model.number="columnCount" :aria-label="tl('欄數@@分欄')">
               <option v-for="n in COLUMN_COUNTS" :key="n" :value="n">{{ n === 1 ? tl('1（不分欄）') : n }}</option>
               <option v-if="otherCount" :value="otherCount">{{ tl('{0}（文件原有）', otherCount) }}</option>
             </select>

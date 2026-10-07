@@ -100,10 +100,6 @@
     "why": "STEMS: heavenly stems for reading a pasted list number (logic)"
   },
   {
-    "text": "目錄",
-    "why": "TOC_TITLE: the title paragraph put into the document above a new table of contents"
-  },
-  {
     "text": "百",
     "why": "page number format: digits / units of a Chinese numbering format (document content)"
   },
@@ -128,16 +124,8 @@
     "why": "page number format: digits / units of a Chinese numbering format (document content)"
   },
   {
-    "text": "流程圖",
-    "why": "compared with a shape kind's label (startsWith) to pick the flowchart shapes; the same text as the group label, which is shown through tl(g.label)"
-  },
-  {
     "text": "限閱",
     "why": "watermark preset (WATERMARK_PRESETS): document content"
-  },
-  {
-    "text": "浮水印",
-    "why": "label attr of the watermark's raw_inline node, kept in the document model and never shown (the chip on the page is schema.ts's own tl('浮水印'))"
   },
   {
     "text": "草稿",
@@ -154,10 +142,6 @@
   {
     "text": "細明體-ExtB",
     "why": "font name (FONT_NAMES, local() sources of @font-face): proper name, rule 3"
-  },
-  {
-    "text": "註解",
-    "why": "the label attribute of the raw_inline node of a comment reference: a stored value compared in logic (COMMENT_LABELS, the set of marker labels below it, label === …) and given to the nodes made by markerNode; shown through tl(label) in editor/schema.ts"
   },
   {
     "text": "黑体",
@@ -214,10 +198,6 @@
   {
     "text": "零壹貳參肆伍陸柒捌玖",
     "why": "page number format: digits / units of a Chinese numbering format (document content)"
-  },
-  {
-    "text": "圖形",
-    "why": "raw_inline node attribute `label` (3 places): a value stored in the document model, the same one docx/convert.ts gives on import; shown, if at all, by schema.ts toDOM"
   },
   {
     "text": "圖案 {0}",

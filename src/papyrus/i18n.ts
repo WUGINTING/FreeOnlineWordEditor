@@ -10,6 +10,8 @@ import zhCN from './locales/zh-CN';
 
 /** The language the interface is written in. */
 export const DEFAULT_LOCALE = 'zh-TW';
+/** Between a text and a note saying which of its meanings it has here. */
+const CONTEXT = '@@';
 
 const catalogs = new Map<string, Record<string, string>>([
   ['en', en],
@@ -26,7 +28,10 @@ let onRead: () => void = () => {};
 export function tl(text: string, ...values: unknown[]): string {
   onRead();
   if (typeof text !== 'string') return text;
-  const out = messages?.[text] ?? text;
+  // '欄數@@分欄': the same words meaning something else here (text columns, not a table's), so
+  // that a language can say it differently; what follows @@ is never shown.
+  const note = text.indexOf(CONTEXT);
+  const out = messages?.[text] ?? (note < 0 ? text : text.slice(0, note));
   if (!values.length) return out;
   return out.replace(/\{(\d+)\}/g, (place, i) => (Number(i) < values.length ? String(values[Number(i)] ?? '') : place));
 }

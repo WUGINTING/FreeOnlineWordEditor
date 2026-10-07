@@ -1246,10 +1246,10 @@ export interface ShapeInfo {
   canUngroup: boolean;
 }
 
-export const WRAP_LABEL: Record<WrapChoice, string> = { inline: '與文字排列', square: '矩形', topAndBottom: '上及下', front: '文字在前', behind: '文字在後' };
+export const WRAP_LABEL: Record<WrapChoice, string> = { inline: '與文字排列', square: '矩形@@文繞圖', topAndBottom: '上及下', front: '文字在前', behind: '文字在後' };
 const ALIGN_LABEL = { left: '靠左對齊', center: '水平置中', right: '靠右對齊', top: '靠上對齊', middle: '垂直置中', bottom: '靠下對齊' };
-const H_LABEL: Record<string, string> = { column: '欄', margin: '邊界', page: '頁面', character: '字元', leftMargin: '左邊界', rightMargin: '右邊界', insideMargin: '內側邊界', outsideMargin: '外側邊界' };
-const V_LABEL: Record<string, string> = { paragraph: '段落', line: '行', margin: '邊界', page: '頁面', topMargin: '上邊界', bottomMargin: '下邊界', insideMargin: '內側邊界', outsideMargin: '外側邊界' };
+const H_LABEL: Record<string, string> = { column: '欄', margin: '邊界@@位置', page: '頁面', character: '字元', leftMargin: '左邊界', rightMargin: '右邊界', insideMargin: '內側邊界', outsideMargin: '外側邊界' };
+const V_LABEL: Record<string, string> = { paragraph: '段落', line: '行', margin: '邊界@@位置', page: '頁面', topMargin: '上邊界', bottomMargin: '下邊界', insideMargin: '內側邊界', outsideMargin: '外側邊界' };
 
 function shift(r: Rect, dx: number, dy: number): Rect {
   return { left: r.left + dx, right: r.right + dx, top: r.top + dy, bottom: r.bottom + dy };
