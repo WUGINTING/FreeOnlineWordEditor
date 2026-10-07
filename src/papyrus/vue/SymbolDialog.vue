@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { tl } from './locale';
 import { computed, nextTick, ref, watch } from 'vue';
 import type { DocxEditor } from '../editor/core';
 import { SYMBOL_CATEGORIES, parseSymbolCode, symbolCategory, symbolCode, symbolHex } from '../editor/symbols';
@@ -249,16 +250,16 @@ const label = (ch: string) => `${ch}（${symbolCode(ch)}）`;
 <template>
   <div v-if="shown" class="dx-dialog-backdrop" @mousedown.self="close" @keydown.esc="close">
     <div ref="dialog" class="dx-dialog" role="dialog" aria-modal="true" aria-labelledby="dx-sy-title" @keydown="trapFocus">
-      <h3 id="dx-sy-title">符號</h3>
+      <h3 id="dx-sy-title">{{ tl('符號') }}</h3>
 
       <label class="dx-sy-subset">
-        子集
+        {{ tl('子集') }}
         <select v-model="categoryId" @change="onCategory">
           <option v-for="c in SYMBOL_CATEGORIES" :key="c.id" :value="c.id">{{ c.label }}</option>
         </select>
       </label>
 
-      <div ref="grid" class="dx-sy-grid" role="grid" aria-label="符號" @keydown="onGridKey">
+      <div ref="grid" class="dx-sy-grid" role="grid" :aria-label="tl('符號')" @keydown="onGridKey">
         <div v-for="(row, r) in rows" :key="r" class="dx-sy-row" role="row">
           <div
             v-for="cell in row"
@@ -277,7 +278,7 @@ const label = (ch: string) => `${ch}（${symbolCode(ch)}）`;
       </div>
 
       <div class="dx-sy-recent">
-        <span id="dx-sy-recent-label">最近使用過的符號</span>
+        <span id="dx-sy-recent-label">{{ tl('最近使用過的符號') }}</span>
         <div
           v-if="recent.length"
           ref="recentGrid"
@@ -302,22 +303,22 @@ const label = (ch: string) => `${ch}（${symbolCode(ch)}）`;
             >{{ ch }}</div>
           </div>
         </div>
-        <span v-else class="dx-sy-none">尚未使用過符號</span>
+        <span v-else class="dx-sy-none">{{ tl('尚未使用過符號') }}</span>
       </div>
 
       <!-- The code is read out with the symbol (its cell's name), so this line isn't announced again. -->
       <div class="dx-sy-info">
         <span class="dx-sy-glyph" aria-hidden="true">{{ current ?? '' }}</span>
-        <span>字元代碼：{{ current ? symbolCode(current) : '—' }}</span>
+        <span>{{ tl('字元代碼：') }}{{ current ? symbolCode(current) : '—' }}</span>
         <label class="dx-sy-code">
-          字元代碼（16 進位）
+          {{ tl('字元代碼（16 進位）') }}
           <input
             v-model="code"
             type="text"
             maxlength="8"
             spellcheck="false"
             autocomplete="off"
-            placeholder="例如 2605"
+            :placeholder="tl('例如 2605')"
             @input="onCode"
             @keydown.enter="onCodeEnter"
           />
@@ -326,8 +327,8 @@ const label = (ch: string) => `${ch}（${symbolCode(ch)}）`;
 
       <p v-if="error" class="dx-error" role="alert">{{ error }}</p>
       <div class="dx-actions">
-        <button type="button" class="dx-primary" :disabled="!canInsert" title="在游標處插入選取的符號（對話方塊不會關閉，可以連續插入）" @click="insert()">插入</button>
-        <button type="button" @click="close">關閉</button>
+        <button type="button" class="dx-primary" :disabled="!canInsert" :title="tl('在游標處插入選取的符號（對話方塊不會關閉，可以連續插入）')" @click="insert()">{{ tl('插入') }}</button>
+        <button type="button" @click="close">{{ tl('關閉') }}</button>
       </div>
     </div>
   </div>

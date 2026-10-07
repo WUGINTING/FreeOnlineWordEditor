@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { tl } from './locale';
 // Find / replace panel (Ctrl+F / Ctrl+H). Searches the body (tables included) and every
 // header and footer part shown on the pages, each part once (GOV-ISSUE-012); moving to a hit
 // in a header/footer opens it for editing, as Word does. Text boxes, footnotes and comments
@@ -372,7 +373,7 @@ defineExpose({ focus });
 </script>
 
 <template>
-  <div ref="root" class="dx-find" role="search" aria-label="尋找與取代" @keydown.esc="onEscape($event, close)">
+  <div ref="root" class="dx-find" role="search" :aria-label="tl('尋找與取代')" @keydown.esc="onEscape($event, close)">
     <div class="dx-find-row">
       <span v-if="!canReplace" class="dx-toggle-space" />
       <button
@@ -389,15 +390,15 @@ defineExpose({ focus });
         v-model="query"
         type="text"
         class="dx-find-input"
-        placeholder="尋找"
-        aria-label="尋找"
+        :placeholder="tl('尋找')"
+        :aria-label="tl('尋找')"
         :aria-describedby="`${uid}-scope`"
         @keydown="onFindKey"
       />
       <span class="dx-count" aria-live="polite">{{ countLabel }}</span>
-      <button type="button" title="上一個 (Shift+Enter)" aria-label="上一個" :disabled="!results.total" @click="go(-1)">↑</button>
-      <button type="button" title="下一個 (Enter)" aria-label="下一個" :disabled="!results.total" @click="go(1)">↓</button>
-      <button type="button" title="關閉 (Esc)" aria-label="關閉" @click="close">✕</button>
+      <button type="button" :title="tl('上一個 (Shift+Enter)')" :aria-label="tl('上一個')" :disabled="!results.total" @click="go(-1)">↑</button>
+      <button type="button" :title="tl('下一個 (Enter)')" :aria-label="tl('下一個')" :disabled="!results.total" @click="go(1)">↓</button>
+      <button type="button" :title="tl('關閉 (Esc)')" :aria-label="tl('關閉')" @click="close">✕</button>
     </div>
     <div v-if="replace && canReplace" class="dx-find-row">
       <span class="dx-toggle-space" />
@@ -406,17 +407,17 @@ defineExpose({ focus });
         v-model="replacement"
         type="text"
         class="dx-find-input"
-        placeholder="取代為"
-        aria-label="取代為"
+        :placeholder="tl('取代為')"
+        :aria-label="tl('取代為')"
         @keydown="onReplaceKey"
       />
-      <button type="button" :disabled="!results.total" @click="replaceOne">取代</button>
-      <button ref="replaceAllButton" type="button" title="先列出所有相符項目，確認後再取代" :disabled="!results.total" @click="openReview">全部取代</button>
+      <button type="button" :disabled="!results.total" @click="replaceOne">{{ tl('取代') }}</button>
+      <button ref="replaceAllButton" type="button" :title="tl('先列出所有相符項目，確認後再取代')" :disabled="!results.total" @click="openReview">{{ tl('全部取代') }}</button>
     </div>
     <div class="dx-find-row dx-find-options">
       <span class="dx-toggle-space" />
-      <label><input v-model="caseSensitive" type="checkbox" /> 區分大小寫</label>
-      <label title="不勾選時，「114」也會找到全形的「１１４」"><input v-model="widthSensitive" type="checkbox" /> 區分全形／半形</label>
+      <label><input v-model="caseSensitive" type="checkbox" /> {{ tl('區分大小寫') }}</label>
+      <label :title="tl('不勾選時，「114」也會找到全形的「１１４」')"><input v-model="widthSensitive" type="checkbox" /> {{ tl('區分全形／半形') }}</label>
       <span v-if="breakdown" class="dx-find-where">{{ breakdown }}</span>
       <span v-if="message" class="dx-find-msg" role="status">{{ message }}</span>
     </div>
@@ -433,27 +434,27 @@ defineExpose({ focus });
       :aria-labelledby="`${uid}-review`"
       @keydown.esc="onEscape($event, () => closeReview(), true)"
     >
-      <div :id="`${uid}-review`" class="dx-review-title">將「{{ query }}」取代為「{{ replacement }}」：共 {{ reviewItems.length }} 處，請確認要取代的項目</div>
+      <div :id="`${uid}-review`" class="dx-review-title">{{ tl('將「') }}{{ query }}{{ tl('」取代為「') }}{{ replacement }}{{ tl('」：共') }} {{ reviewItems.length }} {{ tl('處，請確認要取代的項目') }}</div>
       <p v-if="flaggedCount" class="dx-review-note">
-        標示「後面還有文字」的 {{ flaggedCount }} 處可能是較長的詞（如「第十二條之一」），預設不取代；確認要取代再勾選。
+        {{ tl('標示「後面還有文字」的') }} {{ flaggedCount }} {{ tl('處可能是較長的詞（如「第十二條之一」），預設不取代；確認要取代再勾選。') }}
       </p>
       <div class="dx-review-bulk">
-        <button type="button" @click="checkAll(true)">全選</button>
-        <button type="button" @click="checkAll(false)">全不選</button>
+        <button type="button" @click="checkAll(true)">{{ tl('全選') }}</button>
+        <button type="button" @click="checkAll(false)">{{ tl('全不選') }}</button>
       </div>
-      <ul class="dx-review-list" aria-label="相符項目">
+      <ul class="dx-review-list" :aria-label="tl('相符項目')">
         <li v-for="it in reviewItems" :key="it.id" :class="{ 'dx-review-longer': it.longer }">
           <label>
             <input v-model="it.checked" type="checkbox" />
             <span class="dx-review-where">{{ it.where }}</span>
             <span class="dx-review-text">{{ it.before }}<mark>{{ it.text }}</mark>{{ it.after }}</span>
-            <span v-if="it.longer" class="dx-review-hint">後面還有文字，可能是較長的詞</span>
+            <span v-if="it.longer" class="dx-review-hint">{{ tl('後面還有文字，可能是較長的詞') }}</span>
           </label>
         </li>
       </ul>
       <div class="dx-review-actions">
-        <button type="button" class="dx-primary" :disabled="!checkedCount" @click="confirmReview">全部取代（{{ checkedCount }} 處）</button>
-        <button type="button" @click="closeReview()">取消</button>
+        <button type="button" class="dx-primary" :disabled="!checkedCount" @click="confirmReview">{{ tl('全部取代（') }}{{ checkedCount }} {{ tl('處）') }}</button>
+        <button type="button" @click="closeReview()">{{ tl('取消') }}</button>
       </div>
     </div>
   </div>

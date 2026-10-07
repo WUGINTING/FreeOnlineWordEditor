@@ -7,6 +7,7 @@ const LOADED_PIXEL_RATIO = typeof window !== 'undefined' && window.devicePixelRa
 </script>
 
 <script setup lang="ts">
+import { tl } from './locale';
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, shallowRef, watch } from 'vue';
 import { DocxEditor, LARGE_DOCUMENT_BYTES, promptLink, type EditorSnapshot } from '../editor/core';
 import type { MissingFont } from '../docx/fonts';
@@ -582,7 +583,7 @@ defineExpose({ save, download, editor, open: load, compat, startComment });
 <template>
   <div class="dx-vue" @keydown="onFindKey">
     <!-- First Tab stop: straight into the text instead of through every toolbar button (GOV-ISSUE-013). -->
-    <a v-if="showToolbar" class="dx-skip" href="#" @click.prevent="focusDocument">跳到文件內容</a>
+    <a v-if="showToolbar" class="dx-skip" href="#" @click.prevent="focusDocument">{{ tl('跳到文件內容') }}</a>
     <DocxToolbar
       v-if="showToolbar"
       ref="toolbarRef"
@@ -652,7 +653,7 @@ defineExpose({ save, download, editor, open: load, compat, startComment });
       />
       <div class="dx-scroll" @click="onDocClick" @contextmenu="onContextMenu">
         <div ref="mount" />
-        <div v-if="loading" class="dx-loading">載入中…</div>
+        <div v-if="loading" class="dx-loading">{{ tl('載入中…') }}</div>
         <div v-if="notice" class="dx-notice" role="status">{{ notice }}</div>
       </div>
       <FieldsPanel
@@ -685,35 +686,35 @@ defineExpose({ save, download, editor, open: load, compat, startComment });
       />
     </div>
     <div class="dx-status">
-      <span aria-live="polite">第 {{ snapshot?.currentPage ?? 1 }} 頁，共 {{ snapshot?.pageCount ?? 1 }} 頁</span>
-      <span v-if="(snapshot?.sectionCount ?? 1) > 1" class="dx-status-item">第 {{ (snapshot?.section ?? 0) + 1 }} 節，共 {{ snapshot?.sectionCount }} 節</span>
+      <span aria-live="polite">{{ tl('第') }} {{ snapshot?.currentPage ?? 1 }} {{ tl('頁，共') }} {{ snapshot?.pageCount ?? 1 }} {{ tl('頁') }}</span>
+      <span v-if="(snapshot?.sectionCount ?? 1) > 1" class="dx-status-item">{{ tl('第') }} {{ (snapshot?.section ?? 0) + 1 }} {{ tl('節，共') }} {{ snapshot?.sectionCount }} {{ tl('節') }}</span>
       <label class="dx-status-item">
-        跳至
-        <input class="dx-page-input" type="number" min="1" :max="snapshot?.pageCount ?? 1" :placeholder="String(snapshot?.currentPage ?? 1)" aria-label="跳至頁碼" @change="goToPage" @keydown.enter="!composing($event) && goToPage($event)" />
-        頁
+        {{ tl('跳至') }}
+        <input class="dx-page-input" type="number" min="1" :max="snapshot?.pageCount ?? 1" :placeholder="String(snapshot?.currentPage ?? 1)" :aria-label="tl('跳至頁碼')" @change="goToPage" @keydown.enter="!composing($event) && goToPage($event)" />
+        {{ tl('頁') }}
       </label>
       <span v-if="counts" class="dx-status-item" :title="countTitle">
         {{ counts.selected ? `已選 ${n(counts.selected.words)}／共 ${n(counts.all.words)} 字` : `字數 ${n(counts.all.words)}` }}
       </span>
       <button v-if="editable" type="button" class="dx-status-btn" :aria-pressed="spellcheck"
-              title="使用瀏覽器的拼字檢查（主要檢查英文；多數瀏覽器不檢查中文）" @click="toggleSpellcheck">
-        拼字檢查：{{ spellcheck ? '開' : '關' }}
+              :title="tl('使用瀏覽器的拼字檢查（主要檢查英文；多數瀏覽器不檢查中文）')" @click="toggleSpellcheck">
+        {{ tl('拼字檢查：') }}{{ spellcheck ? '開' : '關' }}
       </button>
       <label class="dx-status-item dx-zoom">
-        縮放
-        <select :value="zoomChoice" aria-label="縮放" @change="onZoom">
+        {{ tl('縮放') }}
+        <select :value="zoomChoice" :aria-label="tl('縮放')" @change="onZoom">
           <option v-for="z in ZOOMS" :key="z" :value="String(z)">{{ Math.round(z * 100) }}%</option>
-          <option value="fit">符合寬度（{{ zoomLabel }}）</option>
+          <option value="fit">{{ tl('符合寬度（') }}{{ zoomLabel }}{{ tl('）') }}</option>
         </select>
       </label>
-      <button type="button" class="dx-status-btn" :aria-pressed="outlineOpen" title="依標題瀏覽文件（導覽窗格）" @click="outlineOpen = !outlineOpen">
-        導覽
+      <button type="button" class="dx-status-btn" :aria-pressed="outlineOpen" :title="tl('依標題瀏覽文件（導覽窗格）')" @click="outlineOpen = !outlineOpen">
+        {{ tl('導覽') }}
       </button>
       <button v-if="fields.length" type="button" class="dx-status-btn" :aria-pressed="fieldsOpen" @click="fieldsOpen = !fieldsOpen">
-        欄位 {{ fields.filter((f) => f.filled).length }}/{{ fields.length }}
+        {{ tl('欄位') }} {{ fields.filter((f) => f.filled).length }}/{{ fields.length }}
       </button>
       <button v-if="comments.length" type="button" class="dx-status-btn" :aria-pressed="commentsOpen" @click="commentsOpen = !commentsOpen">
-        留言 {{ comments.length }}
+        {{ tl('留言') }} {{ comments.length }}
       </button>
     </div>
   </div>

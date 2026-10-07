@@ -47,6 +47,7 @@ export const HIGHLIGHT_PALETTE: NamedColor[] = [
 </script>
 
 <script setup lang="ts">
+import { tl } from './locale';
 // A Word-like colour menu (persona-300): the standard colours as named swatches (each with an
 // aria-label and title, 「紅色」「深藍」…), 自動 / 無色彩, and 「其他色彩…」 (the browser's own
 // colour picker) for any other colour. The button shows the current colour; Escape closes the
@@ -145,7 +146,7 @@ onBeforeUnmount(() => document.removeEventListener('mousedown', onDocumentDown, 
     </button>
     <div v-if="open" :id="menuId" class="dx-cp-menu dx-popup" role="dialog" :aria-label="label">
       <button v-if="noneLabel" type="button" class="dx-cp-none" :aria-pressed="!value" @click="pick(null)">{{ noneLabel }}</button>
-      <div class="dx-cp-grid" role="group" aria-label="標準色彩" @keydown="onGridKey">
+      <div class="dx-cp-grid" role="group" :aria-label="tl('標準色彩')" @keydown="onGridKey">
         <button
           v-for="c in colors"
           :key="c.value"
@@ -159,7 +160,7 @@ onBeforeUnmount(() => document.removeEventListener('mousedown', onDocumentDown, 
         />
       </div>
       <label class="dx-cp-other">
-        其他色彩…
+        {{ tl('其他色彩…') }}
         <input type="color" :aria-label="`${label}：其他色彩`" :value="value ?? '#000000'" @change="onOther" />
       </label>
     </div>

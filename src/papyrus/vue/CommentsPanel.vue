@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { tl } from './locale';
 import { computed, nextTick, ref, watch } from 'vue';
 import { commentThreads, type CommentThread, type DocComment } from '../docx/comments';
 import { formatDate } from '../docx/revisions';
@@ -184,22 +185,22 @@ function go(step: 1 | -1) {
 </script>
 
 <template>
-  <aside ref="panel" class="dx-comments" aria-label="留言">
+  <aside ref="panel" class="dx-comments" :aria-label="tl('留言')">
     <header>
-      <span class="dx-comments-title">留言（{{ count }}）</span>
-      <button v-if="editable" type="button" class="dx-comments-new" title="在選取的文字上新增留言 (Ctrl+Alt+M)" @click="emit('new')">＋ 新增留言</button>
-      <button type="button" class="dx-comments-close" title="關閉留言面板" aria-label="關閉留言面板" @click="emit('close')">×</button>
+      <span class="dx-comments-title">{{ tl('留言（') }}{{ count }}{{ tl('）') }}</span>
+      <button v-if="editable" type="button" class="dx-comments-new" :title="tl('在選取的文字上新增留言 (Ctrl+Alt+M)')" @click="emit('new')">{{ tl('＋ 新增留言') }}</button>
+      <button type="button" class="dx-comments-close" :title="tl('關閉留言面板')" :aria-label="tl('關閉留言面板')" @click="emit('close')">×</button>
     </header>
     <div v-if="threads.length" class="dx-comments-nav">
-      <button type="button" class="dx-comments-prev" title="上一則留言" aria-label="上一則留言"
-              :disabled="!shown.length || current === 0" @click="go(-1)">↑ 上一則</button>
-      <button type="button" class="dx-comments-next" title="下一則留言" aria-label="下一則留言"
-              :disabled="!shown.length || current === shown.length - 1" @click="go(1)">↓ 下一則</button>
+      <button type="button" class="dx-comments-prev" :title="tl('上一則留言')" :aria-label="tl('上一則留言')"
+              :disabled="!shown.length || current === 0" @click="go(-1)">{{ tl('↑ 上一則') }}</button>
+      <button type="button" class="dx-comments-next" :title="tl('下一則留言')" :aria-label="tl('下一則留言')"
+              :disabled="!shown.length || current === shown.length - 1" @click="go(1)">{{ tl('↓ 下一則') }}</button>
       <button type="button" class="dx-comments-filter" :aria-pressed="openOnly"
-              title="只列出還沒解決的留言" @click="openOnly = !openOnly">只看未解決（{{ openCount }}）</button>
+              :title="tl('只列出還沒解決的留言')" @click="openOnly = !openOnly">{{ tl('只看未解決（') }}{{ openCount }}{{ tl('）') }}</button>
     </div>
-    <p v-if="!editable" class="dx-comments-note">唯讀：只能檢視留言。</p>
-    <p v-if="openOnly && !shown.length" class="dx-comments-note">沒有未解決的留言。</p>
+    <p v-if="!editable" class="dx-comments-note">{{ tl('唯讀：只能檢視留言。') }}</p>
+    <p v-if="openOnly && !shown.length" class="dx-comments-note">{{ tl('沒有未解決的留言。') }}</p>
     <form v-if="editable && draft" class="dx-comment-draft" @submit.prevent="addDraft">
       <blockquote>{{ draft.quote ? snippet(draft.quote) : '（游標位置）' }}</blockquote>
       <textarea
@@ -207,13 +208,13 @@ function go(step: 1 | -1) {
         v-model="draftText"
         class="dx-comment-box"
         rows="3"
-        aria-label="新留言"
-        placeholder="輸入留言…（Ctrl+Enter 送出）"
+        :aria-label="tl('新留言')"
+        :placeholder="tl('輸入留言…（Ctrl+Enter 送出）')"
         @keydown="keys($event, addDraft, () => emit('cancel-draft'))"
       />
       <div class="dx-comment-actions">
-        <button type="submit" class="dx-comment-primary" :disabled="!draftText.trim()">留言</button>
-        <button type="button" @click="emit('cancel-draft')">取消</button>
+        <button type="submit" class="dx-comment-primary" :disabled="!draftText.trim()">{{ tl('留言') }}</button>
+        <button type="button" @click="emit('cancel-draft')">{{ tl('取消') }}</button>
       </div>
     </form>
     <ol>
@@ -229,7 +230,7 @@ function go(step: 1 | -1) {
                 <div class="dx-comment-head">
                   <span class="dx-comment-author">{{ c.author || '未知作者' }}</span>
                   <span class="dx-comment-date">{{ formatDate(c.date, c.dateUtc) }}</span>
-                  <span v-if="!i && t.comment.done" class="dx-comment-done">已解決</span>
+                  <span v-if="!i && t.comment.done" class="dx-comment-done">{{ tl('已解決') }}</span>
                 </div>
                 <blockquote v-if="!i && anchors[c.id]">{{ snippet(anchors[c.id]) }}</blockquote>
                 <div v-if="editing !== c.id" class="dx-comment-text">{{ c.text || (i ? '' : '（空白留言）') }}</div>
@@ -239,22 +240,22 @@ function go(step: 1 | -1) {
                   v-model="editText"
                   class="dx-comment-box dx-comment-edit-box"
                   rows="3"
-                  aria-label="編輯留言"
+                  :aria-label="tl('編輯留言')"
                   @keydown="keys($event, saveEdit, closeEdit)"
                 />
                 <div class="dx-comment-actions">
-                  <button type="submit" class="dx-comment-primary" :disabled="!editText.trim()">儲存</button>
-                  <button type="button" @click="closeEdit">取消</button>
+                  <button type="submit" class="dx-comment-primary" :disabled="!editText.trim()">{{ tl('儲存') }}</button>
+                  <button type="button" @click="closeEdit">{{ tl('取消') }}</button>
                 </div>
               </form>
               <div v-else-if="mine(c)" class="dx-comment-actions dx-comment-own" :data-id="c.id">
-                <button type="button" class="dx-comment-edit-open" :aria-label="`編輯${c.author}的留言`" @click="startEdit(c)">編輯</button>
+                <button type="button" class="dx-comment-edit-open" :aria-label="`編輯${c.author}的留言`" @click="startEdit(c)">{{ tl('編輯') }}</button>
                 <button
                   type="button"
                   :title="!i && t.replies.length ? `連同 ${t.replies.length} 則回覆一起刪除（可復原）` : '刪除（可復原）'"
                   :aria-label="`刪除${c.author}的留言`"
                   @click="emit('remove', c.id)"
-                >刪除</button>
+                >{{ tl('刪除') }}</button>
               </div>
             </div>
           </template>
@@ -263,17 +264,17 @@ function go(step: 1 | -1) {
               v-model="replyText"
               class="dx-comment-box dx-comment-reply-box"
               rows="2"
-              aria-label="回覆"
-              placeholder="回覆…（Ctrl+Enter 送出）"
+              :aria-label="tl('回覆')"
+              :placeholder="tl('回覆…（Ctrl+Enter 送出）')"
               @keydown="keys($event, sendReply, closeReply)"
             />
             <div class="dx-comment-actions">
-              <button type="submit" class="dx-comment-primary" :disabled="!replyText.trim()">回覆</button>
-              <button type="button" @click="closeReply">取消</button>
+              <button type="submit" class="dx-comment-primary" :disabled="!replyText.trim()">{{ tl('回覆') }}</button>
+              <button type="button" @click="closeReply">{{ tl('取消') }}</button>
             </div>
           </form>
           <div v-else-if="editable" class="dx-comment-actions dx-comment-thread" :data-id="t.comment.id">
-            <button type="button" class="dx-comment-reply-open" @click="startReply(t)">回覆</button>
+            <button type="button" class="dx-comment-reply-open" @click="startReply(t)">{{ tl('回覆') }}</button>
             <button type="button" :aria-pressed="t.comment.done" @click="resolve(t)">
               {{ t.comment.done ? '重新開啟' : '標示為已解決' }}
             </button>

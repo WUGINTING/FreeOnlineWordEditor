@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { tl } from './locale';
 import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue';
 import type { Command, EditorState } from 'prosemirror-state';
 import { selectAll } from 'prosemirror-commands';
@@ -201,7 +202,7 @@ onBeforeUnmount(() => {
     ref="menu"
     class="dx-context-menu"
     role="menu"
-    aria-label="文字功能"
+    :aria-label="tl('文字功能')"
     :style="{ left: `${pos.left}px`, top: `${pos.top}px` }"
     @keydown="onKey"
     @contextmenu.prevent
@@ -221,7 +222,7 @@ onBeforeUnmount(() => {
         <span>{{ entry.label }}</span><span v-if="entry.keys" class="dx-context-keys">{{ entry.keys }}</span>
       </button>
     </template>
-    <div class="dx-context-hint">Ctrl+右鍵：瀏覽器原本的選單（拼字建議）</div>
+    <div class="dx-context-hint">{{ tl('Ctrl+右鍵：瀏覽器原本的選單（拼字建議）') }}</div>
   </div>
 </template>
 

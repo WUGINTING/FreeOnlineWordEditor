@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { tl } from './locale';
 import { nextTick, onBeforeUnmount, onMounted, ref } from 'vue';
 import type { DocxEditor } from '../editor/core';
 import { menuSymbols, symbolCode } from '../editor/symbols';
@@ -115,7 +116,7 @@ const label = (ch: string) => `${ch}（${symbolCode(ch)}）`;
 <template>
   <div ref="root" class="dx-pop">
     <slot :open="open" :toggle="toggle" />
-    <div v-if="open" ref="menu" class="dx-menu dx-popup dx-symmenu" role="menu" aria-label="符號" @keydown="onKey">
+    <div v-if="open" ref="menu" class="dx-menu dx-popup dx-symmenu" role="menu" :aria-label="tl('符號')" @keydown="onKey">
       <div class="dx-symgrid">
         <button
           v-for="ch in choices"
@@ -129,8 +130,8 @@ const label = (ch: string) => `${ch}（${symbolCode(ch)}）`;
           @click="pick(ch)"
         >{{ ch }}</button>
       </div>
-      <button type="button" role="menuitem" tabindex="-1" class="dx-symmore" title="開啟「符號」對話方塊，選擇更多符號或輸入字元代碼" @click="more">
-        <svg class="dx-ico" viewBox="0 0 24 24" v-html="ICONS.symbol" />其他符號(M)…
+      <button type="button" role="menuitem" tabindex="-1" class="dx-symmore" :title="tl('開啟「符號」對話方塊，選擇更多符號或輸入字元代碼')" @click="more">
+        <svg class="dx-ico" viewBox="0 0 24 24" v-html="ICONS.symbol" />{{ tl('其他符號(M)…') }}
       </button>
     </div>
   </div>

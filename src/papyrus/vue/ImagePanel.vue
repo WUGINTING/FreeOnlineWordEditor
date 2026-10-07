@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { tl } from './locale';
 // Tools for the selected picture: size (px or cm, proportions locked by default),
 // turn 90° to the right, replace, delete, alt text.
 import { computed, onBeforeUnmount, ref, watch } from 'vue';
@@ -145,38 +146,38 @@ async function onReplace(e: Event) {
 </script>
 
 <template>
-  <div class="dx-group dx-image-panel" role="group" aria-label="圖片">
+  <div class="dx-group dx-image-panel" role="group" :aria-label="tl('圖片')">
     <span class="dx-size">
-      寬
-      <input v-model="widthText" type="text" inputmode="decimal" aria-label="圖片寬度" @change="applySize('width')" @keydown="onEnter(() => applySize('width'))($event)" />
-      高
-      <input v-model="heightText" type="text" inputmode="decimal" aria-label="圖片高度" @change="applySize('height')" @keydown="onEnter(() => applySize('height'))($event)" />
-      <select v-model="unit" aria-label="尺寸單位">
-        <option value="cm">公分</option>
-        <option value="px">像素</option>
+      {{ tl('寬') }}
+      <input v-model="widthText" type="text" inputmode="decimal" :aria-label="tl('圖片寬度')" @change="applySize('width')" @keydown="onEnter(() => applySize('width'))($event)" />
+      {{ tl('高') }}
+      <input v-model="heightText" type="text" inputmode="decimal" :aria-label="tl('圖片高度')" @change="applySize('height')" @keydown="onEnter(() => applySize('height'))($event)" />
+      <select v-model="unit" :aria-label="tl('尺寸單位')">
+        <option value="cm">{{ tl('公分') }}</option>
+        <option value="px">{{ tl('像素') }}</option>
       </select>
     </span>
-    <label class="dx-check" title="調整寬度或高度時維持長寬比">
+    <label class="dx-check" :title="tl('調整寬度或高度時維持長寬比')">
       <input v-model="lock" type="checkbox" />
-      鎖定比例
+      {{ tl('鎖定比例') }}
     </label>
     <button
       type="button"
       :title="inWord.turned ? TURNED_IN_WORD : '把圖片向右轉 90 度（順時針）'"
       :aria-disabled="inWord.turned ? 'true' : undefined"
       @click="rotateRight"
-    >向右旋轉 90°</button>
-    <button type="button" title="換成另一張圖片（保留目前寬度與版面設定）" @click="fileInput?.click()">替換圖片</button>
+    >{{ tl('向右旋轉 90°') }}</button>
+    <button type="button" :title="tl('換成另一張圖片（保留目前寬度與版面設定）')" @click="fileInput?.click()">{{ tl('替換圖片') }}</button>
     <input ref="fileInput" type="file" accept="image/*" hidden @change="onReplace" />
     <span v-if="message" class="dx-msg" role="alert">{{ message }}</span>
-    <button type="button" title="刪除圖片" @click="run(deleteSelection)">刪除</button>
+    <button type="button" :title="tl('刪除圖片')" @click="run(deleteSelection)">{{ tl('刪除') }}</button>
     <span class="dx-alt">
-      替代文字
+      {{ tl('替代文字') }}
       <input
         v-model="altText"
         type="text"
-        aria-label="替代文字"
-        placeholder="描述這張圖片"
+        :aria-label="tl('替代文字')"
+        :placeholder="tl('描述這張圖片')"
         @input="onAltInput"
         @change="applyAlt(true)"
         @blur="applyAlt(true)"

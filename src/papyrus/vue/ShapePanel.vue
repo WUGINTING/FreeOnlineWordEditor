@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { tl } from './locale';
 // 圖形格式 (the ribbon's tab while a shape is selected, like 圖片格式): fill and outline, 文繞圖,
 // stacking, align and distribute, group, and the position and size in cm (editor/shapeInteract.ts).
 import { computed, ref, watch } from 'vue';
@@ -86,68 +87,68 @@ function onWidth(e: Event) {
 </script>
 
 <template>
-  <div v-if="info" class="dx-group dx-shape-panel" role="group" aria-label="圖形格式">
+  <div v-if="info" class="dx-group dx-shape-panel" role="group" :aria-label="tl('圖形格式')">
     <span class="dx-shape-name" aria-live="off">{{ info.count > 1 ? `已選取 ${info.count} 個圖形` : info.name }}</span>
     <template v-if="info.drawable">
-      <span class="dx-field" role="group" aria-label="圖案樣式">
-        <ColorPicker v-if="!info.line1" label="圖案填滿" :colors="STANDARD_COLORS" :value="info.fill" none-label="無填滿" @pick="(c) => tools()?.setFill(c)">
-          <span class="dx-cp-glyph">填滿</span>
+      <span class="dx-field" role="group" :aria-label="tl('圖案樣式')">
+        <ColorPicker v-if="!info.line1" :label="tl('圖案填滿')" :colors="STANDARD_COLORS" :value="info.fill" :none-label="tl('無填滿')" @pick="(c) => tools()?.setFill(c)">
+          <span class="dx-cp-glyph">{{ tl('填滿') }}</span>
         </ColorPicker>
-        <ColorPicker label="圖案外框" :colors="STANDARD_COLORS" :value="info.line" none-label="無外框" @pick="(c) => tools()?.setOutline(c, info?.lineWidth ?? undefined)">
-          <span class="dx-cp-glyph">外框</span>
+        <ColorPicker :label="tl('圖案外框')" :colors="STANDARD_COLORS" :value="info.line" :none-label="tl('無外框')" @pick="(c) => tools()?.setOutline(c, info?.lineWidth ?? undefined)">
+          <span class="dx-cp-glyph">{{ tl('外框') }}</span>
         </ColorPicker>
-        <select aria-label="外框粗細（點）" title="外框粗細" :value="info.lineWidth ?? ''" @change="onWidth">
-          <option v-if="info.lineWidth == null" value="" disabled>粗細</option>
-          <option v-for="v in WIDTHS" :key="v" :value="v">{{ v }} 點</option>
-          <option v-if="info.lineWidth != null && !WIDTHS.includes(info.lineWidth)" :value="info.lineWidth">{{ info.lineWidth }} 點</option>
+        <select :aria-label="tl('外框粗細（點）')" :title="tl('外框粗細')" :value="info.lineWidth ?? ''" @change="onWidth">
+          <option v-if="info.lineWidth == null" value="" disabled>{{ tl('粗細') }}</option>
+          <option v-for="v in WIDTHS" :key="v" :value="v">{{ v }} {{ tl('點') }}</option>
+          <option v-if="info.lineWidth != null && !WIDTHS.includes(info.lineWidth)" :value="info.lineWidth">{{ info.lineWidth }} {{ tl('點') }}</option>
         </select>
       </span>
       <label class="dx-field">
-        文繞圖
-        <select aria-label="文繞圖" :value="info.wrap" @change="onWrap">
+        {{ tl('文繞圖') }}
+        <select :aria-label="tl('文繞圖')" :value="info.wrap" @change="onWrap">
           <option v-for="o in WRAPS" :key="o.value" :value="o.value">{{ o.label }}</option>
         </select>
       </label>
-      <span class="dx-field" role="group" aria-label="排列">
-        <button type="button" title="上移一層" :disabled="!info.floating" @click="tools()?.restack(1)">上移一層</button>
-        <button type="button" title="下移一層" :disabled="!info.floating" @click="tools()?.restack(-1)">下移一層</button>
+      <span class="dx-field" role="group" :aria-label="tl('排列')">
+        <button type="button" :title="tl('上移一層')" :disabled="!info.floating" @click="tools()?.restack(1)">{{ tl('上移一層') }}</button>
+        <button type="button" :title="tl('下移一層')" :disabled="!info.floating" @click="tools()?.restack(-1)">{{ tl('下移一層') }}</button>
         <span class="dx-pop">
-          <button type="button" title="對齊與均分" aria-haspopup="menu" :aria-expanded="alignOpen" :disabled="!info.floating" @click="alignOpen = !alignOpen">對齊 ▾</button>
-          <span v-if="alignOpen" class="dx-menu dx-popup" role="menu" aria-label="對齊" @keydown.esc.stop.prevent="alignOpen = false">
-            <button type="button" role="menuitem" @click="align('left')">靠左對齊</button>
-            <button type="button" role="menuitem" @click="align('center')">水平置中</button>
-            <button type="button" role="menuitem" @click="align('right')">靠右對齊</button>
-            <button type="button" role="menuitem" @click="align('top')">靠上對齊</button>
-            <button type="button" role="menuitem" @click="align('middle')">垂直置中</button>
-            <button type="button" role="menuitem" @click="align('bottom')">靠下對齊</button>
-            <button type="button" role="menuitem" :disabled="info.count < 3" @click="distribute('h')">水平均分</button>
-            <button type="button" role="menuitem" :disabled="info.count < 3" @click="distribute('v')">垂直均分</button>
+          <button type="button" :title="tl('對齊與均分')" aria-haspopup="menu" :aria-expanded="alignOpen" :disabled="!info.floating" @click="alignOpen = !alignOpen">{{ tl('對齊 ▾') }}</button>
+          <span v-if="alignOpen" class="dx-menu dx-popup" role="menu" :aria-label="tl('對齊')" @keydown.esc.stop.prevent="alignOpen = false">
+            <button type="button" role="menuitem" @click="align('left')">{{ tl('靠左對齊') }}</button>
+            <button type="button" role="menuitem" @click="align('center')">{{ tl('水平置中') }}</button>
+            <button type="button" role="menuitem" @click="align('right')">{{ tl('靠右對齊') }}</button>
+            <button type="button" role="menuitem" @click="align('top')">{{ tl('靠上對齊') }}</button>
+            <button type="button" role="menuitem" @click="align('middle')">{{ tl('垂直置中') }}</button>
+            <button type="button" role="menuitem" @click="align('bottom')">{{ tl('靠下對齊') }}</button>
+            <button type="button" role="menuitem" :disabled="info.count < 3" @click="distribute('h')">{{ tl('水平均分') }}</button>
+            <button type="button" role="menuitem" :disabled="info.count < 3" @click="distribute('v')">{{ tl('垂直均分') }}</button>
           </span>
         </span>
-        <button type="button" title="群組 (Ctrl+G)：先按住 Shift 點選多個圖形" :disabled="!info.canGroup" @click="tools()?.group()">群組</button>
-        <button type="button" title="取消群組 (Ctrl+Shift+G)" :disabled="!info.canUngroup" @click="tools()?.ungroup()">取消群組</button>
+        <button type="button" :title="tl('群組 (Ctrl+G)：先按住 Shift 點選多個圖形')" :disabled="!info.canGroup" @click="tools()?.group()">{{ tl('群組') }}</button>
+        <button type="button" :title="tl('取消群組 (Ctrl+Shift+G)')" :disabled="!info.canUngroup" @click="tools()?.ungroup()">{{ tl('取消群組') }}</button>
       </span>
-      <span class="dx-field" role="group" aria-label="位置">
+      <span class="dx-field" role="group" :aria-label="tl('位置')">
         <template v-if="info.floating">
-          水平
+          {{ tl('水平') }}
           <input v-model="x" type="text" inputmode="decimal" :aria-label="`水平位置（公分，相對於${info.xFrom}）`" :title="`相對於${info.xFrom}`" @change="applyPosition" @keydown="onEnter(applyPosition)($event)" />
-          垂直
+          {{ tl('垂直') }}
           <input v-model="y" type="text" inputmode="decimal" :aria-label="`垂直位置（公分，相對於${info.yFrom}）`" :title="`相對於${info.yFrom}`" @change="applyPosition" @keydown="onEnter(applyPosition)($event)" />
-          公分
+          {{ tl('公分') }}
         </template>
       </span>
-      <span class="dx-field" role="group" aria-label="大小">
-        寬
-        <input v-model="w" type="text" inputmode="decimal" aria-label="寬度（公分）" @change="applySize('w')" @keydown="onEnter(() => applySize('w'))($event)" />
-        高
-        <input v-model="h" type="text" inputmode="decimal" aria-label="高度（公分）" @change="applySize('h')" @keydown="onEnter(() => applySize('h'))($event)" />
-        公分
-        <label class="dx-check" title="調整寬度或高度時維持長寬比（拖曳控點時按住 Shift 也可以）"><input v-model="lock" type="checkbox" />鎖定比例</label>
+      <span class="dx-field" role="group" :aria-label="tl('大小')">
+        {{ tl('寬') }}
+        <input v-model="w" type="text" inputmode="decimal" :aria-label="tl('寬度（公分）')" @change="applySize('w')" @keydown="onEnter(() => applySize('w'))($event)" />
+        {{ tl('高') }}
+        <input v-model="h" type="text" inputmode="decimal" :aria-label="tl('高度（公分）')" @change="applySize('h')" @keydown="onEnter(() => applySize('h'))($event)" />
+        {{ tl('公分') }}
+        <label class="dx-check" :title="tl('調整寬度或高度時維持長寬比（拖曳控點時按住 Shift 也可以）')"><input v-model="lock" type="checkbox" />{{ tl('鎖定比例') }}</label>
       </span>
     </template>
-    <span v-else class="dx-msg">這個圖形只能在 Word 修改</span>
-    <button type="button" title="選取下一個圖形 (Tab)" @click="editor?.selectShape(1)">選取下一個</button>
-    <button type="button" title="刪除選取的圖形 (Delete)" @click="tools()?.deleteSelected()">刪除</button>
+    <span v-else class="dx-msg">{{ tl('這個圖形只能在 Word 修改') }}</span>
+    <button type="button" :title="tl('選取下一個圖形 (Tab)')" @click="editor?.selectShape(1)">{{ tl('選取下一個') }}</button>
+    <button type="button" :title="tl('刪除選取的圖形 (Delete)')" @click="tools()?.deleteSelected()">{{ tl('刪除') }}</button>
   </div>
 </template>
 

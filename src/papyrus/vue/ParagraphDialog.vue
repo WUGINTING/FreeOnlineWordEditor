@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { tl } from './locale';
 import { nextTick, ref, watch } from 'vue';
 import type { DocxEditor } from '../editor/core';
 import { setParagraphFormat } from '../editor/commands';
@@ -169,46 +170,46 @@ function onLineKind() {
 <template>
   <div v-if="open" class="dx-dialog-backdrop" @mousedown.self="close" @keydown.esc="!($event.isComposing || $event.keyCode === 229) && close()">
     <div ref="dialog" class="dx-dialog" role="dialog" aria-modal="true" aria-labelledby="dx-pd-title" @keydown="trapFocus">
-      <h3 id="dx-pd-title">段落</h3>
-      <p class="dx-hint">空白表示依段落樣式。只會寫入你改過的項目。</p>
+      <h3 id="dx-pd-title">{{ tl('段落') }}</h3>
+      <p class="dx-hint">{{ tl('空白表示依段落樣式。只會寫入你改過的項目。') }}</p>
 
       <fieldset>
-        <legend>縮排</legend>
+        <legend>{{ tl('縮排') }}</legend>
         <div class="dx-row">
-          單位
-          <label><input v-model="form.unit" type="radio" name="dx-pd-unit" value="cm" /> 公分</label>
-          <label><input v-model="form.unit" type="radio" name="dx-pd-unit" value="char" /> 字元</label>
+          {{ tl('單位') }}
+          <label><input v-model="form.unit" type="radio" name="dx-pd-unit" value="cm" /> {{ tl('公分') }}</label>
+          <label><input v-model="form.unit" type="radio" name="dx-pd-unit" value="char" /> {{ tl('字元') }}</label>
         </div>
         <div class="dx-grid">
-          <label>左 <input v-model="form.left" type="text" inputmode="decimal" placeholder="依樣式" /></label>
-          <label>右 <input v-model="form.right" type="text" inputmode="decimal" placeholder="依樣式" /></label>
+          <label>{{ tl('左') }} <input v-model="form.left" type="text" inputmode="decimal" :placeholder="tl('依樣式')" /></label>
+          <label>{{ tl('右') }} <input v-model="form.right" type="text" inputmode="decimal" :placeholder="tl('依樣式')" /></label>
           <label>
-            指定方式
+            {{ tl('指定方式') }}
             <select v-model="form.special">
-              <option value="none">（無）</option>
-              <option value="first">第一行</option>
-              <option value="hanging">凸排</option>
+              <option value="none">{{ tl('（無）') }}</option>
+              <option value="first">{{ tl('第一行') }}</option>
+              <option value="hanging">{{ tl('凸排') }}</option>
             </select>
           </label>
-          <label>位移 <input v-model="form.by" type="text" inputmode="decimal" :disabled="form.special === 'none'" placeholder="0" /></label>
+          <label>{{ tl('位移') }} <input v-model="form.by" type="text" inputmode="decimal" :disabled="form.special === 'none'" placeholder="0" /></label>
         </div>
       </fieldset>
 
       <fieldset>
-        <legend>間距</legend>
+        <legend>{{ tl('間距') }}</legend>
         <div class="dx-grid">
-          <label>與前段距離（點）<input v-model="form.before" type="text" inputmode="decimal" placeholder="依樣式" /></label>
-          <label>與後段距離（點）<input v-model="form.after" type="text" inputmode="decimal" placeholder="依樣式" /></label>
+          <label>{{ tl('與前段距離（點）') }}<input v-model="form.before" type="text" inputmode="decimal" :placeholder="tl('依樣式')" /></label>
+          <label>{{ tl('與後段距離（點）') }}<input v-model="form.after" type="text" inputmode="decimal" :placeholder="tl('依樣式')" /></label>
           <label>
-            行距
+            {{ tl('行距') }}
             <select v-model="form.line" @change="onLineKind">
-              <option value="">依樣式</option>
-              <option value="single">單行間距</option>
-              <option value="1.5">1.5 倍行高</option>
-              <option value="double">2 倍行高</option>
-              <option value="multiple">多行（倍數）</option>
-              <option value="atLeast">最小行高（點）</option>
-              <option value="exact">固定行高（點）</option>
+              <option value="">{{ tl('依樣式') }}</option>
+              <option value="single">{{ tl('單行間距') }}</option>
+              <option value="1.5">{{ tl('1.5 倍行高') }}</option>
+              <option value="double">{{ tl('2 倍行高') }}</option>
+              <option value="multiple">{{ tl('多行（倍數）') }}</option>
+              <option value="atLeast">{{ tl('最小行高（點）') }}</option>
+              <option value="exact">{{ tl('固定行高（點）') }}</option>
             </select>
           </label>
           <label>
@@ -220,8 +221,8 @@ function onLineKind() {
 
       <p v-if="error" class="dx-error" role="alert">{{ error }}</p>
       <div class="dx-actions">
-        <button type="button" @click="close">取消</button>
-        <button type="button" class="dx-primary" @click="apply">套用</button>
+        <button type="button" @click="close">{{ tl('取消') }}</button>
+        <button type="button" class="dx-primary" @click="apply">{{ tl('套用') }}</button>
       </div>
     </div>
   </div>

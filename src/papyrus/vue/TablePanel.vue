@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { tl } from './locale';
 // Table appearance for the selected cells / rows: shading, borders, vertical alignment,
 // row height, header row, "don't split row", sorting rows. (平均分配欄寬 is in 表格版面配置 ›
 // 儲存格大小, as in Word.)
@@ -102,22 +103,22 @@ function applyWidth() {
 </script>
 
 <template>
-  <div class="dx-group dx-table-panel" role="group" aria-label="表格外觀">
-    <ColorPicker label="儲存格底色" :colors="STANDARD_COLORS" :value="info?.background ?? null" none-label="無色彩" @pick="onShading">
-      <span>底色</span>
+  <div class="dx-group dx-table-panel" role="group" :aria-label="tl('表格外觀')">
+    <ColorPicker :label="tl('儲存格底色')" :colors="STANDARD_COLORS" :value="info?.background ?? null" :none-label="tl('無色彩')" @pick="onShading">
+      <span>{{ tl('底色') }}</span>
     </ColorPicker>
-    <button type="button" title="移除儲存格底色" :disabled="!info?.background" @click="run(setCellBackground(null))">無底色</button>
+    <button type="button" :title="tl('移除儲存格底色')" :disabled="!info?.background" @click="run(setCellBackground(null))">{{ tl('無底色') }}</button>
 
-    <select title="框線（套用到選取的儲存格）" value="" @change="onBorders">
-      <option value="" disabled>框線</option>
+    <select :title="tl('框線（套用到選取的儲存格）')" value="" @change="onBorders">
+      <option value="" disabled>{{ tl('框線') }}</option>
       <option v-for="b in BORDERS" :key="b.value" :value="b.value">{{ b.label }}</option>
     </select>
 
-    <span class="dx-seg" role="group" aria-label="垂直對齊">
+    <span class="dx-seg" role="group" :aria-label="tl('垂直對齊')">
       <button
         type="button"
-        title="垂直置上"
-        aria-label="垂直置上"
+        :title="tl('垂直置上')"
+        :aria-label="tl('垂直置上')"
         :class="{ on: vAlignTop }"
         :aria-pressed="vAlignTop"
         @click="run(setCellVAlign('top'))"
@@ -126,8 +127,8 @@ function applyWidth() {
       </button>
       <button
         type="button"
-        title="垂直置中"
-        aria-label="垂直置中"
+        :title="tl('垂直置中')"
+        :aria-label="tl('垂直置中')"
         :class="{ on: info?.vAlign === 'middle' }"
         :aria-pressed="info?.vAlign === 'middle'"
         @click="run(setCellVAlign('middle'))"
@@ -136,8 +137,8 @@ function applyWidth() {
       </button>
       <button
         type="button"
-        title="垂直置下"
-        aria-label="垂直置下"
+        :title="tl('垂直置下')"
+        :aria-label="tl('垂直置下')"
         :class="{ on: info?.vAlign === 'bottom' }"
         :aria-pressed="info?.vAlign === 'bottom'"
         @click="run(setCellVAlign('bottom'))"
@@ -146,41 +147,41 @@ function applyWidth() {
       </button>
     </span>
 
-    <span class="dx-height" title="列高（空白 = 自動）">
-      列高
-      <input v-model="heightText" type="text" inputmode="decimal" placeholder="自動" aria-label="列高" @change="applyHeight" @keydown="onEnter(applyHeight)($event)" />
-      <select v-model="unit" aria-label="列高單位">
-        <option value="cm">公分</option>
-        <option value="pt">點</option>
+    <span class="dx-height" :title="tl('列高（空白 = 自動）')">
+      {{ tl('列高') }}
+      <input v-model="heightText" type="text" inputmode="decimal" :placeholder="tl('自動')" :aria-label="tl('列高')" @change="applyHeight" @keydown="onEnter(applyHeight)($event)" />
+      <select v-model="unit" :aria-label="tl('列高單位')">
+        <option value="cm">{{ tl('公分') }}</option>
+        <option value="pt">{{ tl('點') }}</option>
       </select>
-      <select v-model="rule" aria-label="列高規則" @change="applyRule">
-        <option value="atLeast">最小</option>
-        <option value="exact">固定</option>
-        <option v-if="rule === 'auto'" value="auto">自動</option>
+      <select v-model="rule" :aria-label="tl('列高規則')" @change="applyRule">
+        <option value="atLeast">{{ tl('最小') }}</option>
+        <option value="exact">{{ tl('固定') }}</option>
+        <option v-if="rule === 'auto'" value="auto">{{ tl('自動') }}</option>
       </select>
     </span>
 
-    <span class="dx-height" title="游標所在欄（或選取的欄）的寬度">
-      欄寬
-      <input v-model="widthText" type="text" inputmode="decimal" :placeholder="info?.colWidth ? '' : '不一'" aria-label="欄寬（公分）" @change="applyWidth" @keydown="onEnter(applyWidth)($event)" />
-      公分
+    <span class="dx-height" :title="tl('游標所在欄（或選取的欄）的寬度')">
+      {{ tl('欄寬') }}
+      <input v-model="widthText" type="text" inputmode="decimal" :placeholder="info?.colWidth ? '' : '不一'" :aria-label="tl('欄寬（公分）')" @change="applyWidth" @keydown="onEnter(applyWidth)($event)" />
+      {{ tl('公分') }}
     </span>
 
-    <label class="dx-check" title="在每一頁頂端重複此列（Word 的「重複標題列」）">
+    <label class="dx-check" :title="tl('在每一頁頂端重複此列（Word 的「重複標題列」）')">
       <input type="checkbox" :checked="info?.header" @change="run(setHeaderRow(($event.target as HTMLInputElement).checked))" />
-      標題列（跨頁重複）
+      {{ tl('標題列（跨頁重複）') }}
     </label>
-    <label class="dx-check" title="此列不會被分頁拆開">
+    <label class="dx-check" :title="tl('此列不會被分頁拆開')">
       <input type="checkbox" :checked="info?.cantSplit" @change="run(setCantSplit(($event.target as HTMLInputElement).checked))" />
-      列不可跨頁拆開
+      {{ tl('列不可跨頁拆開') }}
     </label>
 
-    <span class="dx-sort" role="group" aria-label="依游標所在欄排序">
-      <button type="button" :disabled="!!sortBlocked" :title="sortBlocked ?? '依游標所在欄由小到大排序（數字依大小、日期依先後、文字依筆畫）'" @click="run(sortTable(false, keepFirst))">排序↑</button>
-      <button type="button" :disabled="!!sortBlocked" :title="sortBlocked ?? '依游標所在欄由大到小排序'" @click="run(sortTable(true, keepFirst))">排序↓</button>
-      <label class="dx-check" title="第一列是標題時不參與排序（已設為「標題列」的列一律保留在上方）">
+    <span class="dx-sort" role="group" :aria-label="tl('依游標所在欄排序')">
+      <button type="button" :disabled="!!sortBlocked" :title="sortBlocked ?? '依游標所在欄由小到大排序（數字依大小、日期依先後、文字依筆畫）'" @click="run(sortTable(false, keepFirst))">{{ tl('排序↑') }}</button>
+      <button type="button" :disabled="!!sortBlocked" :title="sortBlocked ?? '依游標所在欄由大到小排序'" @click="run(sortTable(true, keepFirst))">{{ tl('排序↓') }}</button>
+      <label class="dx-check" :title="tl('第一列是標題時不參與排序（已設為「標題列」的列一律保留在上方）')">
         <input v-model="keepFirst" type="checkbox" />
-        保留第一列
+        {{ tl('保留第一列') }}
       </label>
     </span>
   </div>

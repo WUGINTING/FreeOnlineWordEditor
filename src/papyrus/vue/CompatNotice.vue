@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { tl } from './locale';
 import { ref, watch } from 'vue';
 import { KEEP_ORIGINAL, type CompatReport } from '../docx/compat';
 
@@ -27,12 +28,12 @@ watch(
   <div v-if="report && report.items.length && !dismissed" class="dx-compat" role="status">
     <div class="dx-compat-bar">
       <span class="dx-compat-icon" aria-hidden="true">!</span>
-      <span class="dx-compat-text">這份文件有 {{ report.items.length }} 項內容在網頁上無法完整顯示或編輯</span>
+      <span class="dx-compat-text">{{ tl('這份文件有') }} {{ report.items.length }} {{ tl('項內容在網頁上無法完整顯示或編輯') }}</span>
       <button type="button" class="dx-compat-link" :aria-expanded="open" @click="open = !open">{{ open ? '收合' : '查看詳情' }}</button>
-      <button type="button" class="dx-compat-close" title="關閉提示" aria-label="關閉提示" @click="dismissed = true">×</button>
+      <button type="button" class="dx-compat-close" :title="tl('關閉提示')" :aria-label="tl('關閉提示')" @click="dismissed = true">×</button>
     </div>
     <div v-if="open" class="dx-compat-panel">
-      <p class="dx-compat-lead">網頁版只支援 Word 的部分功能。下列內容都會原樣保存在檔案中，但在網頁上的顯示或編輯方式有限制：</p>
+      <p class="dx-compat-lead">{{ tl('網頁版只支援 Word 的部分功能。下列內容都會原樣保存在檔案中，但在網頁上的顯示或編輯方式有限制：') }}</p>
       <ul>
         <li v-for="item in report.items" :key="item.id">
           <div class="dx-compat-title">
@@ -41,7 +42,7 @@ watch(
           <div class="dx-compat-effect">{{ item.effect }}</div>
         </li>
       </ul>
-      <p class="dx-compat-keep"><b>保留原檔：</b>{{ keepOriginal }}</p>
+      <p class="dx-compat-keep"><b>{{ tl('保留原檔：') }}</b>{{ keepOriginal }}</p>
     </div>
   </div>
 </template>

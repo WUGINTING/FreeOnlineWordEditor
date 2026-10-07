@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { tl } from './locale';
 import { computed, nextTick, ref, watch } from 'vue';
 import type { ColumnsChange, DocxEditor, PageSetupScope } from '../editor/core';
 import type { PageSetup } from '../docx/model';
@@ -291,137 +292,137 @@ function apply() {
 <template>
   <div v-if="open" class="dx-dialog-backdrop" @mousedown.self="close" @keydown.esc="!($event.isComposing || $event.keyCode === 229) && close()">
     <div ref="dialog" class="dx-dialog" role="dialog" aria-modal="true" aria-labelledby="dx-ps-title" @keydown="trapFocus">
-      <h3 id="dx-ps-title">版面設定</h3>
+      <h3 id="dx-ps-title">{{ tl('版面設定') }}</h3>
 
       <fieldset>
-        <legend>紙張</legend>
+        <legend>{{ tl('紙張') }}</legend>
         <label class="dx-row">
-          大小
+          {{ tl('大小') }}
           <select v-model="paper" @change="onPaper">
             <option v-for="p in PAPERS" :key="p.id" :value="p.id">{{ p.label }}</option>
-            <option value="custom">自訂</option>
+            <option value="custom">{{ tl('自訂') }}</option>
           </select>
         </label>
         <div class="dx-row">
-          <label>寬 <input v-model.number="width" type="number" step="0.1" min="5" @input="paper = 'custom'" /> 公分</label>
-          <label>高 <input v-model.number="height" type="number" step="0.1" min="5" @input="paper = 'custom'" /> 公分</label>
+          <label>{{ tl('寬') }} <input v-model.number="width" type="number" step="0.1" min="5" @input="paper = 'custom'" /> {{ tl('公分') }}</label>
+          <label>{{ tl('高') }} <input v-model.number="height" type="number" step="0.1" min="5" @input="paper = 'custom'" /> {{ tl('公分') }}</label>
         </div>
-        <div class="dx-row" role="radiogroup" aria-label="方向">
-          方向
-          <label><input type="radio" name="dx-ps-orient" :checked="!landscape" @change="onOrientation(false)" /> 直向</label>
-          <label><input type="radio" name="dx-ps-orient" :checked="landscape" @change="onOrientation(true)" /> 橫向</label>
+        <div class="dx-row" role="radiogroup" :aria-label="tl('方向')">
+          {{ tl('方向') }}
+          <label><input type="radio" name="dx-ps-orient" :checked="!landscape" @change="onOrientation(false)" /> {{ tl('直向') }}</label>
+          <label><input type="radio" name="dx-ps-orient" :checked="landscape" @change="onOrientation(true)" /> {{ tl('橫向') }}</label>
         </div>
       </fieldset>
 
       <fieldset>
-        <legend>邊界（公分）</legend>
+        <legend>{{ tl('邊界（公分）') }}</legend>
         <div class="dx-grid">
-          <label>上 <input v-model.number="margins.top" type="number" step="0.1" min="0" /></label>
-          <label>下 <input v-model.number="margins.bottom" type="number" step="0.1" min="0" /></label>
-          <label>左 <input v-model.number="margins.left" type="number" step="0.1" min="0" /></label>
-          <label>右 <input v-model.number="margins.right" type="number" step="0.1" min="0" /></label>
-          <label>頁首距頁緣 <input v-model.number="margins.header" type="number" step="0.1" min="0" /></label>
-          <label>頁尾距頁緣 <input v-model.number="margins.footer" type="number" step="0.1" min="0" /></label>
+          <label>{{ tl('上') }} <input v-model.number="margins.top" type="number" step="0.1" min="0" /></label>
+          <label>{{ tl('下') }} <input v-model.number="margins.bottom" type="number" step="0.1" min="0" /></label>
+          <label>{{ tl('左') }} <input v-model.number="margins.left" type="number" step="0.1" min="0" /></label>
+          <label>{{ tl('右') }} <input v-model.number="margins.right" type="number" step="0.1" min="0" /></label>
+          <label>{{ tl('頁首距頁緣') }} <input v-model.number="margins.header" type="number" step="0.1" min="0" /></label>
+          <label>{{ tl('頁尾距頁緣') }} <input v-model.number="margins.footer" type="number" step="0.1" min="0" /></label>
         </div>
       </fieldset>
 
       <fieldset>
-        <legend>頁碼</legend>
+        <legend>{{ tl('頁碼') }}</legend>
         <label class="dx-row">
-          頁碼格式
-          <select v-model="numberFormat" aria-label="頁碼格式">
+          {{ tl('頁碼格式') }}
+          <select v-model="numberFormat" :aria-label="tl('頁碼格式')">
             <option v-for="f in NUMBER_FORMATS" :key="f.id" :value="f.id">{{ f.label }}</option>
-            <option v-if="otherFormat" :value="otherFormat">文件原有格式（{{ otherFormat }}）</option>
+            <option v-if="otherFormat" :value="otherFormat">{{ tl('文件原有格式（') }}{{ otherFormat }}{{ tl('）') }}</option>
           </select>
         </label>
-        <div class="dx-row" role="radiogroup" aria-label="頁碼編排">
-          <label><input v-model="restart" type="radio" name="dx-ps-restart" :value="false" /> 接續前一節</label>
+        <div class="dx-row" role="radiogroup" :aria-label="tl('頁碼編排')">
+          <label><input v-model="restart" type="radio" name="dx-ps-restart" :value="false" /> {{ tl('接續前一節') }}</label>
           <label>
-            <input v-model="restart" type="radio" name="dx-ps-restart" :value="true" /> 起始頁碼
+            <input v-model="restart" type="radio" name="dx-ps-restart" :value="true" /> {{ tl('起始頁碼') }}
             <input
               v-model.number="startAt"
               type="number"
               step="1"
               min="0"
               :max="MAX_START"
-              aria-label="起始頁碼"
+              :aria-label="tl('起始頁碼')"
               class="dx-start"
               @focus="restart = true"
             />
           </label>
         </div>
         <p class="dx-hint">
-          這一節第一頁的頁碼：<strong>{{ preview }}</strong>
-          <template v-if="!restart && sectionInfo.index === 0">（第一節從 1 起算）</template>
+          {{ tl('這一節第一頁的頁碼：') }}<strong>{{ preview }}</strong>
+          <template v-if="!restart && sectionInfo.index === 0">{{ tl('（第一節從 1 起算）') }}</template>
         </p>
         <label class="dx-row">
-          <input v-model="titlePage" type="checkbox" /> 首頁不同
-          <span class="dx-hint-inline">這一節第一頁用另外的頁首頁尾，空白就不顯示頁碼（內容在頁首頁尾編輯時設定）</span>
+          <input v-model="titlePage" type="checkbox" /> {{ tl('首頁不同') }}
+          <span class="dx-hint-inline">{{ tl('這一節第一頁用另外的頁首頁尾，空白就不顯示頁碼（內容在頁首頁尾編輯時設定）') }}</span>
         </label>
         <details class="dx-hint">
-          <summary>封面不顯示頁碼、正文從 1 起算</summary>
+          <summary>{{ tl('封面不顯示頁碼、正文從 1 起算') }}</summary>
           <ol>
-            <li>游標放在封面最後，按「版面配置 › 分隔設定 › 分節符號（下一頁）」插入分節符號。</li>
-            <li>游標在封面時勾選「首頁不同」（或讓封面的頁尾保持空白）。</li>
-            <li>游標移到正文，選「起始頁碼」並填 1，套用範圍選「目前這一節」。</li>
+            <li>{{ tl('游標放在封面最後，按「版面配置 › 分隔設定 › 分節符號（下一頁）」插入分節符號。') }}</li>
+            <li>{{ tl('游標在封面時勾選「首頁不同」（或讓封面的頁尾保持空白）。') }}</li>
+            <li>{{ tl('游標移到正文，選「起始頁碼」並填 1，套用範圍選「目前這一節」。') }}</li>
           </ol>
         </details>
       </fieldset>
 
       <fieldset>
-        <legend>分欄</legend>
+        <legend>{{ tl('分欄') }}</legend>
         <label v-if="sectionInfo.index > 0" class="dx-row">
-          這一節的開始位置
-          <select v-model="sectionStart" aria-label="這一節的開始位置">
+          {{ tl('這一節的開始位置') }}
+          <select v-model="sectionStart" :aria-label="tl('這一節的開始位置')">
             <option v-for="k in startOptions" :key="k" :value="k">{{ START_LABELS[k] }}</option>
           </select>
-          <span class="dx-hint-inline">標題單欄、內文分欄時，把內文這一節設為「接續本頁」，兩者就在同一頁。</span>
+          <span class="dx-hint-inline">{{ tl('標題單欄、內文分欄時，把內文這一節設為「接續本頁」，兩者就在同一頁。') }}</span>
         </label>
         <div class="dx-row">
           <label>
-            欄數
-            <select v-model.number="columnCount" aria-label="欄數">
+            {{ tl('欄數') }}
+            <select v-model.number="columnCount" :aria-label="tl('欄數')">
               <option v-for="n in COLUMN_COUNTS" :key="n" :value="n">{{ n === 1 ? '1（不分欄）' : n }}</option>
-              <option v-if="otherCount" :value="otherCount">{{ otherCount }}（文件原有）</option>
+              <option v-if="otherCount" :value="otherCount">{{ otherCount }}{{ tl('（文件原有）') }}</option>
             </select>
           </label>
           <label>
-            間距
+            {{ tl('間距') }}
             <input
               v-model.number="columnSpace"
               type="number"
               step="0.05"
               min="0"
-              aria-label="欄間距"
+              :aria-label="tl('欄間距')"
               :disabled="columnCount === 1"
             />
-            公分
+            {{ tl('公分') }}
           </label>
         </div>
         <div class="dx-row">
-          <label><input v-model="columnSeparator" type="checkbox" :disabled="columnCount === 1" /> 分隔線</label>
-          <label title="各欄寬度相同（依紙張寬度、邊界與間距平均分配）">
-            <input type="checkbox" :checked="!unequalKept" disabled /> 欄寬相等
+          <label><input v-model="columnSeparator" type="checkbox" :disabled="columnCount === 1" /> {{ tl('分隔線') }}</label>
+          <label :title="tl('各欄寬度相同（依紙張寬度、邊界與間距平均分配）')">
+            <input type="checkbox" :checked="!unequalKept" disabled /> {{ tl('欄寬相等') }}
           </label>
         </div>
-        <p v-if="unequalKept" class="dx-hint">這一節在 Word 中各欄寬度不同；變更欄數或間距後會改為欄寬相等。</p>
+        <p v-if="unequalKept" class="dx-hint">{{ tl('這一節在 Word 中各欄寬度不同；變更欄數或間距後會改為欄寬相等。') }}</p>
         <p v-if="columnCount > 1" class="dx-hint dx-cols-note" role="note">{{ ONE_COLUMN_NOTE }}</p>
-        <p class="dx-hint">要讓後面的文字從下一欄開始，請在該處按「版面配置 › 分隔設定 › 分欄符號」（Ctrl+Shift+Enter）。</p>
+        <p class="dx-hint">{{ tl('要讓後面的文字從下一欄開始，請在該處按「版面配置 › 分隔設定 › 分欄符號」（Ctrl+Shift+Enter）。') }}</p>
       </fieldset>
 
       <fieldset>
-        <legend>套用範圍</legend>
+        <legend>{{ tl('套用範圍') }}</legend>
         <label class="dx-row">
           <input v-model="scope" type="radio" name="dx-ps-scope" value="section" />
           {{ multi ? `目前這一節（第 ${sectionInfo.index + 1} 節，共 ${sectionInfo.count} 節）` : '整份文件' }}
         </label>
-        <label v-if="multi" class="dx-row"><input v-model="scope" type="radio" name="dx-ps-scope" value="all" /> 整份文件（所有分節）</label>
+        <label v-if="multi" class="dx-row"><input v-model="scope" type="radio" name="dx-ps-scope" value="all" /> {{ tl('整份文件（所有分節）') }}</label>
       </fieldset>
 
       <p v-if="error" class="dx-error" role="alert">{{ error }}</p>
       <div class="dx-actions">
-        <button type="button" @click="close">取消</button>
-        <button type="button" class="dx-primary" @click="apply">套用</button>
+        <button type="button" @click="close">{{ tl('取消') }}</button>
+        <button type="button" class="dx-primary" @click="apply">{{ tl('套用') }}</button>
       </div>
     </div>
   </div>

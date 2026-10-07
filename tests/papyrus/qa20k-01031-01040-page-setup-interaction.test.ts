@@ -1,6 +1,6 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { readFileSync, rmSync, writeFileSync } from 'node:fs';
-import { resolve } from 'node:path';
+import { dirname, resolve } from 'node:path';
 import { compileScript, parse } from '@vue/compiler-sfc';
 import ts from 'typescript';
 import { createApp, h, nextTick, reactive } from 'vue';
@@ -25,7 +25,9 @@ afterAll(() => rmSync(OUT, { force: true }));
 async function compiledDialog(): Promise<any> {
   const { descriptor } = parse(readFileSync(SFC, 'utf8'), { filename: SFC });
   const script = compileScript(descriptor, { id: 'qa-page-setup-dialog', inlineTemplate: true });
-  const code = ts.transpileModule(script.content, { compilerOptions: { module: ts.ModuleKind.ESNext, target: ts.ScriptTarget.ES2020 } }).outputText;
+  const code = ts.transpileModule(script.content, { compilerOptions: { module: ts.ModuleKind.ESNext, target: ts.ScriptTarget.ES2020 } }).outputText
+    // The component's own imports (./locale) are found from this file's folder.
+    .replace(/from\s+(['"])(\.{1,2}\/[^'"]+)\1/g, (_m, _q, spec: string) => `from '${resolve(dirname(SFC), spec).replace(/\\/g, '/')}'`);
   writeFileSync(OUT, code);
   return (await import(/* @vite-ignore */ OUT.replace(/\\/g, '/'))).default;
 }

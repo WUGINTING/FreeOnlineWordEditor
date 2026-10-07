@@ -4,6 +4,7 @@ let dialogs = 0;
 </script>
 
 <script setup lang="ts">
+import { tl } from './locale';
 import { computed, nextTick, ref, watch } from 'vue';
 import type { DocxEditor } from '../editor/core';
 import {
@@ -240,63 +241,63 @@ function apply() {
 <template>
   <div v-if="open" class="dx-dialog-backdrop" @mousedown.self="close" @keydown.esc="close">
     <div ref="dialog" class="dx-dialog" role="dialog" aria-modal="true" :aria-labelledby="`${uid}-title`" @keydown="trapFocus">
-      <h3 :id="`${uid}-title`">浮水印</h3>
-      <p class="dx-hint">浮水印會出現在每一頁的文字後面，也會列印出來；它存在各節的頁首中，Word 也能修改或移除。</p>
+      <h3 :id="`${uid}-title`">{{ tl('浮水印') }}</h3>
+      <p class="dx-hint">{{ tl('浮水印會出現在每一頁的文字後面，也會列印出來；它存在各節的頁首中，Word 也能修改或移除。') }}</p>
 
-      <label class="dx-choice"><input v-model="form.kind" type="radio" :name="`${uid}-kind`" value="none" /> 無浮水印</label>
+      <label class="dx-choice"><input v-model="form.kind" type="radio" :name="`${uid}-kind`" value="none" /> {{ tl('無浮水印') }}</label>
 
-      <label class="dx-choice"><input v-model="form.kind" type="radio" :name="`${uid}-kind`" value="picture" /> 圖片浮水印</label>
-      <fieldset :disabled="form.kind !== 'picture'" aria-label="圖片浮水印">
+      <label class="dx-choice"><input v-model="form.kind" type="radio" :name="`${uid}-kind`" value="picture" /> {{ tl('圖片浮水印') }}</label>
+      <fieldset :disabled="form.kind !== 'picture'" :aria-label="tl('圖片浮水印')">
         <div class="dx-line">
           <input :id="`${uid}-file`" ref="fileInput" class="dx-file-input" type="file" accept="image/png,image/jpeg,image/gif" tabindex="-1" @change="onFile" />
-          <button type="button" @click="fileInput?.click()">選擇圖片…</button>
+          <button type="button" @click="fileInput?.click()">{{ tl('選擇圖片…') }}</button>
           <span class="dx-file-name">{{ form.picture ? form.picture.name || '目前的圖片' : '尚未選擇圖片' }}</span>
         </div>
         <div class="dx-line">
-          <label>縮放
+          <label>{{ tl('縮放') }}
             <select :id="`${uid}-scale`" v-model="form.scale">
-              <option value="auto">自動</option>
+              <option value="auto">{{ tl('自動') }}</option>
               <option v-for="s in scales" :key="s" :value="String(s)">{{ s }}%</option>
             </select>
           </label>
-          <label><input :id="`${uid}-washout`" v-model="form.washout" type="checkbox" /> 刷淡</label>
+          <label><input :id="`${uid}-washout`" v-model="form.washout" type="checkbox" /> {{ tl('刷淡') }}</label>
         </div>
       </fieldset>
 
-      <label class="dx-choice"><input v-model="form.kind" type="radio" :name="`${uid}-kind`" value="text" /> 文字浮水印</label>
-      <fieldset :disabled="form.kind !== 'text'" aria-label="文字浮水印">
+      <label class="dx-choice"><input v-model="form.kind" type="radio" :name="`${uid}-kind`" value="text" /> {{ tl('文字浮水印') }}</label>
+      <fieldset :disabled="form.kind !== 'text'" :aria-label="tl('文字浮水印')">
         <div class="dx-grid">
-          <label :for="`${uid}-text`">文字</label>
+          <label :for="`${uid}-text`">{{ tl('文字') }}</label>
           <input :id="`${uid}-text`" v-model="form.text" type="text" :list="`${uid}-presets`" maxlength="255" />
           <datalist :id="`${uid}-presets`">
             <option v-for="p in WATERMARK_PRESETS" :key="p" :value="p" />
           </datalist>
-          <label :for="`${uid}-font`">字型</label>
+          <label :for="`${uid}-font`">{{ tl('字型') }}</label>
           <select :id="`${uid}-font`" v-model="form.font">
             <option v-for="f in fonts" :key="f" :value="f">{{ f }}</option>
           </select>
-          <label :for="`${uid}-size`">大小</label>
+          <label :for="`${uid}-size`">{{ tl('大小') }}</label>
           <select :id="`${uid}-size`" v-model="form.size">
-            <option value="auto">自動</option>
+            <option value="auto">{{ tl('自動') }}</option>
             <option v-for="s in sizes" :key="s" :value="String(s)">{{ s }}</option>
           </select>
-          <label :for="`${uid}-color`">色彩</label>
+          <label :for="`${uid}-color`">{{ tl('色彩') }}</label>
           <span class="dx-line">
             <input :id="`${uid}-color`" v-model="form.color" type="color" />
-            <label><input :id="`${uid}-semi`" v-model="form.semi" type="checkbox" /> 半透明</label>
+            <label><input :id="`${uid}-semi`" v-model="form.semi" type="checkbox" /> {{ tl('半透明') }}</label>
           </span>
-          <span>配置</span>
-          <span class="dx-line" role="radiogroup" aria-label="配置">
-            <label><input v-model="form.layout" type="radio" :name="`${uid}-layout`" value="diagonal" /> 斜向</label>
-            <label><input v-model="form.layout" type="radio" :name="`${uid}-layout`" value="horizontal" /> 水平</label>
+          <span>{{ tl('配置') }}</span>
+          <span class="dx-line" role="radiogroup" :aria-label="tl('配置')">
+            <label><input v-model="form.layout" type="radio" :name="`${uid}-layout`" value="diagonal" /> {{ tl('斜向') }}</label>
+            <label><input v-model="form.layout" type="radio" :name="`${uid}-layout`" value="horizontal" /> {{ tl('水平') }}</label>
           </span>
         </div>
       </fieldset>
 
       <p v-if="error" class="dx-error" role="alert">{{ error }}</p>
       <div class="dx-actions">
-        <button type="button" @click="close">取消</button>
-        <button type="button" class="dx-primary" @click="apply">確定</button>
+        <button type="button" @click="close">{{ tl('取消') }}</button>
+        <button type="button" class="dx-primary" @click="apply">{{ tl('確定') }}</button>
       </div>
     </div>
   </div>

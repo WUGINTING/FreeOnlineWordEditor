@@ -4,6 +4,7 @@ let ribbons = 0;
 </script>
 
 <script setup lang="ts">
+import { tl } from './locale';
 // The ribbon: Word's tabs (檔案、常用、插入、設計、版面配置、參考資料、校閱、檢視, and the 表格 /
 // 圖片 tabs while a table or picture is selected), each command where Word has it, so someone
 // who knows Word finds it without looking.
@@ -665,19 +666,19 @@ onBeforeUnmount(() => {
           class="dx-file"
           :aria-haspopup="fileMenu ? 'dialog' : 'menu'"
           :aria-expanded="fileMenu ? undefined : menu === 'file'"
-          title="檔案：儲存、下載、列印、版本紀錄等"
+          :title="tl('檔案：儲存、下載、列印、版本紀錄等')"
           @click="onFile"
-        >檔案</button>
-        <div v-if="menu === 'file'" class="dx-menu dx-popup" role="menu" aria-label="檔案" @keydown="onMenuKey">
-          <button type="button" role="menuitem" tabindex="-1" title="列印／另存 PDF（在列印視窗選擇「另存為 PDF」）" @click="pick(() => editor?.print())">
-            <svg class="dx-ico" viewBox="0 0 24 24" v-html="ICONS.print" />列印
+        >{{ tl('檔案') }}</button>
+        <div v-if="menu === 'file'" class="dx-menu dx-popup" role="menu" :aria-label="tl('檔案')" @keydown="onMenuKey">
+          <button type="button" role="menuitem" tabindex="-1" :title="tl('列印／另存 PDF（在列印視窗選擇「另存為 PDF」）')" @click="pick(() => editor?.print())">
+            <svg class="dx-ico" viewBox="0 0 24 24" v-html="ICONS.print" />{{ tl('列印') }}
           </button>
-          <button type="button" role="menuitem" tabindex="-1" title="下載 Word 檔（.docx）" @click="pick(downloadDocx)">
-            <svg class="dx-ico" viewBox="0 0 24 24" v-html="ICONS.download" />下載
+          <button type="button" role="menuitem" tabindex="-1" :title="tl('下載 Word 檔（.docx）')" @click="pick(downloadDocx)">
+            <svg class="dx-ico" viewBox="0 0 24 24" v-html="ICONS.download" />{{ tl('下載') }}
           </button>
         </div>
       </div>
-      <div ref="tabList" class="dx-tabs" role="tablist" aria-label="功能區索引標籤" @keydown="onTabKey">
+      <div ref="tabList" class="dx-tabs" role="tablist" :aria-label="tl('功能區索引標籤')" @keydown="onTabKey">
         <button
           v-for="t in tabs"
           :id="tabId(t.id)"
@@ -711,7 +712,7 @@ onBeforeUnmount(() => {
         ref="root"
         class="dx-toolbar"
         role="toolbar"
-        aria-label="文件格式工具列"
+        :aria-label="tl('文件格式工具列')"
         aria-keyshortcuts="Alt+F10"
         @mousedown.self.prevent
         @keydown="onKeydown"
@@ -720,154 +721,154 @@ onBeforeUnmount(() => {
       >
         <!-- ===== 常用 ===== -->
         <div v-show="tab === 'home'" class="dx-panel">
-          <div class="dx-rgroup" role="group" aria-label="復原">
+          <div class="dx-rgroup" role="group" :aria-label="tl('復原')">
             <div class="dx-rbody dx-stack">
-              <button type="button" class="dx-sm" title="復原 (Ctrl+Z)" :disabled="!s?.canUndo" @click="editor?.undo()">
-                <svg class="dx-ico" viewBox="0 0 24 24" v-html="ICONS.undo" /><span>復原</span>
+              <button type="button" class="dx-sm" :title="tl('復原 (Ctrl+Z)')" :disabled="!s?.canUndo" @click="editor?.undo()">
+                <svg class="dx-ico" viewBox="0 0 24 24" v-html="ICONS.undo" /><span>{{ tl('復原') }}</span>
               </button>
-              <button type="button" class="dx-sm" title="取消復原 (Ctrl+Y)" :disabled="!s?.canRedo" @click="editor?.redo()">
-                <svg class="dx-ico" viewBox="0 0 24 24" v-html="ICONS.redo" /><span>取消復原</span>
+              <button type="button" class="dx-sm" :title="tl('取消復原 (Ctrl+Y)')" :disabled="!s?.canRedo" @click="editor?.redo()">
+                <svg class="dx-ico" viewBox="0 0 24 24" v-html="ICONS.redo" /><span>{{ tl('取消復原') }}</span>
               </button>
             </div>
-            <div class="dx-rlabel" aria-hidden="true">復原</div>
+            <div class="dx-rlabel" aria-hidden="true">{{ tl('復原') }}</div>
           </div>
 
-          <div class="dx-rgroup" role="group" aria-label="剪貼簿">
+          <div class="dx-rgroup" role="group" :aria-label="tl('剪貼簿')">
             <div class="dx-rbody">
-              <button type="button" class="dx-big" title="貼上 (Ctrl+V)" @click="paste">
-                <svg class="dx-ico" viewBox="0 0 24 24" v-html="ICONS.paste" /><span>貼上</span>
+              <button type="button" class="dx-big" :title="tl('貼上 (Ctrl+V)')" @click="paste">
+                <svg class="dx-ico" viewBox="0 0 24 24" v-html="ICONS.paste" /><span>{{ tl('貼上') }}</span>
               </button>
               <div class="dx-stack">
-                <button type="button" class="dx-sm" title="剪下 (Ctrl+X)" @click="clip('cut')">
-                  <svg class="dx-ico" viewBox="0 0 24 24" v-html="ICONS.cut" /><span>剪下</span>
+                <button type="button" class="dx-sm" :title="tl('剪下 (Ctrl+X)')" @click="clip('cut')">
+                  <svg class="dx-ico" viewBox="0 0 24 24" v-html="ICONS.cut" /><span>{{ tl('剪下') }}</span>
                 </button>
-                <button type="button" class="dx-sm" title="複製 (Ctrl+C)" @click="clip('copy')">
-                  <svg class="dx-ico" viewBox="0 0 24 24" v-html="ICONS.copy" /><span>複製</span>
+                <button type="button" class="dx-sm" :title="tl('複製 (Ctrl+C)')" @click="clip('copy')">
+                  <svg class="dx-ico" viewBox="0 0 24 24" v-html="ICONS.copy" /><span>{{ tl('複製') }}</span>
                 </button>
                 <!-- 複製格式: behaviour in editor/formatPainter.ts; a click paints once, a double-click keeps painting until Esc. -->
                 <button
                   type="button"
                   class="dx-sm"
-                  title="複製格式：複製所選文字的格式，再用滑鼠選取要套用的文字（按兩下可連續套用，按 Esc 結束） (鍵盤：Ctrl+Shift+C 複製格式，再按 Ctrl+Shift+V 貼上格式)"
+                  :title="tl('複製格式：複製所選文字的格式，再用滑鼠選取要套用的文字（按兩下可連續套用，按 Esc 結束） (鍵盤：Ctrl+Shift+C 複製格式，再按 Ctrl+Shift+V 貼上格式)')"
                   :class="{ on: s?.formatPainter }"
                   :aria-pressed="!!s?.formatPainter"
                   @click="editor?.toggleFormatPainter(false)"
                   @dblclick="editor?.startFormatPainter(true)"
                 >
-                  <svg class="dx-ico" viewBox="0 0 24 24" v-html="ICONS.formatPainter" /><span>複製格式</span>
+                  <svg class="dx-ico" viewBox="0 0 24 24" v-html="ICONS.formatPainter" /><span>{{ tl('複製格式') }}</span>
                 </button>
               </div>
             </div>
-            <div class="dx-rlabel" aria-hidden="true">剪貼簿</div>
+            <div class="dx-rlabel" aria-hidden="true">{{ tl('剪貼簿') }}</div>
           </div>
 
-          <div class="dx-rgroup" role="group" aria-label="字型">
+          <div class="dx-rgroup" role="group" :aria-label="tl('字型')">
             <div class="dx-rbody dx-rows">
               <div class="dx-rrow">
-                <select title="字型" aria-label="字型" class="dx-w-font" :value="s?.fontFamily ?? ''" @change="onFont">
+                <select :title="tl('字型')" :aria-label="tl('字型')" class="dx-w-font" :value="s?.fontFamily ?? ''" @change="onFont">
                   <option value="">{{ s?.mixed?.fontFamily ? '（多種字型）' : '（預設字型）' }}</option>
                   <option v-if="s?.fontFamily && !FONTS.some((f) => f.value === s!.fontFamily)" :value="s.fontFamily">{{ s.fontFamily }}</option>
                   <option v-for="f in FONTS" :key="f.value" :value="f.value">{{ f.label }}</option>
                 </select>
-                <select title="字型大小" aria-label="字型大小" class="dx-w-size" :value="s?.fontSize ?? ''" @change="onSize">
+                <select :title="tl('字型大小')" :aria-label="tl('字型大小')" class="dx-w-size" :value="s?.fontSize ?? ''" @change="onSize">
                   <option value="">{{ s?.mixed?.fontSize ? '多種' : '—' }}</option>
                   <option v-if="s?.fontSize && !SIZES.includes(s.fontSize)" :value="s.fontSize">{{ s.fontSize }}</option>
                   <option v-for="size in SIZES" :key="size" :value="size">{{ size }}</option>
                 </select>
-                <button type="button" title="清除格式 (Ctrl+Space)" aria-label="清除格式" @click="run(clearFormatting)">⌫</button>
+                <button type="button" :title="tl('清除格式 (Ctrl+Space)')" :aria-label="tl('清除格式')" @click="run(clearFormatting)">⌫</button>
               </div>
               <div class="dx-rrow">
-                <button type="button" title="粗體 (Ctrl+B)" aria-label="粗體" :class="{ on: s?.bold }" :aria-pressed="!!(s?.bold)" @click="run(toggleFormat('bold', styles()))"><b>B</b></button>
-                <button type="button" title="斜體 (Ctrl+I)" aria-label="斜體" :class="{ on: s?.italic }" :aria-pressed="!!(s?.italic)" @click="run(toggleFormat('italic', styles()))"><i>I</i></button>
-                <button type="button" title="底線 (Ctrl+U)" aria-label="底線" :class="{ on: s?.underline }" :aria-pressed="!!(s?.underline)" @click="run(toggle('underline'))"><u>U</u></button>
-                <button type="button" title="刪除線" aria-label="刪除線" :class="{ on: s?.strike }" :aria-pressed="!!(s?.strike)" @click="run(toggle('strike'))"><s>S</s></button>
-                <button type="button" title="下標" aria-label="下標" :class="{ on: s?.subscript }" :aria-pressed="!!(s?.subscript)" @click="run(toggle('subscript'))">x₂</button>
-                <button type="button" title="上標" aria-label="上標" :class="{ on: s?.superscript }" :aria-pressed="!!(s?.superscript)" @click="run(toggle('superscript'))">x²</button>
+                <button type="button" :title="tl('粗體 (Ctrl+B)')" :aria-label="tl('粗體')" :class="{ on: s?.bold }" :aria-pressed="!!(s?.bold)" @click="run(toggleFormat('bold', styles()))"><b>B</b></button>
+                <button type="button" :title="tl('斜體 (Ctrl+I)')" :aria-label="tl('斜體')" :class="{ on: s?.italic }" :aria-pressed="!!(s?.italic)" @click="run(toggleFormat('italic', styles()))"><i>I</i></button>
+                <button type="button" :title="tl('底線 (Ctrl+U)')" :aria-label="tl('底線')" :class="{ on: s?.underline }" :aria-pressed="!!(s?.underline)" @click="run(toggle('underline'))"><u>U</u></button>
+                <button type="button" :title="tl('刪除線')" :aria-label="tl('刪除線')" :class="{ on: s?.strike }" :aria-pressed="!!(s?.strike)" @click="run(toggle('strike'))"><s>S</s></button>
+                <button type="button" :title="tl('下標')" :aria-label="tl('下標')" :class="{ on: s?.subscript }" :aria-pressed="!!(s?.subscript)" @click="run(toggle('subscript'))">x₂</button>
+                <button type="button" :title="tl('上標')" :aria-label="tl('上標')" :class="{ on: s?.superscript }" :aria-pressed="!!(s?.superscript)" @click="run(toggle('superscript'))">x²</button>
                 <!-- Word's colour menus: named standard colours, 無色彩 / 自動, and 其他色彩… (persona-300). -->
-                <ColorPicker label="螢光標記" :colors="HIGHLIGHT_PALETTE" :value="s?.highlight ?? null" none-label="無色彩" @pick="onHighlight">
+                <ColorPicker :label="tl('螢光標記')" :colors="HIGHLIGHT_PALETTE" :value="s?.highlight ?? null" :none-label="tl('無色彩')" @pick="onHighlight">
                   <span class="dx-cp-glyph dx-hl">ab</span>
                 </ColorPicker>
-                <ColorPicker label="文字顏色" :colors="STANDARD_COLORS" :value="s?.color ?? null" :mixed="!!s?.mixed?.color" none-label="自動" @pick="onColor">
+                <ColorPicker :label="tl('文字顏色')" :colors="STANDARD_COLORS" :value="s?.color ?? null" :mixed="!!s?.mixed?.color" :none-label="tl('自動')" @pick="onColor">
                   <span class="dx-cp-glyph">A</span>
                 </ColorPicker>
               </div>
             </div>
-            <div class="dx-rlabel" aria-hidden="true">字型</div>
+            <div class="dx-rlabel" aria-hidden="true">{{ tl('字型') }}</div>
           </div>
 
-          <div class="dx-rgroup" role="group" aria-label="段落">
+          <div class="dx-rgroup" role="group" :aria-label="tl('段落')">
             <div class="dx-rbody dx-rows">
               <div class="dx-rrow">
-                <button type="button" title="項目符號清單" aria-label="項目符號清單" :class="{ on: s?.list === 'bullet' }" :aria-pressed="!!(s?.list === 'bullet')" @click="list('bullet')">
+                <button type="button" :title="tl('項目符號清單')" :aria-label="tl('項目符號清單')" :class="{ on: s?.list === 'bullet' }" :aria-pressed="!!(s?.list === 'bullet')" @click="list('bullet')">
                   <svg viewBox="0 0 16 16"><circle cx="3" cy="4" r="1.2" /><circle cx="3" cy="8" r="1.2" /><circle cx="3" cy="12" r="1.2" /><path d="M6 4h8M6 8h8M6 12h8" /></svg>
                 </button>
-                <button type="button" title="編號清單" aria-label="編號清單" :class="{ on: s?.list === 'decimal' }" :aria-pressed="!!(s?.list === 'decimal')" @click="list('decimal')">
+                <button type="button" :title="tl('編號清單')" :aria-label="tl('編號清單')" :class="{ on: s?.list === 'decimal' }" :aria-pressed="!!(s?.list === 'decimal')" @click="list('decimal')">
                   <svg viewBox="0 0 16 16"><text x="0.5" y="6" font-size="5">1</text><text x="0.5" y="13" font-size="5">2</text><path d="M6 4h8M6 11h8" /></svg>
                 </button>
                 <div class="dx-pop">
                   <button
                     type="button"
-                    title="多層次清單：公文編號（一、（一）1.（1）甲、（甲））、重新編號、接續編號"
-                    aria-label="多層次清單"
+                    :title="tl('多層次清單：公文編號（一、（一）1.（1）甲、（甲））、重新編號、接續編號')"
+                    :aria-label="tl('多層次清單')"
                     aria-haspopup="menu"
                     :aria-expanded="menu === 'multilevel'"
                     :class="{ on: s?.list === 'gongwen' }"
                     @click="toggleMenu('multilevel', $event)"
                   >
-                    <svg viewBox="0 0 16 16"><text x="0" y="6.5" font-size="6">一</text><text x="3" y="14" font-size="6">1</text><path d="M7 4.5h8M9 12h6" /></svg>
+                    <svg viewBox="0 0 16 16"><text x="0" y="6.5" font-size="6">{{ tl('一') }}</text><text x="3" y="14" font-size="6">1</text><path d="M7 4.5h8M9 12h6" /></svg>
                   </button>
-                  <div v-if="menu === 'multilevel'" class="dx-menu dx-popup" role="menu" aria-label="多層次清單" @keydown="onMenuKey">
+                  <div v-if="menu === 'multilevel'" class="dx-menu dx-popup" role="menu" :aria-label="tl('多層次清單')" @keydown="onMenuKey">
                     <button type="button" role="menuitemradio" tabindex="-1" :aria-checked="s?.list === 'gongwen'" @click="pick(() => list('gongwen'))">
-                      <b>公文編號</b><small>一、（一）1.（1）甲、（甲）；按 Tab 到下一層</small>
+                      <b>{{ tl('公文編號') }}</b><small>{{ tl('一、（一）1.（1）甲、（甲）；按 Tab 到下一層') }}</small>
                     </button>
                     <button type="button" role="menuitem" tabindex="-1" :disabled="!numberingCan.restart" @click="pick(() => renumber(true))">
-                      <b>重新從 1 開始編號</b><small>這一項和後面的項目重新編號</small>
+                      <b>{{ tl('重新從 1 開始編號') }}</b><small>{{ tl('這一項和後面的項目重新編號') }}</small>
                     </button>
                     <button type="button" role="menuitem" tabindex="-1" :disabled="!numberingCan.continue" @click="pick(() => renumber(false))">
-                      <b>接續編號</b><small>接著前一個同樣的清單編號</small>
+                      <b>{{ tl('接續編號') }}</b><small>{{ tl('接著前一個同樣的清單編號') }}</small>
                     </button>
                   </div>
                 </div>
-                <button type="button" title="減少縮排" aria-label="減少縮排" @click="run(indent(-1))">⇤</button>
-                <button type="button" title="增加縮排" aria-label="增加縮排" @click="run(indent(1))">⇥</button>
+                <button type="button" :title="tl('減少縮排')" :aria-label="tl('減少縮排')" @click="run(indent(-1))">⇤</button>
+                <button type="button" :title="tl('增加縮排')" :aria-label="tl('增加縮排')" @click="run(indent(1))">⇥</button>
                 <!-- 顯示／隱藏編輯標記: display only, behaviour in editor/formattingMarks.ts. -->
                 <button
                   type="button"
-                  title="顯示／隱藏編輯標記：顯示段落標記、空格、定位字元等不會列印的符號 (Ctrl+Shift+8)"
-                  aria-label="顯示／隱藏編輯標記"
+                  :title="tl('顯示／隱藏編輯標記：顯示段落標記、空格、定位字元等不會列印的符號 (Ctrl+Shift+8)')"
+                  :aria-label="tl('顯示／隱藏編輯標記')"
                   :class="{ on: s?.showMarks }"
                   :aria-pressed="!!s?.showMarks"
                   @click="editor?.toggleShowMarks()"
                 >¶</button>
               </div>
               <div class="dx-rrow">
-                <button type="button" title="靠左對齊" aria-label="靠左對齊" :class="{ on: !s?.align || s.align === 'left' }" :aria-pressed="!!(!s?.align || s.align === 'left')" @click="run(setAlign('left', styles()))">
+                <button type="button" :title="tl('靠左對齊')" :aria-label="tl('靠左對齊')" :class="{ on: !s?.align || s.align === 'left' }" :aria-pressed="!!(!s?.align || s.align === 'left')" @click="run(setAlign('left', styles()))">
                   <svg viewBox="0 0 16 16"><path d="M2 3h12M2 6.5h8M2 10h12M2 13.5h8" /></svg>
                 </button>
-                <button type="button" title="置中" aria-label="置中" :class="{ on: s?.align === 'center' }" :aria-pressed="!!(s?.align === 'center')" @click="run(setAlign('center', styles()))">
+                <button type="button" :title="tl('置中')" :aria-label="tl('置中')" :class="{ on: s?.align === 'center' }" :aria-pressed="!!(s?.align === 'center')" @click="run(setAlign('center', styles()))">
                   <svg viewBox="0 0 16 16"><path d="M2 3h12M4 6.5h8M2 10h12M4 13.5h8" /></svg>
                 </button>
-                <button type="button" title="靠右對齊" aria-label="靠右對齊" :class="{ on: s?.align === 'right' }" :aria-pressed="!!(s?.align === 'right')" @click="run(setAlign('right', styles()))">
+                <button type="button" :title="tl('靠右對齊')" :aria-label="tl('靠右對齊')" :class="{ on: s?.align === 'right' }" :aria-pressed="!!(s?.align === 'right')" @click="run(setAlign('right', styles()))">
                   <svg viewBox="0 0 16 16"><path d="M2 3h12M6 6.5h8M2 10h12M6 13.5h8" /></svg>
                 </button>
-                <button type="button" title="左右對齊" aria-label="左右對齊" :class="{ on: s?.align === 'justify' }" :aria-pressed="!!(s?.align === 'justify')" @click="run(setAlign('justify', styles()))">
+                <button type="button" :title="tl('左右對齊')" :aria-label="tl('左右對齊')" :class="{ on: s?.align === 'justify' }" :aria-pressed="!!(s?.align === 'justify')" @click="run(setAlign('justify', styles()))">
                   <svg viewBox="0 0 16 16"><path d="M2 3h12M2 6.5h12M2 10h12M2 13.5h12" /></svg>
                 </button>
-                <select title="行距" aria-label="行距" class="dx-w-size" value="" @change="onSpacing">
-                  <option value="" disabled>行距</option>
+                <select :title="tl('行距')" :aria-label="tl('行距')" class="dx-w-size" value="" @change="onSpacing">
+                  <option value="" disabled>{{ tl('行距') }}</option>
                   <option v-for="o in SPACING" :key="o.value" :value="o.value">{{ o.label }}</option>
                 </select>
               </div>
             </div>
             <div class="dx-rlabel">
-              <span aria-hidden="true">段落</span>
-              <button type="button" class="dx-launch" title="段落設定（縮排、段前段後距離、行距）" aria-label="段落設定" @click="emit('paragraph')">
+              <span aria-hidden="true">{{ tl('段落') }}</span>
+              <button type="button" class="dx-launch" :title="tl('段落設定（縮排、段前段後距離、行距）')" :aria-label="tl('段落設定')" @click="emit('paragraph')">
                 <svg class="dx-ico" viewBox="0 0 24 24" v-html="ICONS.launcher" />
               </button>
             </div>
           </div>
 
-          <div class="dx-rgroup" role="group" aria-label="樣式">
+          <div class="dx-rgroup" role="group" :aria-label="tl('樣式')">
             <div class="dx-rbody dx-rows">
               <div class="dx-rrow dx-gallery">
                 <button
@@ -882,65 +883,65 @@ onBeforeUnmount(() => {
                 >{{ o.label }}</button>
               </div>
               <div class="dx-rrow">
-                <select title="段落樣式" aria-label="段落樣式" class="dx-w-style" :value="currentStyle ?? ''" @change="onStyle">
-                  <option v-if="!defaultStyleId" value="">內文</option>
+                <select :title="tl('段落樣式')" :aria-label="tl('段落樣式')" class="dx-w-style" :value="currentStyle ?? ''" @change="onStyle">
+                  <option v-if="!defaultStyleId" value="">{{ tl('內文') }}</option>
                   <option v-for="o in styleOptions" :key="o.id" :value="o.id">{{ o.label }}</option>
                 </select>
               </div>
             </div>
-            <div class="dx-rlabel" aria-hidden="true">樣式</div>
+            <div class="dx-rlabel" aria-hidden="true">{{ tl('樣式') }}</div>
           </div>
 
-          <div class="dx-rgroup" role="group" aria-label="編輯">
+          <div class="dx-rgroup" role="group" :aria-label="tl('編輯')">
             <div class="dx-rbody dx-stack">
-              <button type="button" class="dx-sm" title="尋找 (Ctrl+F)" @click="emit('find', false)">
-                <svg class="dx-ico" viewBox="0 0 24 24" v-html="ICONS.find" /><span>尋找</span>
+              <button type="button" class="dx-sm" :title="tl('尋找 (Ctrl+F)')" @click="emit('find', false)">
+                <svg class="dx-ico" viewBox="0 0 24 24" v-html="ICONS.find" /><span>{{ tl('尋找') }}</span>
               </button>
-              <button type="button" class="dx-sm" title="取代 (Ctrl+H)" @click="emit('find', true)">
-                <svg class="dx-ico" viewBox="0 0 24 24" v-html="ICONS.replace" /><span>取代</span>
+              <button type="button" class="dx-sm" :title="tl('取代 (Ctrl+H)')" @click="emit('find', true)">
+                <svg class="dx-ico" viewBox="0 0 24 24" v-html="ICONS.replace" /><span>{{ tl('取代') }}</span>
               </button>
-              <button type="button" class="dx-sm" title="全選 (Ctrl+A)" @click="selectEverything">
-                <svg class="dx-ico" viewBox="0 0 24 24" v-html="ICONS.selectAll" /><span>全選</span>
+              <button type="button" class="dx-sm" :title="tl('全選 (Ctrl+A)')" @click="selectEverything">
+                <svg class="dx-ico" viewBox="0 0 24 24" v-html="ICONS.selectAll" /><span>{{ tl('全選') }}</span>
               </button>
 
             </div>
-            <div class="dx-rlabel" aria-hidden="true">編輯</div>
+            <div class="dx-rlabel" aria-hidden="true">{{ tl('編輯') }}</div>
           </div>
         </div>
 
         <!-- ===== 插入 ===== -->
         <div v-show="tab === 'insert'" class="dx-panel">
-          <div class="dx-rgroup" role="group" aria-label="頁面">
+          <div class="dx-rgroup" role="group" :aria-label="tl('頁面')">
             <div class="dx-rbody">
               <button
                 type="button"
                 class="dx-big"
-                title="插入空白頁：在游標處加入一整頁空白，游標後面的文字移到下一頁（同 Word「插入 › 空白頁」）"
+                :title="tl('插入空白頁：在游標處加入一整頁空白，游標後面的文字移到下一頁（同 Word「插入 › 空白頁」）')"
                 :disabled="!inBody"
                 @click="run(insertBlankPage)"
               >
-                <svg class="dx-ico" viewBox="0 0 24 24" v-html="ICONS.blankPage" /><span>空白頁</span>
+                <svg class="dx-ico" viewBox="0 0 24 24" v-html="ICONS.blankPage" /><span>{{ tl('空白頁') }}</span>
               </button>
-              <button type="button" class="dx-big" title="插入分頁符號 (Ctrl+Enter)" :disabled="!inBody" @click="run(insertPageBreak)">
-                <svg class="dx-ico" viewBox="0 0 24 24" v-html="ICONS.pageBreak" /><span>分頁符號</span>
+              <button type="button" class="dx-big" :title="tl('插入分頁符號 (Ctrl+Enter)')" :disabled="!inBody" @click="run(insertPageBreak)">
+                <svg class="dx-ico" viewBox="0 0 24 24" v-html="ICONS.pageBreak" /><span>{{ tl('分頁符號') }}</span>
               </button>
             </div>
-            <div class="dx-rlabel" aria-hidden="true">頁面</div>
+            <div class="dx-rlabel" aria-hidden="true">{{ tl('頁面') }}</div>
           </div>
 
-          <div class="dx-rgroup" role="group" aria-label="表格">
+          <div class="dx-rgroup" role="group" :aria-label="tl('表格')">
             <div class="dx-rbody">
               <div class="dx-pop">
-                <button ref="tableButton" type="button" class="dx-big" title="插入表格" :aria-expanded="tableOpen" @click="toggleTable">
-                  <svg class="dx-ico" viewBox="0 0 24 24" v-html="ICONS.table" /><span>表格 ▾</span>
+                <button ref="tableButton" type="button" class="dx-big" :title="tl('插入表格')" :aria-expanded="tableOpen" @click="toggleTable">
+                  <svg class="dx-ico" viewBox="0 0 24 24" v-html="ICONS.table" /><span>{{ tl('表格 ▾') }}</span>
                 </button>
                 <div v-if="tableOpen" class="dx-grid dx-popup" @mouseleave="hover = { r: 0, c: 0 }" @keydown="onGridKey">
-                  <form v-if="tableForm" class="dx-tform" role="group" aria-label="插入表格" @submit.prevent="submitTableForm">
-                    <label>欄數 <input v-model.number="tableCols" type="number" min="1" :max="MAX_TABLE_COLS" /></label>
-                    <label>列數 <input v-model.number="tableRows" type="number" min="1" :max="MAX_TABLE_ROWS" /></label>
+                  <form v-if="tableForm" class="dx-tform" role="group" :aria-label="tl('插入表格')" @submit.prevent="submitTableForm">
+                    <label>{{ tl('欄數') }} <input v-model.number="tableCols" type="number" min="1" :max="MAX_TABLE_COLS" /></label>
+                    <label>{{ tl('列數') }} <input v-model.number="tableRows" type="number" min="1" :max="MAX_TABLE_ROWS" /></label>
                     <div class="dx-tform-actions">
-                      <button type="submit">確定</button>
-                      <button type="button" @click="tableForm = false">取消</button>
+                      <button type="submit">{{ tl('確定') }}</button>
+                      <button type="button" @click="tableForm = false">{{ tl('取消') }}</button>
                     </div>
                   </form>
                   <template v-else>
@@ -961,126 +962,126 @@ onBeforeUnmount(() => {
                       />
                     </template>
                   </div>
-                  <button type="button" class="dx-grid-more" title="指定欄數與列數（最多 63 欄）" @click="openTableForm">插入表格…</button>
+                  <button type="button" class="dx-grid-more" :title="tl('指定欄數與列數（最多 63 欄）')" @click="openTableForm">{{ tl('插入表格…') }}</button>
                   </template>
                 </div>
               </div>
             </div>
-            <div class="dx-rlabel" aria-hidden="true">表格</div>
+            <div class="dx-rlabel" aria-hidden="true">{{ tl('表格') }}</div>
           </div>
 
-          <div class="dx-rgroup" role="group" aria-label="圖例">
+          <div class="dx-rgroup" role="group" :aria-label="tl('圖例')">
             <div class="dx-rbody">
-              <button type="button" class="dx-big" title="插入圖片" @click="fileInput?.click()">
-                <svg class="dx-ico" viewBox="0 0 24 24" v-html="ICONS.picture" /><span>圖片</span>
+              <button type="button" class="dx-big" :title="tl('插入圖片')" @click="fileInput?.click()">
+                <svg class="dx-ico" viewBox="0 0 24 24" v-html="ICONS.picture" /><span>{{ tl('圖片') }}</span>
               </button>
               <input ref="fileInput" type="file" accept="image/*" multiple hidden @change="onImage" />
               <div class="dx-pop">
-                <button type="button" class="dx-big" title="插入圖案：選好後在頁面上按一下或拖曳" aria-haspopup="menu" :aria-expanded="menu === 'shapes'" @click="toggleMenu('shapes', $event)">
-                  <svg class="dx-ico" viewBox="0 0 24 24" v-html="ICONS.shapes" /><span>圖案 ▾</span>
+                <button type="button" class="dx-big" :title="tl('插入圖案：選好後在頁面上按一下或拖曳')" aria-haspopup="menu" :aria-expanded="menu === 'shapes'" @click="toggleMenu('shapes', $event)">
+                  <svg class="dx-ico" viewBox="0 0 24 24" v-html="ICONS.shapes" /><span>{{ tl('圖案 ▾') }}</span>
                 </button>
-                <div v-if="menu === 'shapes'" class="dx-menu dx-popup dx-shape-menu" role="menu" aria-label="圖案" @keydown="onMenuKey">
+                <div v-if="menu === 'shapes'" class="dx-menu dx-popup dx-shape-menu" role="menu" :aria-label="tl('圖案')" @keydown="onMenuKey">
                   <template v-for="g in SHAPE_MENU" :key="g.label">
                     <div class="dx-menu-head" role="presentation">{{ g.label }}</div>
                     <button v-for="k in g.kinds" :key="k.id" type="button" role="menuitem" tabindex="-1" :title="`插入${k.label}`" @click="pick(() => insertShape(k.id))">{{ k.label.replace(/^流程圖：/, '') }}</button>
                   </template>
                 </div>
               </div>
-              <button type="button" class="dx-big" title="插入文字方塊：在頁面上按一下或拖曳" @click="insertShape('textbox')">
-                <svg class="dx-ico" viewBox="0 0 24 24" v-html="ICONS.textbox" /><span>文字方塊</span>
+              <button type="button" class="dx-big" :title="tl('插入文字方塊：在頁面上按一下或拖曳')" @click="insertShape('textbox')">
+                <svg class="dx-ico" viewBox="0 0 24 24" v-html="ICONS.textbox" /><span>{{ tl('文字方塊') }}</span>
               </button>
-              <button type="button" class="dx-big" title="選取游標後的圖形或文字方塊（再按 Tab 到下一個，方向鍵移動，Enter 編輯文字，Esc 回到文字）" @click="editor?.selectShape(1)">
-                <svg class="dx-ico" viewBox="0 0 24 24" v-html="ICONS.select" /><span>選取圖形</span>
-              </button>
-            </div>
-            <div class="dx-rlabel" aria-hidden="true">圖例</div>
-          </div>
-
-          <div class="dx-rgroup" role="group" aria-label="連結">
-            <div class="dx-rbody">
-              <button type="button" class="dx-big" title="插入連結" :class="{ on: !!s?.link }" @click="onLink">
-                <svg class="dx-ico" viewBox="0 0 24 24" v-html="ICONS.link" /><span>連結</span>
+              <button type="button" class="dx-big" :title="tl('選取游標後的圖形或文字方塊（再按 Tab 到下一個，方向鍵移動，Enter 編輯文字，Esc 回到文字）')" @click="editor?.selectShape(1)">
+                <svg class="dx-ico" viewBox="0 0 24 24" v-html="ICONS.select" /><span>{{ tl('選取圖形') }}</span>
               </button>
             </div>
-            <div class="dx-rlabel" aria-hidden="true">連結</div>
+            <div class="dx-rlabel" aria-hidden="true">{{ tl('圖例') }}</div>
           </div>
 
-          <div class="dx-rgroup" role="group" aria-label="留言">
+          <div class="dx-rgroup" role="group" :aria-label="tl('連結')">
             <div class="dx-rbody">
-              <button type="button" class="dx-big" title="在選取的文字上新增留言 (Ctrl+Alt+M)" :disabled="!inBody" @click="emit('comment')">
-                <svg class="dx-ico" viewBox="0 0 24 24" v-html="ICONS.comment" /><span>留言</span>
+              <button type="button" class="dx-big" :title="tl('插入連結')" :class="{ on: !!s?.link }" @click="onLink">
+                <svg class="dx-ico" viewBox="0 0 24 24" v-html="ICONS.link" /><span>{{ tl('連結') }}</span>
               </button>
             </div>
-            <div class="dx-rlabel" aria-hidden="true">留言</div>
+            <div class="dx-rlabel" aria-hidden="true">{{ tl('連結') }}</div>
           </div>
 
-          <div class="dx-rgroup" role="group" aria-label="頁首及頁尾">
+          <div class="dx-rgroup" role="group" :aria-label="tl('留言')">
             <div class="dx-rbody">
-              <button type="button" class="dx-big" title="編輯頁首（也可以在頁面上方空白處按兩下）" @click="editHeaderFooter('header')">
-                <svg class="dx-ico" viewBox="0 0 24 24" v-html="ICONS.header" /><span>頁首</span>
+              <button type="button" class="dx-big" :title="tl('在選取的文字上新增留言 (Ctrl+Alt+M)')" :disabled="!inBody" @click="emit('comment')">
+                <svg class="dx-ico" viewBox="0 0 24 24" v-html="ICONS.comment" /><span>{{ tl('留言') }}</span>
               </button>
-              <button type="button" class="dx-big" title="編輯頁尾（也可以在頁面下方空白處按兩下）" @click="editHeaderFooter('footer')">
-                <svg class="dx-ico" viewBox="0 0 24 24" v-html="ICONS.footer" /><span>頁尾</span>
+            </div>
+            <div class="dx-rlabel" aria-hidden="true">{{ tl('留言') }}</div>
+          </div>
+
+          <div class="dx-rgroup" role="group" :aria-label="tl('頁首及頁尾')">
+            <div class="dx-rbody">
+              <button type="button" class="dx-big" :title="tl('編輯頁首（也可以在頁面上方空白處按兩下）')" @click="editHeaderFooter('header')">
+                <svg class="dx-ico" viewBox="0 0 24 24" v-html="ICONS.header" /><span>{{ tl('頁首') }}</span>
+              </button>
+              <button type="button" class="dx-big" :title="tl('編輯頁尾（也可以在頁面下方空白處按兩下）')" @click="editHeaderFooter('footer')">
+                <svg class="dx-ico" viewBox="0 0 24 24" v-html="ICONS.footer" /><span>{{ tl('頁尾') }}</span>
               </button>
               <div class="dx-pop">
-                <button type="button" class="dx-big" title="頁碼" aria-haspopup="menu" :aria-expanded="menu === 'pageNumber'" @click="toggleMenu('pageNumber', $event)">
-                  <svg class="dx-ico" viewBox="0 0 24 24" v-html="ICONS.pageNumber" /><span>頁碼 ▾</span>
+                <button type="button" class="dx-big" :title="tl('頁碼')" aria-haspopup="menu" :aria-expanded="menu === 'pageNumber'" @click="toggleMenu('pageNumber', $event)">
+                  <svg class="dx-ico" viewBox="0 0 24 24" v-html="ICONS.pageNumber" /><span>{{ tl('頁碼 ▾') }}</span>
                 </button>
-                <div v-if="menu === 'pageNumber'" class="dx-menu dx-popup" role="menu" aria-label="頁碼" @keydown="onMenuKey">
-                  <button type="button" role="menuitem" tabindex="-1" title="在頁尾插入頁碼（頁尾原本空白時置中）" @click="pick(pageNumberAtBottom)">頁面底端</button>
+                <div v-if="menu === 'pageNumber'" class="dx-menu dx-popup" role="menu" :aria-label="tl('頁碼')" @keydown="onMenuKey">
+                  <button type="button" role="menuitem" tabindex="-1" :title="tl('在頁尾插入頁碼（頁尾原本空白時置中）')" @click="pick(pageNumberAtBottom)">{{ tl('頁面底端') }}</button>
                   <button
                     type="button"
                     role="menuitem"
                     tabindex="-1"
-                    title="在游標處插入目前頁碼（編輯頁首或頁尾時）"
+                    :title="tl('在游標處插入目前頁碼（編輯頁首或頁尾時）')"
                     :disabled="inBody"
                     @click="pick(() => editor?.insertField('PAGE'))"
-                  >目前位置</button>
-                  <button type="button" role="menuitem" tabindex="-1" title="頁碼的格式、起始頁碼與首頁不同" @click="pick(() => emit('page-setup'))">頁碼格式…</button>
+                  >{{ tl('目前位置') }}</button>
+                  <button type="button" role="menuitem" tabindex="-1" :title="tl('頁碼的格式、起始頁碼與首頁不同')" @click="pick(() => emit('page-setup'))">{{ tl('頁碼格式…') }}</button>
                 </div>
               </div>
             </div>
-            <div class="dx-rlabel" aria-hidden="true">頁首及頁尾</div>
+            <div class="dx-rlabel" aria-hidden="true">{{ tl('頁首及頁尾') }}</div>
           </div>
 
           <!-- 符號: the gallery (SymbolGallery.vue) inserts at the cursor; 其他符號 opens the 符號 dialog. -->
-          <div class="dx-rgroup" role="group" aria-label="符號">
+          <div class="dx-rgroup" role="group" :aria-label="tl('符號')">
             <div class="dx-rbody">
               <SymbolGallery v-slot="{ open, toggle }" :editor="editor" :disabled="readOnly" @more="emit('symbol')">
                 <button
                   type="button"
                   class="dx-big"
-                  title="符號：插入鍵盤上沒有的符號，例如 ※、①、℃"
+                  :title="tl('符號：插入鍵盤上沒有的符號，例如 ※、①、℃')"
                   aria-haspopup="menu"
                   :aria-expanded="open"
                   :disabled="readOnly"
                   @click="toggle"
                 >
-                  <svg class="dx-ico" viewBox="0 0 24 24" v-html="ICONS.symbol" /><span>符號 ▾</span>
+                  <svg class="dx-ico" viewBox="0 0 24 24" v-html="ICONS.symbol" /><span>{{ tl('符號 ▾') }}</span>
                 </button>
               </SymbolGallery>
             </div>
-            <div class="dx-rlabel" aria-hidden="true">符號</div>
+            <div class="dx-rlabel" aria-hidden="true">{{ tl('符號') }}</div>
           </div>
         </div>
 
         <!-- ===== 設計 ===== -->
         <div v-show="tab === 'design'" class="dx-panel">
           <!-- 頁面背景, as in Word: 浮水印 (頁面色彩 and 頁面框線 go next to it). -->
-          <div class="dx-rgroup" role="group" aria-label="頁面背景">
+          <div class="dx-rgroup" role="group" :aria-label="tl('頁面背景')">
             <div class="dx-rbody">
               <div class="dx-pop">
                 <button
                   type="button"
                   class="dx-big"
-                  title="浮水印：在每一頁的文字後面加上「機密」、「草稿」等淡色文字或圖片"
+                  :title="tl('浮水印：在每一頁的文字後面加上「機密」、「草稿」等淡色文字或圖片')"
                   aria-haspopup="menu"
                   :aria-expanded="menu === 'watermark'"
                   @click="toggleMenu('watermark', $event)"
                 >
-                  <svg class="dx-ico" viewBox="0 0 24 24" v-html="ICONS.watermark" /><span>浮水印 ▾</span>
+                  <svg class="dx-ico" viewBox="0 0 24 24" v-html="ICONS.watermark" /><span>{{ tl('浮水印 ▾') }}</span>
                 </button>
-                <div v-if="menu === 'watermark'" class="dx-menu dx-popup dx-wm-menu" role="menu" aria-label="浮水印" @keydown="onMenuKey">
+                <div v-if="menu === 'watermark'" class="dx-menu dx-popup dx-wm-menu" role="menu" :aria-label="tl('浮水印')" @keydown="onMenuKey">
                   <div class="dx-wm-gallery">
                     <button
                       v-for="p in WATERMARK_PRESETS"
@@ -1097,24 +1098,24 @@ onBeforeUnmount(() => {
                       <span class="dx-wm-name">{{ p }}</span>
                     </button>
                   </div>
-                  <button type="button" role="menuitem" tabindex="-1" title="選擇文字、字型、色彩或圖片" @click="pick(() => emit('watermark'))">自訂浮水印…</button>
-                  <button type="button" role="menuitem" tabindex="-1" title="移除每一頁的浮水印" :disabled="!hasWatermark()" @click="pick(() => editor?.setWatermark(null))">移除浮水印</button>
+                  <button type="button" role="menuitem" tabindex="-1" :title="tl('選擇文字、字型、色彩或圖片')" @click="pick(() => emit('watermark'))">{{ tl('自訂浮水印…') }}</button>
+                  <button type="button" role="menuitem" tabindex="-1" :title="tl('移除每一頁的浮水印')" :disabled="!hasWatermark()" @click="pick(() => editor?.setWatermark(null))">{{ tl('移除浮水印') }}</button>
                 </div>
               </div>
             </div>
-            <div class="dx-rlabel" aria-hidden="true">頁面背景</div>
+            <div class="dx-rlabel" aria-hidden="true">{{ tl('頁面背景') }}</div>
           </div>
         </div>
 
         <!-- ===== 版面配置 ===== -->
         <div v-show="tab === 'layout'" class="dx-panel">
-          <div class="dx-rgroup" role="group" aria-label="版面設定">
+          <div class="dx-rgroup" role="group" :aria-label="tl('版面設定')">
             <div class="dx-rbody">
               <div class="dx-pop">
-                <button type="button" class="dx-big" title="邊界" aria-haspopup="menu" :aria-expanded="menu === 'margins'" @click="toggleMenu('margins', $event)">
-                  <svg class="dx-ico" viewBox="0 0 24 24" v-html="ICONS.margins" /><span>邊界 ▾</span>
+                <button type="button" class="dx-big" :title="tl('邊界')" aria-haspopup="menu" :aria-expanded="menu === 'margins'" @click="toggleMenu('margins', $event)">
+                  <svg class="dx-ico" viewBox="0 0 24 24" v-html="ICONS.margins" /><span>{{ tl('邊界 ▾') }}</span>
                 </button>
-                <div v-if="menu === 'margins'" class="dx-menu dx-popup" role="menu" aria-label="邊界" @keydown="onMenuKey">
+                <div v-if="menu === 'margins'" class="dx-menu dx-popup" role="menu" :aria-label="tl('邊界')" @keydown="onMenuKey">
                   <button
                     v-for="m in MARGIN_PRESETS"
                     :key="m.id"
@@ -1124,23 +1125,23 @@ onBeforeUnmount(() => {
                     :aria-checked="isMargins(cursorPage(), m)"
                     @click="pick(() => setPage(marginsOf(m)))"
                   ><b>{{ m.label }}</b><small>{{ m.note }}</small></button>
-                  <button type="button" role="menuitem" tabindex="-1" @click="pick(() => emit('page-setup'))">自訂邊界…</button>
+                  <button type="button" role="menuitem" tabindex="-1" @click="pick(() => emit('page-setup'))">{{ tl('自訂邊界…') }}</button>
                 </div>
               </div>
               <div class="dx-pop">
-                <button type="button" class="dx-big" title="方向" aria-haspopup="menu" :aria-expanded="menu === 'orientation'" @click="toggleMenu('orientation', $event)">
-                  <svg class="dx-ico" viewBox="0 0 24 24" v-html="ICONS.orientation" /><span>方向 ▾</span>
+                <button type="button" class="dx-big" :title="tl('方向')" aria-haspopup="menu" :aria-expanded="menu === 'orientation'" @click="toggleMenu('orientation', $event)">
+                  <svg class="dx-ico" viewBox="0 0 24 24" v-html="ICONS.orientation" /><span>{{ tl('方向 ▾') }}</span>
                 </button>
-                <div v-if="menu === 'orientation'" class="dx-menu dx-popup" role="menu" aria-label="方向" @keydown="onMenuKey">
-                  <button type="button" role="menuitemradio" tabindex="-1" :aria-checked="!!cursorPage() && cursorPage()!.width <= cursorPage()!.height" @click="pick(() => setOrientation(false))">直向</button>
-                  <button type="button" role="menuitemradio" tabindex="-1" :aria-checked="!!cursorPage() && cursorPage()!.width > cursorPage()!.height" @click="pick(() => setOrientation(true))">橫向</button>
+                <div v-if="menu === 'orientation'" class="dx-menu dx-popup" role="menu" :aria-label="tl('方向')" @keydown="onMenuKey">
+                  <button type="button" role="menuitemradio" tabindex="-1" :aria-checked="!!cursorPage() && cursorPage()!.width <= cursorPage()!.height" @click="pick(() => setOrientation(false))">{{ tl('直向') }}</button>
+                  <button type="button" role="menuitemradio" tabindex="-1" :aria-checked="!!cursorPage() && cursorPage()!.width > cursorPage()!.height" @click="pick(() => setOrientation(true))">{{ tl('橫向') }}</button>
                 </div>
               </div>
               <div class="dx-pop">
-                <button type="button" class="dx-big" title="大小（紙張）" aria-haspopup="menu" :aria-expanded="menu === 'size'" @click="toggleMenu('size', $event)">
-                  <svg class="dx-ico" viewBox="0 0 24 24" v-html="ICONS.size" /><span>大小 ▾</span>
+                <button type="button" class="dx-big" :title="tl('大小（紙張）')" aria-haspopup="menu" :aria-expanded="menu === 'size'" @click="toggleMenu('size', $event)">
+                  <svg class="dx-ico" viewBox="0 0 24 24" v-html="ICONS.size" /><span>{{ tl('大小 ▾') }}</span>
                 </button>
-                <div v-if="menu === 'size'" class="dx-menu dx-popup" role="menu" aria-label="大小" @keydown="onMenuKey">
+                <div v-if="menu === 'size'" class="dx-menu dx-popup" role="menu" :aria-label="tl('大小')" @keydown="onMenuKey">
                   <button
                     v-for="p in PAPERS"
                     :key="p.id"
@@ -1150,14 +1151,14 @@ onBeforeUnmount(() => {
                     :aria-checked="isPaper(cursorPage(), p)"
                     @click="pick(() => setPaper(p))"
                   >{{ p.label }}</button>
-                  <button type="button" role="menuitem" tabindex="-1" @click="pick(() => emit('page-setup'))">其他紙張大小…</button>
+                  <button type="button" role="menuitem" tabindex="-1" @click="pick(() => emit('page-setup'))">{{ tl('其他紙張大小…') }}</button>
                 </div>
               </div>
               <div class="dx-pop">
-                <button type="button" class="dx-big" title="欄（分欄）" aria-haspopup="menu" :aria-expanded="menu === 'columns'" @click="toggleMenu('columns', $event)">
-                  <svg class="dx-ico" viewBox="0 0 24 24" v-html="ICONS.columns" /><span>欄 ▾</span>
+                <button type="button" class="dx-big" :title="tl('欄（分欄）')" aria-haspopup="menu" :aria-expanded="menu === 'columns'" @click="toggleMenu('columns', $event)">
+                  <svg class="dx-ico" viewBox="0 0 24 24" v-html="ICONS.columns" /><span>{{ tl('欄 ▾') }}</span>
                 </button>
-                <div v-if="menu === 'columns'" class="dx-menu dx-popup" role="menu" aria-label="欄" @keydown="onMenuKey">
+                <div v-if="menu === 'columns'" class="dx-menu dx-popup" role="menu" :aria-label="tl('欄')" @keydown="onMenuKey">
                   <button
                     v-for="(label, i) in ['一欄', '二欄', '三欄']"
                     :key="label"
@@ -1167,73 +1168,73 @@ onBeforeUnmount(() => {
                     :aria-checked="cursorColumns() === i + 1"
                     @click="pick(() => setColumns(i + 1))"
                   >{{ label }}</button>
-                  <button type="button" role="menuitem" tabindex="-1" @click="pick(() => emit('page-setup'))">其他欄…</button>
+                  <button type="button" role="menuitem" tabindex="-1" @click="pick(() => emit('page-setup'))">{{ tl('其他欄…') }}</button>
                 </div>
               </div>
               <div class="dx-pop">
-                <button type="button" class="dx-big" title="分隔設定：分頁符號、分欄符號、分節符號" aria-haspopup="menu" :aria-expanded="menu === 'breaks'" @click="toggleMenu('breaks', $event)">
-                  <svg class="dx-ico" viewBox="0 0 24 24" v-html="ICONS.breaks" /><span>分隔設定 ▾</span>
+                <button type="button" class="dx-big" :title="tl('分隔設定：分頁符號、分欄符號、分節符號')" aria-haspopup="menu" :aria-expanded="menu === 'breaks'" @click="toggleMenu('breaks', $event)">
+                  <svg class="dx-ico" viewBox="0 0 24 24" v-html="ICONS.breaks" /><span>{{ tl('分隔設定 ▾') }}</span>
                 </button>
-                <div v-if="menu === 'breaks'" class="dx-menu dx-popup" role="menu" aria-label="分隔設定" @keydown="onMenuKey">
-                  <button type="button" role="menuitem" tabindex="-1" title="插入分頁符號 (Ctrl+Enter)" :disabled="!inBody" @click="pick(() => run(insertPageBreak))">
-                    <b>分頁符號</b><small>後面的文字從下一頁開始</small>
+                <div v-if="menu === 'breaks'" class="dx-menu dx-popup" role="menu" :aria-label="tl('分隔設定')" @keydown="onMenuKey">
+                  <button type="button" role="menuitem" tabindex="-1" :title="tl('插入分頁符號 (Ctrl+Enter)')" :disabled="!inBody" @click="pick(() => run(insertPageBreak))">
+                    <b>{{ tl('分頁符號') }}</b><small>{{ tl('後面的文字從下一頁開始') }}</small>
                   </button>
                   <button
                     type="button"
                     role="menuitem"
                     tabindex="-1"
-                    title="插入分欄符號 (Ctrl+Shift+Enter)：後面的文字從下一欄開始"
+                    :title="tl('插入分欄符號 (Ctrl+Shift+Enter)：後面的文字從下一欄開始')"
                     :disabled="!inBody || s?.inTable"
                     @click="pick(() => editor?.insertColumnBreak())"
-                  ><b>分欄符號</b><small>後面的文字從下一欄開始</small></button>
+                  ><b>{{ tl('分欄符號') }}</b><small>{{ tl('後面的文字從下一欄開始') }}</small></button>
                   <button
                     type="button"
                     role="menuitem"
                     tabindex="-1"
-                    title="插入分節符號（下一頁）：游標前後可以有不同的紙張方向、邊界與頁首頁尾"
+                    :title="tl('插入分節符號（下一頁）：游標前後可以有不同的紙張方向、邊界與頁首頁尾')"
                     :disabled="!inBody"
                     @click="pick(() => editor?.insertSectionBreak())"
-                  ><b>分節符號（下一頁）</b><small>新的一節從下一頁開始，可以有不同的版面</small></button>
+                  ><b>{{ tl('分節符號（下一頁）') }}</b><small>{{ tl('新的一節從下一頁開始，可以有不同的版面') }}</small></button>
                   <button
                     v-if="s?.atSectionBreak"
                     type="button"
                     role="menuitem"
                     tabindex="-1"
-                    title="移除這個分節符號：這一節併入下一節，改用下一節的版面與頁首頁尾"
+                    :title="tl('移除這個分節符號：這一節併入下一節，改用下一節的版面與頁首頁尾')"
                     @click="pick(() => editor?.removeSectionBreak())"
-                  ><b>移除分節符號</b><small>這一節併入下一節</small></button>
+                  ><b>{{ tl('移除分節符號') }}</b><small>{{ tl('這一節併入下一節') }}</small></button>
                 </div>
               </div>
             </div>
             <div class="dx-rlabel">
-              <span aria-hidden="true">版面設定</span>
-              <button type="button" class="dx-launch" title="版面設定（紙張大小、方向、邊界）" aria-label="版面設定" @click="emit('page-setup')">
+              <span aria-hidden="true">{{ tl('版面設定') }}</span>
+              <button type="button" class="dx-launch" :title="tl('版面設定（紙張大小、方向、邊界）')" :aria-label="tl('版面設定')" @click="emit('page-setup')">
                 <svg class="dx-ico" viewBox="0 0 24 24" v-html="ICONS.launcher" />
               </button>
             </div>
           </div>
 
-          <div class="dx-rgroup" role="group" aria-label="段落">
+          <div class="dx-rgroup" role="group" :aria-label="tl('段落')">
             <div class="dx-rbody">
-              <button type="button" class="dx-big" title="縮排與間距：左右縮排、段前段後距離、行距" @click="emit('paragraph')">
-                <svg class="dx-ico" viewBox="0 0 24 24" v-html="ICONS.paragraph" /><span>縮排與間距</span>
+              <button type="button" class="dx-big" :title="tl('縮排與間距：左右縮排、段前段後距離、行距')" @click="emit('paragraph')">
+                <svg class="dx-ico" viewBox="0 0 24 24" v-html="ICONS.paragraph" /><span>{{ tl('縮排與間距') }}</span>
               </button>
             </div>
-            <div class="dx-rlabel" aria-hidden="true">段落</div>
+            <div class="dx-rlabel" aria-hidden="true">{{ tl('段落') }}</div>
           </div>
         </div>
 
         <!-- ===== 參考資料 ===== -->
         <div v-show="tab === 'references'" class="dx-panel">
-          <div class="dx-rgroup" role="group" aria-label="目錄">
+          <div class="dx-rgroup" role="group" :aria-label="tl('目錄')">
             <div class="dx-rbody">
               <button
                 type="button"
                 class="dx-big"
-                title="目錄：在游標處插入依標題 1～3 建立的目錄（和 Word 的目錄相同，在 Word 按 F9 也能更新）"
+                :title="tl('目錄：在游標處插入依標題 1～3 建立的目錄（和 Word 的目錄相同，在 Word 按 F9 也能更新）')"
                 @click="emit('insert-toc')"
               >
-                <svg class="dx-ico" viewBox="0 0 24 24" v-html="ICONS.tocInsert" /><span>目錄</span>
+                <svg class="dx-ico" viewBox="0 0 24 24" v-html="ICONS.tocInsert" /><span>{{ tl('目錄') }}</span>
               </button>
               <button
                 type="button"
@@ -1242,53 +1243,53 @@ onBeforeUnmount(() => {
                 :disabled="!tocCount"
                 @click="emit('update-toc')"
               >
-                <svg class="dx-ico" viewBox="0 0 24 24" v-html="ICONS.toc" /><span>更新目錄</span>
+                <svg class="dx-ico" viewBox="0 0 24 24" v-html="ICONS.toc" /><span>{{ tl('更新目錄') }}</span>
               </button>
             </div>
-            <div class="dx-rlabel" aria-hidden="true">目錄</div>
+            <div class="dx-rlabel" aria-hidden="true">{{ tl('目錄') }}</div>
           </div>
         </div>
 
         <!-- ===== 校閱 ===== -->
         <div v-show="tab === 'review'" class="dx-panel">
-          <div class="dx-rgroup" role="group" aria-label="校對">
+          <div class="dx-rgroup" role="group" :aria-label="tl('校對')">
             <div class="dx-rbody">
               <button
                 type="button"
                 class="dx-big"
                 :class="{ on: spellcheck }"
                 :aria-pressed="spellcheck"
-                title="拼字檢查：使用瀏覽器的拼字檢查（主要檢查英文；多數瀏覽器不檢查中文）"
+                :title="tl('拼字檢查：使用瀏覽器的拼字檢查（主要檢查英文；多數瀏覽器不檢查中文）')"
                 @click="emit('toggle-spellcheck')"
               >
-                <svg class="dx-ico" viewBox="0 0 24 24" v-html="ICONS.spell" /><span>拼字檢查</span>
+                <svg class="dx-ico" viewBox="0 0 24 24" v-html="ICONS.spell" /><span>{{ tl('拼字檢查') }}</span>
               </button>
               <div class="dx-pop dx-rcount-pop">
-                <button type="button" class="dx-big" title="字數統計" :aria-expanded="countOpen" @click="countOpen = !countOpen">
-                  <svg class="dx-ico" viewBox="0 0 24 24" v-html="ICONS.wordCount" /><span>字數統計</span>
+                <button type="button" class="dx-big" :title="tl('字數統計')" :aria-expanded="countOpen" @click="countOpen = !countOpen">
+                  <svg class="dx-ico" viewBox="0 0 24 24" v-html="ICONS.wordCount" /><span>{{ tl('字數統計') }}</span>
                 </button>
-                <div v-if="countOpen && counts" class="dx-rcount dx-popup" role="dialog" aria-label="字數統計" @keydown.esc="!composing($event) && closeCount($event)">
+                <div v-if="countOpen && counts" class="dx-rcount dx-popup" role="dialog" :aria-label="tl('字數統計')" @keydown.esc="!composing($event) && closeCount($event)">
                   <table>
                     <tbody>
-                      <tr><th>頁數</th><td>{{ n(s?.pageCount ?? 1) }}</td></tr>
-                      <tr><th>字數</th><td>{{ n(counts.all.words) }}</td></tr>
-                      <tr><th>字元（不含空白）</th><td>{{ n(counts.all.chars) }}</td></tr>
-                      <tr><th>字元（含空白）</th><td>{{ n(counts.all.charsWithSpaces) }}</td></tr>
-                      <tr v-if="counts.selected"><th>選取範圍字數</th><td>{{ n(counts.selected.words) }}</td></tr>
+                      <tr><th>{{ tl('頁數') }}</th><td>{{ n(s?.pageCount ?? 1) }}</td></tr>
+                      <tr><th>{{ tl('字數') }}</th><td>{{ n(counts.all.words) }}</td></tr>
+                      <tr><th>{{ tl('字元（不含空白）') }}</th><td>{{ n(counts.all.chars) }}</td></tr>
+                      <tr><th>{{ tl('字元（含空白）') }}</th><td>{{ n(counts.all.charsWithSpaces) }}</td></tr>
+                      <tr v-if="counts.selected"><th>{{ tl('選取範圍字數') }}</th><td>{{ n(counts.selected.words) }}</td></tr>
                     </tbody>
                   </table>
-                  <p>本文的統計，不含頁首頁尾。</p>
-                  <button type="button" @click="countOpen = false">關閉</button>
+                  <p>{{ tl('本文的統計，不含頁首頁尾。') }}</p>
+                  <button type="button" @click="countOpen = false">{{ tl('關閉') }}</button>
                 </div>
               </div>
             </div>
-            <div class="dx-rlabel" aria-hidden="true">校對</div>
+            <div class="dx-rlabel" aria-hidden="true">{{ tl('校對') }}</div>
           </div>
 
-          <div class="dx-rgroup" role="group" aria-label="留言">
+          <div class="dx-rgroup" role="group" :aria-label="tl('留言')">
             <div class="dx-rbody">
-              <button type="button" class="dx-big" title="在選取的文字上新增留言 (Ctrl+Alt+M)" :disabled="!inBody" @click="emit('comment')">
-                <svg class="dx-ico" viewBox="0 0 24 24" v-html="ICONS.comment" /><span>新增留言</span>
+              <button type="button" class="dx-big" :title="tl('在選取的文字上新增留言 (Ctrl+Alt+M)')" :disabled="!inBody" @click="emit('comment')">
+                <svg class="dx-ico" viewBox="0 0 24 24" v-html="ICONS.comment" /><span>{{ tl('新增留言') }}</span>
               </button>
               <button
                 type="button"
@@ -1299,24 +1300,24 @@ onBeforeUnmount(() => {
                 :title="commentCount ? `顯示或隱藏留言（共 ${commentCount} 則）` : '這份文件沒有留言'"
                 @click="emit('toggle-comments')"
               >
-                <svg class="dx-ico" viewBox="0 0 24 24" v-html="ICONS.comments" /><span>顯示留言</span>
+                <svg class="dx-ico" viewBox="0 0 24 24" v-html="ICONS.comments" /><span>{{ tl('顯示留言') }}</span>
               </button>
             </div>
-            <div class="dx-rlabel" aria-hidden="true">留言</div>
+            <div class="dx-rlabel" aria-hidden="true">{{ tl('留言') }}</div>
           </div>
 
-          <div class="dx-rgroup" role="group" aria-label="追蹤">
+          <div class="dx-rgroup" role="group" :aria-label="tl('追蹤')">
             <div class="dx-rbody">
               <button
                 type="button"
                 class="dx-big"
                 :class="{ on: s?.trackChanges }"
                 :aria-pressed="!!s?.trackChanges"
-                aria-label="追蹤修訂"
-                title="追蹤修訂 (Ctrl+Shift+E)：開啟時，輸入、刪除與格式變更都會記錄為修訂（作者與時間），可在 Word 中檢視、接受或拒絕"
+                :aria-label="tl('追蹤修訂')"
+                :title="tl('追蹤修訂 (Ctrl+Shift+E)：開啟時，輸入、刪除與格式變更都會記錄為修訂（作者與時間），可在 Word 中檢視、接受或拒絕')"
                 @click="editor?.setTrackChanges(!s?.trackChanges)"
               >
-                <svg class="dx-ico" viewBox="0 0 24 24" v-html="ICONS.track" /><span>追蹤修訂</span>
+                <svg class="dx-ico" viewBox="0 0 24 24" v-html="ICONS.track" /><span>{{ tl('追蹤修訂') }}</span>
               </button>
               <button
                 type="button"
@@ -1326,115 +1327,115 @@ onBeforeUnmount(() => {
                 :title="rev.show ? '隱藏修訂標記（顯示接受全部修訂後的樣子）' : '顯示修訂標記'"
                 @click="run(toggleRevisionMarks)"
               >
-                <svg class="dx-ico" viewBox="0 0 24 24" v-html="ICONS.markup" /><span>顯示標記</span>
+                <svg class="dx-ico" viewBox="0 0 24 24" v-html="ICONS.markup" /><span>{{ tl('顯示標記') }}</span>
               </button>
               <button
                 type="button"
                 class="dx-big"
                 :class="{ on: revisionsOpen }"
                 :aria-pressed="revisionsOpen"
-                title="修訂窗格：列出每一處修訂的作者、類型、內容與時間，可逐一接受或拒絕"
+                :title="tl('修訂窗格：列出每一處修訂的作者、類型、內容與時間，可逐一接受或拒絕')"
                 @click="emit('toggle-revisions')"
               >
-                <svg class="dx-ico" viewBox="0 0 24 24" v-html="ICONS.comments" /><span>修訂窗格</span>
+                <svg class="dx-ico" viewBox="0 0 24 24" v-html="ICONS.comments" /><span>{{ tl('修訂窗格') }}</span>
               </button>
             </div>
-            <div class="dx-rlabel" aria-hidden="true">追蹤</div>
+            <div class="dx-rlabel" aria-hidden="true">{{ tl('追蹤') }}</div>
           </div>
 
-          <div class="dx-rgroup dx-review" role="group" aria-label="變更">
+          <div class="dx-rgroup dx-review" role="group" :aria-label="tl('變更')">
             <div class="dx-rbody">
-              <button type="button" class="dx-big" title="接受游標處或選取範圍中的修訂" :disabled="!rev.here" @click="run(acceptRevision)">
-                <svg class="dx-ico" viewBox="0 0 24 24" v-html="ICONS.accept" /><span>接受</span>
+              <button type="button" class="dx-big" :title="tl('接受游標處或選取範圍中的修訂')" :disabled="!rev.here" @click="run(acceptRevision)">
+                <svg class="dx-ico" viewBox="0 0 24 24" v-html="ICONS.accept" /><span>{{ tl('接受') }}</span>
               </button>
-              <button type="button" class="dx-big" title="拒絕游標處或選取範圍中的修訂" :disabled="!rev.here" @click="run(rejectRevision)">
-                <svg class="dx-ico" viewBox="0 0 24 24" v-html="ICONS.reject" /><span>拒絕</span>
+              <button type="button" class="dx-big" :title="tl('拒絕游標處或選取範圍中的修訂')" :disabled="!rev.here" @click="run(rejectRevision)">
+                <svg class="dx-ico" viewBox="0 0 24 24" v-html="ICONS.reject" /><span>{{ tl('拒絕') }}</span>
               </button>
               <div class="dx-stack">
-                <button type="button" class="dx-sm" title="上一個修訂" aria-label="上一個修訂" :disabled="!rev.count" @click="goRevision(-1)">
-                  <svg class="dx-ico" viewBox="0 0 24 24" v-html="ICONS.prev" /><span>上一個</span>
+                <button type="button" class="dx-sm" :title="tl('上一個修訂')" :aria-label="tl('上一個修訂')" :disabled="!rev.count" @click="goRevision(-1)">
+                  <svg class="dx-ico" viewBox="0 0 24 24" v-html="ICONS.prev" /><span>{{ tl('上一個') }}</span>
                 </button>
-                <button type="button" class="dx-sm" title="下一個修訂" aria-label="下一個修訂" :disabled="!rev.count" @click="goRevision(1)">
-                  <svg class="dx-ico" viewBox="0 0 24 24" v-html="ICONS.next" /><span>下一個</span>
+                <button type="button" class="dx-sm" :title="tl('下一個修訂')" :aria-label="tl('下一個修訂')" :disabled="!rev.count" @click="goRevision(1)">
+                  <svg class="dx-ico" viewBox="0 0 24 24" v-html="ICONS.next" /><span>{{ tl('下一個') }}</span>
                 </button>
-                <span v-if="rev.count" class="dx-review-label" :title="`這部分有 ${rev.count} 處修訂`">修訂 {{ rev.count }}</span>
+                <span v-if="rev.count" class="dx-review-label" :title="`這部分有 ${rev.count} 處修訂`">{{ tl('修訂') }} {{ rev.count }}</span>
                 <span class="dx-sr" aria-live="polite">{{ spoken }}</span>
               </div>
               <div class="dx-stack">
-                <button type="button" class="dx-sm" title="接受這部分的所有修訂" :disabled="!rev.count" @click="run(acceptAllRevisions)">全部接受</button>
-                <button type="button" class="dx-sm" title="拒絕這部分的所有修訂" :disabled="!rev.count" @click="run(rejectAllRevisions)">全部拒絕</button>
+                <button type="button" class="dx-sm" :title="tl('接受這部分的所有修訂')" :disabled="!rev.count" @click="run(acceptAllRevisions)">{{ tl('全部接受') }}</button>
+                <button type="button" class="dx-sm" :title="tl('拒絕這部分的所有修訂')" :disabled="!rev.count" @click="run(rejectAllRevisions)">{{ tl('全部拒絕') }}</button>
               </div>
             </div>
-            <div class="dx-rlabel" aria-hidden="true">變更</div>
+            <div class="dx-rlabel" aria-hidden="true">{{ tl('變更') }}</div>
           </div>
         </div>
 
         <!-- ===== 檢視 ===== -->
         <div v-show="tab === 'view'" class="dx-panel">
-          <div class="dx-rgroup" role="group" aria-label="顯示">
+          <div class="dx-rgroup" role="group" :aria-label="tl('顯示')">
             <div class="dx-rbody">
               <button
                 type="button"
                 class="dx-big"
                 :class="{ on: outlineOpen }"
                 :aria-pressed="outlineOpen"
-                title="導覽窗格：依標題瀏覽文件"
+                :title="tl('導覽窗格：依標題瀏覽文件')"
                 @click="emit('toggle-outline')"
               >
-                <svg class="dx-ico" viewBox="0 0 24 24" v-html="ICONS.nav" /><span>導覽窗格</span>
+                <svg class="dx-ico" viewBox="0 0 24 24" v-html="ICONS.nav" /><span>{{ tl('導覽窗格') }}</span>
               </button>
             </div>
-            <div class="dx-rlabel" aria-hidden="true">顯示</div>
+            <div class="dx-rlabel" aria-hidden="true">{{ tl('顯示') }}</div>
           </div>
 
-          <div class="dx-rgroup" role="group" aria-label="縮放">
+          <div class="dx-rgroup" role="group" :aria-label="tl('縮放')">
             <div class="dx-rbody">
-              <label class="dx-big dx-zoom" title="縮放">
+              <label class="dx-big dx-zoom" :title="tl('縮放')">
                 <svg class="dx-ico" viewBox="0 0 24 24" v-html="ICONS.zoom" />
-                <select :value="zoom" aria-label="縮放比例" @change="emit('zoom', ($event.target as HTMLSelectElement).value)">
+                <select :value="zoom" :aria-label="tl('縮放比例')" @change="emit('zoom', ($event.target as HTMLSelectElement).value)">
                   <option v-for="z in ZOOMS" :key="z" :value="String(z)">{{ Math.round(z * 100) }}%</option>
-                  <option value="fit">頁寬</option>
+                  <option value="fit">{{ tl('頁寬') }}</option>
                 </select>
               </label>
-              <button type="button" class="dx-big" title="縮放到 100%" :class="{ on: zoom === '1' }" :aria-pressed="zoom === '1'" @click="emit('zoom', '1')">
+              <button type="button" class="dx-big" :title="tl('縮放到 100%')" :class="{ on: zoom === '1' }" :aria-pressed="zoom === '1'" @click="emit('zoom', '1')">
                 <svg class="dx-ico" viewBox="0 0 24 24" v-html="ICONS.zoom100" /><span>100%</span>
               </button>
-              <button type="button" class="dx-big" title="頁寬：頁面和視窗一樣寬" :class="{ on: zoom === 'fit' }" :aria-pressed="zoom === 'fit'" @click="emit('zoom', 'fit')">
-                <svg class="dx-ico" viewBox="0 0 24 24" v-html="ICONS.pageWidth" /><span>頁寬</span>
+              <button type="button" class="dx-big" :title="tl('頁寬：頁面和視窗一樣寬')" :class="{ on: zoom === 'fit' }" :aria-pressed="zoom === 'fit'" @click="emit('zoom', 'fit')">
+                <svg class="dx-ico" viewBox="0 0 24 24" v-html="ICONS.pageWidth" /><span>{{ tl('頁寬') }}</span>
               </button>
             </div>
-            <div class="dx-rlabel" aria-hidden="true">縮放</div>
+            <div class="dx-rlabel" aria-hidden="true">{{ tl('縮放') }}</div>
           </div>
         </div>
 
         <!-- ===== 表格設計 / 表格版面配置 (contextual) ===== -->
         <div v-show="tab === 'tableDesign'" class="dx-panel">
-          <div class="dx-rgroup" role="group" aria-label="表格樣式">
+          <div class="dx-rgroup" role="group" :aria-label="tl('表格樣式')">
             <div class="dx-rbody">
               <TablePanel v-if="s?.inTable" :editor="editor" :snapshot="snapshot" />
             </div>
-            <div class="dx-rlabel" aria-hidden="true">網底、框線與儲存格</div>
+            <div class="dx-rlabel" aria-hidden="true">{{ tl('網底、框線與儲存格') }}</div>
           </div>
         </div>
         <div v-show="tab === 'tableLayout'" class="dx-panel">
-          <div v-if="s?.inTable" class="dx-rgroup" role="group" aria-label="刪除">
+          <div v-if="s?.inTable" class="dx-rgroup" role="group" :aria-label="tl('刪除')">
             <div class="dx-rbody dx-stack">
-              <button type="button" class="dx-sm" title="刪除列" @click="run(deleteRow)">刪除列</button>
-              <button type="button" class="dx-sm" title="刪除欄" @click="run(deleteColumn)">刪除欄</button>
-              <button type="button" class="dx-sm" title="刪除表格" @click="run(deleteTable)">刪除表格</button>
+              <button type="button" class="dx-sm" :title="tl('刪除列')" @click="run(deleteRow)">{{ tl('刪除列') }}</button>
+              <button type="button" class="dx-sm" :title="tl('刪除欄')" @click="run(deleteColumn)">{{ tl('刪除欄') }}</button>
+              <button type="button" class="dx-sm" :title="tl('刪除表格')" @click="run(deleteTable)">{{ tl('刪除表格') }}</button>
             </div>
-            <div class="dx-rlabel" aria-hidden="true">刪除</div>
+            <div class="dx-rlabel" aria-hidden="true">{{ tl('刪除') }}</div>
           </div>
-          <div v-if="s?.inTable" class="dx-rgroup" role="group" aria-label="列與欄">
+          <div v-if="s?.inTable" class="dx-rgroup" role="group" :aria-label="tl('列與欄')">
             <div class="dx-rbody">
-              <button type="button" class="dx-big" title="在上方插入列" @click="run(addRowBefore)"><span class="dx-glyph">⬆</span><span>上方插入</span></button>
-              <button type="button" class="dx-big" title="在下方插入列" @click="run(addRowAfter)"><span class="dx-glyph">⬇</span><span>下方插入</span></button>
-              <button type="button" class="dx-big" title="在左側插入欄" @click="run(addColumnBefore)"><span class="dx-glyph">⬅</span><span>左方插入</span></button>
-              <button type="button" class="dx-big" title="在右側插入欄" @click="run(addColumnAfter)"><span class="dx-glyph">➡</span><span>右方插入</span></button>
+              <button type="button" class="dx-big" :title="tl('在上方插入列')" @click="run(addRowBefore)"><span class="dx-glyph">⬆</span><span>{{ tl('上方插入') }}</span></button>
+              <button type="button" class="dx-big" :title="tl('在下方插入列')" @click="run(addRowAfter)"><span class="dx-glyph">⬇</span><span>{{ tl('下方插入') }}</span></button>
+              <button type="button" class="dx-big" :title="tl('在左側插入欄')" @click="run(addColumnBefore)"><span class="dx-glyph">⬅</span><span>{{ tl('左方插入') }}</span></button>
+              <button type="button" class="dx-big" :title="tl('在右側插入欄')" @click="run(addColumnAfter)"><span class="dx-glyph">➡</span><span>{{ tl('右方插入') }}</span></button>
             </div>
-            <div class="dx-rlabel" aria-hidden="true">列與欄</div>
+            <div class="dx-rlabel" aria-hidden="true">{{ tl('列與欄') }}</div>
           </div>
-          <div v-if="s?.inTable" class="dx-rgroup" role="group" aria-label="合併">
+          <div v-if="s?.inTable" class="dx-rgroup" role="group" :aria-label="tl('合併')">
             <div class="dx-rbody dx-stack">
               <button
                 type="button"
@@ -1443,54 +1444,54 @@ onBeforeUnmount(() => {
                 :aria-description="canMerge ? undefined : '請先選取兩個以上的儲存格'"
                 :disabled="!canMerge"
                 @click="run(mergeCells)"
-              >合併儲存格</button>
-              <button type="button" class="dx-sm" title="分割儲存格" @click="run(splitCell)">分割儲存格</button>
-              <button type="button" class="dx-sm" title="分割表格：從游標所在的列起分成兩個表格 (Ctrl+Shift+Enter)" @click="editor?.splitTable()">分割表格</button>
+              >{{ tl('合併儲存格') }}</button>
+              <button type="button" class="dx-sm" :title="tl('分割儲存格')" @click="run(splitCell)">{{ tl('分割儲存格') }}</button>
+              <button type="button" class="dx-sm" :title="tl('分割表格：從游標所在的列起分成兩個表格 (Ctrl+Shift+Enter)')" @click="editor?.splitTable()">{{ tl('分割表格') }}</button>
             </div>
-            <div class="dx-rlabel" aria-hidden="true">合併</div>
+            <div class="dx-rlabel" aria-hidden="true">{{ tl('合併') }}</div>
           </div>
-          <div v-if="s?.inTable" class="dx-rgroup" role="group" aria-label="儲存格大小">
+          <div v-if="s?.inTable" class="dx-rgroup" role="group" :aria-label="tl('儲存格大小')">
             <div class="dx-rbody dx-stack">
               <div class="dx-pop">
                 <button
                   type="button"
                   class="dx-sm"
-                  title="自動調整：依內容或視窗寬度調整欄寬，或固定欄寬"
+                  :title="tl('自動調整：依內容或視窗寬度調整欄寬，或固定欄寬')"
                   aria-haspopup="menu"
                   :aria-expanded="menu === 'autoFit'"
                   @click="toggleMenu('autoFit', $event)"
                 >
-                  <svg class="dx-ico" viewBox="0 0 24 24" v-html="ICONS.autoFit" /><span>自動調整 ▾</span>
+                  <svg class="dx-ico" viewBox="0 0 24 24" v-html="ICONS.autoFit" /><span>{{ tl('自動調整 ▾') }}</span>
                 </button>
-                <div v-if="menu === 'autoFit'" class="dx-menu dx-popup" role="menu" aria-label="自動調整" @keydown="onMenuKey">
-                  <button type="button" role="menuitem" tabindex="-1" title="依儲存格內容調整欄寬" @click="pick(() => editor?.autoFitTable('contents'))">自動調整成內容大小</button>
-                  <button type="button" role="menuitem" tabindex="-1" title="讓表格和版面同寬" @click="pick(() => editor?.autoFitTable('window'))">自動調整成視窗大小</button>
-                  <button type="button" role="menuitem" tabindex="-1" title="欄寬固定為目前的寬度" @click="pick(() => editor?.autoFitTable('fixed'))">固定欄寬</button>
+                <div v-if="menu === 'autoFit'" class="dx-menu dx-popup" role="menu" :aria-label="tl('自動調整')" @keydown="onMenuKey">
+                  <button type="button" role="menuitem" tabindex="-1" :title="tl('依儲存格內容調整欄寬')" @click="pick(() => editor?.autoFitTable('contents'))">{{ tl('自動調整成內容大小') }}</button>
+                  <button type="button" role="menuitem" tabindex="-1" :title="tl('讓表格和版面同寬')" @click="pick(() => editor?.autoFitTable('window'))">{{ tl('自動調整成視窗大小') }}</button>
+                  <button type="button" role="menuitem" tabindex="-1" :title="tl('欄寬固定為目前的寬度')" @click="pick(() => editor?.autoFitTable('fixed'))">{{ tl('固定欄寬') }}</button>
                 </div>
               </div>
-              <button type="button" class="dx-sm" title="平均分配欄寬（選取多欄時只分配這些欄）" @click="run(distributeColumns)">平均分配欄寬</button>
+              <button type="button" class="dx-sm" :title="tl('平均分配欄寬（選取多欄時只分配這些欄）')" @click="run(distributeColumns)">{{ tl('平均分配欄寬') }}</button>
             </div>
-            <div class="dx-rlabel" aria-hidden="true">儲存格大小</div>
+            <div class="dx-rlabel" aria-hidden="true">{{ tl('儲存格大小') }}</div>
           </div>
         </div>
 
         <!-- ===== 圖形格式 (contextual) ===== -->
         <div v-show="tab === 'shape'" class="dx-panel">
-          <div class="dx-rgroup" role="group" aria-label="圖形">
+          <div class="dx-rgroup" role="group" :aria-label="tl('圖形')">
             <div class="dx-rbody">
               <ShapePanel v-if="shapeSelected" :editor="editor" :snapshot="snapshot" />
             </div>
-            <div class="dx-rlabel" aria-hidden="true">圖形</div>
+            <div class="dx-rlabel" aria-hidden="true">{{ tl('圖形') }}</div>
           </div>
         </div>
 
         <!-- ===== 圖片格式 (contextual) ===== -->
         <div v-show="tab === 'picture'" class="dx-panel">
-          <div class="dx-rgroup" role="group" aria-label="圖片">
+          <div class="dx-rgroup" role="group" :aria-label="tl('圖片')">
             <div class="dx-rbody">
               <ImagePanel v-if="imageSelected" :editor="editor" :snapshot="snapshot" />
             </div>
-            <div class="dx-rlabel" aria-hidden="true">大小與替代文字</div>
+            <div class="dx-rlabel" aria-hidden="true">{{ tl('大小與替代文字') }}</div>
           </div>
         </div>
       </div>

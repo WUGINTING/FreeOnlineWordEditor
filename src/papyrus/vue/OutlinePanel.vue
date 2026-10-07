@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { tl } from './locale';
 import type { Heading } from '../editor/outline';
 
 // Navigation pane (Word's 導覽窗格): the document's headings; a click goes to one. Below them,
@@ -19,22 +20,22 @@ const emit = defineEmits<{
 </script>
 
 <template>
-  <aside class="dx-outline" aria-label="導覽">
+  <aside class="dx-outline" :aria-label="tl('導覽')">
     <header>
-      <span class="dx-outline-title">導覽</span>
-      <button type="button" class="dx-outline-close" title="關閉導覽窗格" aria-label="關閉導覽窗格" @click="emit('close')">×</button>
+      <span class="dx-outline-title">{{ tl('導覽') }}</span>
+      <button type="button" class="dx-outline-close" :title="tl('關閉導覽窗格')" :aria-label="tl('關閉導覽窗格')" @click="emit('close')">×</button>
     </header>
-    <p v-if="!headings.length" class="dx-outline-empty">這份文件沒有標題。套用「標題 1」「標題 2」等樣式的段落會列在這裡。</p>
+    <p v-if="!headings.length" class="dx-outline-empty">{{ tl('這份文件沒有標題。套用「標題 1」「標題 2」等樣式的段落會列在這裡。') }}</p>
     <ol v-else>
       <li v-for="h in headings" :key="h.pos" :style="{ paddingLeft: `${h.level * 14}px` }" :class="{ active: activePos === h.pos }">
         <button type="button" :title="h.text" @click="emit('go', h.pos)">{{ h.text }}</button>
       </li>
     </ol>
     <footer v-if="editable && pageRefs">
-      <button type="button" class="dx-outline-update" title="依網頁上的分頁重算目錄與「見第 N 頁」的頁碼（可復原）" @click="emit('update-pages')">
-        更新目錄頁碼
+      <button type="button" class="dx-outline-update" :title="tl('依網頁上的分頁重算目錄與「見第 N 頁」的頁碼（可復原）')" @click="emit('update-pages')">
+        {{ tl('更新目錄頁碼') }}
       </button>
-      <p>頁碼依網頁上的分頁計算；在 Word 開啟後也可按 F9 更新。</p>
+      <p>{{ tl('頁碼依網頁上的分頁計算；在 Word 開啟後也可按 F9 更新。') }}</p>
     </footer>
   </aside>
 </template>

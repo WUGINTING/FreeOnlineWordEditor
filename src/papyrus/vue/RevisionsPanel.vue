@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { tl } from './locale';
 // 修訂窗格 (persona-300; Word's 審閱窗格): every tracked change of the part being edited (the
 // body, or the header / footer open), in order, with who made it, what it is (插入、刪除、格式變更
 // …), its text and when (民國). Clicking one goes there; 接受 / 拒絕 act on that one only (one
@@ -90,12 +91,12 @@ function resolveOne(row: Row, accept: boolean) {
 </script>
 
 <template>
-  <aside class="dx-revs" aria-label="修訂窗格" @pointerdown.capture="rebuild" @focusin="rebuild">
+  <aside class="dx-revs" :aria-label="tl('修訂窗格')" @pointerdown.capture="rebuild" @focusin="rebuild">
     <header>
-      <span class="dx-revs-title">修訂（{{ where }} {{ rows.length }} 處）</span>
-      <button type="button" class="dx-revs-close" title="關閉修訂窗格" aria-label="關閉修訂窗格" @click="emit('close')">×</button>
+      <span class="dx-revs-title">{{ tl('修訂（') }}{{ where }} {{ rows.length }} {{ tl('處）') }}</span>
+      <button type="button" class="dx-revs-close" :title="tl('關閉修訂窗格')" :aria-label="tl('關閉修訂窗格')" @click="emit('close')">×</button>
     </header>
-    <p v-if="!rows.length" class="dx-revs-note">這部分沒有修訂。</p>
+    <p v-if="!rows.length" class="dx-revs-note">{{ tl('這部分沒有修訂。') }}</p>
     <ol>
       <li v-for="(r, i) in rows" :key="r.key" :class="{ active: current === r.key }">
         <button type="button" class="dx-revs-main" :aria-current="current === r.key ? 'true' : undefined" @click="go(r)">
@@ -105,11 +106,11 @@ function resolveOne(row: Row, accept: boolean) {
             <span class="dx-revs-when">{{ r.when }}</span>
           </span>
           <span v-if="r.excerpt" class="dx-revs-text" :class="{ 'dx-revs-deleted': r.label === '刪除' || r.label === '移出' }">{{ r.excerpt }}</span>
-          <span class="dx-sr">第 {{ i + 1 }} 處，共 {{ rows.length }} 處</span>
+          <span class="dx-sr">{{ tl('第') }} {{ i + 1 }} {{ tl('處，共') }} {{ rows.length }} {{ tl('處') }}</span>
         </button>
         <div v-if="editable" class="dx-revs-actions">
-          <button type="button" :aria-label="`接受：${r.label}，${r.author}`" @click="resolveOne(r, true)">接受</button>
-          <button type="button" :aria-label="`拒絕：${r.label}，${r.author}`" @click="resolveOne(r, false)">拒絕</button>
+          <button type="button" :aria-label="`接受：${r.label}，${r.author}`" @click="resolveOne(r, true)">{{ tl('接受') }}</button>
+          <button type="button" :aria-label="`拒絕：${r.label}，${r.author}`" @click="resolveOne(r, false)">{{ tl('拒絕') }}</button>
         </div>
       </li>
     </ol>
