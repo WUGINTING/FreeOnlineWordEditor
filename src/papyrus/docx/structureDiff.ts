@@ -2,6 +2,7 @@ import type { Node as PMNode } from 'prosemirror-model';
 import { readDocx, type ReadResult } from './reader';
 import { documentSections } from './sections';
 import type { PageSetup } from './model';
+import { tl } from '../i18n';
 
 /**
  * What changed between two versions of a document besides the words: tables, pictures,
@@ -37,31 +38,31 @@ export async function structureChanges(a: ReadResult, b: ReadResult): Promise<St
 // ----- page setup -----
 
 const TWIPS_PER_CM = 1440 / 2.54;
-const cm = (twips: number) => `${(twips / TWIPS_PER_CM).toFixed(2).replace(/\.?0+$/, '')} 公分`;
+const cm = (twips: number) => tl('{0} 公分', (twips / TWIPS_PER_CM).toFixed(2).replace(/\.?0+$/, ''));
 const PAPER: Record<string, string> = { '11906x16838': 'A4', '16838x23811': 'A3', '8391x11906': 'A5', '12240x15840': 'Letter', '12240x20160': 'Legal' };
 function paper(p: PageSetup): string {
   const short = Math.min(p.width, p.height);
   const long = Math.max(p.width, p.height);
   const name = PAPER[`${short}x${long}`] ?? `${cm(short)}×${cm(long)}`;
-  return `${name}${p.width > p.height ? '橫向' : '直向'}`;
+  return p.width > p.height ? tl('{0}橫向', name) : tl('{0}直向', name);
 }
 
 function pageChanges(a: ReadResult, b: ReadResult): StructureChange[] {
   const sa = documentSections(a.doc, a.model);
   const sb = documentSections(b.doc, b.model);
   const out: StructureChange[] = [];
-  if (sa.length !== sb.length) out.push({ area: 'page', text: `分節數 ${sa.length} → ${sb.length}` });
+  if (sa.length !== sb.length) out.push({ area: 'page', text: tl('分節數 {0} → {1}', sa.length, sb.length) });
   for (let i = 0; i < Math.min(sa.length, sb.length); i++) {
     const pa = sa[i].page;
     const pb = sb[i].page;
-    const where = sb.length > 1 ? `第 ${i + 1} 節` : '版面';
-    if (paper(pa) !== paper(pb)) out.push({ area: 'page', text: `${where}紙張：${paper(pa)} → ${paper(pb)}` });
+    const where = sb.length > 1 ? tl('第 {0} 節', i + 1) : tl('版面');
+    if (paper(pa) !== paper(pb)) out.push({ area: 'page', text: tl('{0}紙張：{1} → {2}', where, paper(pa), paper(pb)) });
     const margins = (['marginTop', 'marginBottom', 'marginLeft', 'marginRight'] as const).filter((k) => pa[k] !== pb[k]);
     if (margins.length) {
-      const name = { marginTop: '上', marginBottom: '下', marginLeft: '左', marginRight: '右' };
-      out.push({ area: 'page', text: `${where}邊界：${margins.map((k) => `${name[k]} ${cm(pa[k])} → ${cm(pb[k])}`).join('、')}` });
+      const name = { marginTop: tl('上'), marginBottom: tl('下'), marginLeft: tl('左'), marginRight: tl('右') };
+      out.push({ area: 'page', text: tl('{0}邊界：{1}', where, margins.map((k) => `${name[k]} ${cm(pa[k])} → ${cm(pb[k])}`).join(tl('、'))) });
     }
-    if (sa[i].titlePage !== sb[i].titlePage) out.push({ area: 'page', text: `${where}「首頁不同」${sb[i].titlePage ? '開啟' : '關閉'}` });
+    if (sa[i].titlePage !== sb[i].titlePage) out.push({ area: 'page', text: sb[i].titlePage ? tl('{0}「首頁不同」開啟', where) : tl('{0}「首頁不同」關閉', where) });
   }
   return out;
 }
@@ -77,7 +78,7 @@ function headerFooterChanges(a: ReadResult, b: ReadResult): StructureChange[] {
     for (const hf of r.model.headerFooters) {
       const key = `${hf.kind}|${hf.type}`;
       // Several sections may have their own; list them all under the same kind.
-      m.set(key, [m.get(key), hf.doc.textContent.trim()].filter((t) => t != null).join(' ／ '));
+      m.set(key, [m.get(key), hf.doc.textContent.trim()].filter((t) => t != null).join(tl(' ／ ')));
     }
     return m;
   };
@@ -86,13 +87,13 @@ function headerFooterChanges(a: ReadResult, b: ReadResult): StructureChange[] {
   const out: StructureChange[] = [];
   for (const key of new Set([...ta.keys(), ...tb.keys()])) {
     const [kind, type] = key.split('|') as [keyof typeof KIND, keyof typeof TYPE];
-    const name = `${KIND[kind]}${TYPE[type] ?? ''}`;
+    const name = `${tl(KIND[kind])}${tl(TYPE[type] ?? '')}`;
     const before = ta.get(key);
     const after = tb.get(key);
     if (before === after) continue;
-    if (before == null) out.push({ area: 'headerFooter', text: `新增${name}：「${short(after!)}」` });
-    else if (after == null) out.push({ area: 'headerFooter', text: `移除${name}（原為「${short(before)}」）` });
-    else out.push({ area: 'headerFooter', text: `${name}內容：「${short(before)}」→「${short(after)}」` });
+    if (before == null) out.push({ area: 'headerFooter', text: tl('新增{0}：「{1}」', name, short(after!)) });
+    else if (after == null) out.push({ area: 'headerFooter', text: tl('移除{0}（原為「{1}」）', name, short(before)) });
+    else out.push({ area: 'headerFooter', text: tl('{0}內容：「{1}」→「{2}」', name, short(before), short(after)) });
   }
   return out;
 }
@@ -134,20 +135,20 @@ function tableChanges(a: PMNode, b: PMNode): StructureChange[] {
   const ta = tables(a);
   const tb = tables(b);
   const out: StructureChange[] = [];
-  if (ta.length !== tb.length) out.push({ area: 'table', text: `表格數 ${ta.length} → ${tb.length}` });
+  if (ta.length !== tb.length) out.push({ area: 'table', text: tl('表格數 {0} → {1}', ta.length, tb.length) });
   for (let i = 0; i < Math.min(ta.length, tb.length); i++) {
     const x = ta[i];
     const y = tb[i];
-    const name = `表格 ${i + 1}${y.first ? `（「${short(y.first, 12)}」）` : ''}`;
+    const name = y.first ? tl('表格 {0}（「{1}」）', i + 1, short(y.first, 12)) : tl('表格 {0}', i + 1);
     const parts: string[] = [];
-    if (x.rows !== y.rows) parts.push(`列數 ${x.rows} → ${y.rows}`);
-    if (x.cols !== y.cols) parts.push(`欄數 ${x.cols} → ${y.cols}`);
+    if (x.rows !== y.rows) parts.push(tl('列數 {0} → {1}', x.rows, y.rows));
+    if (x.cols !== y.cols) parts.push(tl('欄數 {0} → {1}', x.cols, y.cols));
     if (x.rows === y.rows && x.cols === y.cols) {
       const changed = x.cells.filter((c, k) => c !== y.cells[k]).length;
-      if (changed) parts.push(`${changed} 格內容改變`);
+      if (changed) parts.push(tl('{0} 格內容改變', changed));
     }
-    if (x.look !== y.look) parts.push('外觀改變（框線、底色、對齊、欄寬或列高）');
-    if (parts.length) out.push({ area: 'table', text: `${name}：${parts.join('；')}` });
+    if (x.look !== y.look) parts.push(tl('外觀改變（框線、底色、對齊、欄寬或列高）'));
+    if (parts.length) out.push({ area: 'table', text: tl('{0}：{1}', name, parts.join(tl('；'))) });
   }
   return out;
 }
@@ -185,18 +186,18 @@ function imageChanges(a: PMNode, b: PMNode): StructureChange[] {
     if (k < 0) added++;
     else matched.push([left.splice(k, 1)[0], y]);
   }
-  if (added) out.push({ area: 'image', text: `新增或替換 ${added} 張圖片` });
-  if (left.length) out.push({ area: 'image', text: `移除或替換 ${left.length} 張圖片` });
+  if (added) out.push({ area: 'image', text: tl('新增或替換 {0} 張圖片', added) });
+  if (left.length) out.push({ area: 'image', text: tl('移除或替換 {0} 張圖片', left.length) });
   const resized = matched.filter(([x, y]) => size(x) !== size(y));
   if (resized.length) {
-    out.push({ area: 'image', text: `${resized.length} 張圖片改變大小`, examples: resized.slice(0, 5).map(([x, y]) => `${size(x)} → ${size(y)}`) });
+    out.push({ area: 'image', text: tl('{0} 張圖片改變大小', resized.length), examples: resized.slice(0, 5).map(([x, y]) => `${size(x)} → ${size(y)}`) });
   }
   const alt = matched.filter(([x, y]) => x.alt !== y.alt).length;
-  if (alt) out.push({ area: 'image', text: `${alt} 張圖片的替代文字改變` });
+  if (alt) out.push({ area: 'image', text: tl('{0} 張圖片的替代文字改變', alt) });
   return out;
 }
 
-const size = (i: ImageInfo) => (i.width && i.height ? `${Math.round(i.width)}×${Math.round(i.height)} 像素` : '原始大小');
+const size = (i: ImageInfo) => (i.width && i.height ? tl('{0}×{1} 像素', Math.round(i.width), Math.round(i.height)) : tl('原始大小'));
 
 // ----- formatting -----
 
@@ -249,13 +250,13 @@ function formatChanges(a: PMNode, b: PMNode): StructureChange[] {
     const i = list.splice(k, 1)[0];
     last = i;
     const q = pa[i];
-    const aspects = PARA_ASPECTS.filter(([, keys]) => keys.some((key) => (q.attrs[key] ?? null) !== (p.attrs[key] ?? null))).map(([name]) => name);
-    if (q.runs !== p.runs) aspects.push('文字格式（粗體、字型、字級、顏色等）');
+    const aspects = PARA_ASPECTS.filter(([, keys]) => keys.some((key) => (q.attrs[key] ?? null) !== (p.attrs[key] ?? null))).map(([name]) => tl(name));
+    if (q.runs !== p.runs) aspects.push(tl('文字格式（粗體、字型、字級、顏色等）'));
     for (const name of aspects) counts.set(name, [...(counts.get(name) ?? []), short(p.text, 20)]);
   }
   return [...counts].map(([name, where]) => ({
     area: 'format' as const,
-    text: `${where.length} 段的${name}改變`,
+    text: tl('{0} 段的{1}改變', where.length, name),
     examples: where.slice(0, 5),
   }));
 }
@@ -267,10 +268,10 @@ function formatChanges(a: PMNode, b: PMNode): StructureChange[] {
 async function styleChanges(a: ReadResult, b: ReadResult): Promise<StructureChange[]> {
   const out: StructureChange[] = [];
   if (a.model.css !== b.model.css) {
-    out.push({ area: 'style', text: '文件的樣式定義改變（套用同一樣式的文字外觀可能不同）' });
+    out.push({ area: 'style', text: tl('文件的樣式定義改變（套用同一樣式的文字外觀可能不同）') });
   }
   if (JSON.stringify(a.model.numbering) !== JSON.stringify(b.model.numbering)) {
-    out.push({ area: 'style', text: '清單編號的定義改變' });
+    out.push({ area: 'style', text: tl('清單編號的定義改變') });
   }
   return out;
 }

@@ -93,8 +93,8 @@ const countLabel = computed(() => {
   const r = results.value;
   if (!query.value) return '';
   // Still waiting for the typing to pause: not 「找不到」 yet (run-188).
-  if (searching.value) return '搜尋中…';
-  if (!r.total) return '找不到';
+  if (searching.value) return tl('搜尋中…');
+  if (!r.total) return tl('找不到');
   return `${r.current >= 0 ? r.current + 1 : '–'} / ${r.total}`;
 });
 
@@ -102,8 +102,8 @@ const countLabel = computed(() => {
 function byArea(counts: Record<SearchArea, number>): string {
   return (['body', 'header', 'footer', 'textbox'] as SearchArea[])
     .filter((a) => counts[a])
-    .map((a) => `${AREA_LABEL[a]} ${counts[a]}`)
-    .join('、');
+    .map((a) => `${tl(AREA_LABEL[a])} ${counts[a]}`)
+    .join(tl('、'));
 }
 function areaCounts(parts: { area: SearchArea; n: number }[]): Record<SearchArea, number> {
   const counts: Record<SearchArea, number> = { body: 0, header: 0, footer: 0, textbox: 0 };
@@ -120,8 +120,8 @@ const breakdown = computed(() => {
 /** What is searched: said in the panel so a 「找不到」 is not taken for the whole file. */
 const scope = computed(() =>
   props.editor && !props.editor.editable
-    ? '搜尋範圍：正文（含表格）。唯讀時不含頁首頁尾、文字方塊、註腳及註解。'
-    : '搜尋範圍：正文（含表格）、頁首、頁尾、文字方塊。不含註腳及註解。',
+    ? tl('搜尋範圍：正文（含表格）。唯讀時不含頁首頁尾、文字方塊、註腳及註解。')
+    : tl('搜尋範圍：正文（含表格）、頁首、頁尾、文字方塊。不含註腳及註解。'),
 );
 
 function scrollToCurrent() {
@@ -187,7 +187,7 @@ function moveTo(part: SearchPart, index: number) {
   const focused = root.value?.contains(document.activeElement) ? (document.activeElement as HTMLElement) : null;
   const next = ed.openSearchPart(part.id);
   if (!next) {
-    message.value = `無法開啟${part.label}`;
+    message.value = tl('無法開啟{0}', part.label);
     return;
   }
   if (next !== before) {
@@ -227,7 +227,7 @@ function replaceOne() {
   flush();
   closeReview(false);
   if (!exec(replaceCurrent(replacement.value, false))) {
-    message.value = '沒有可取代的項目';
+    message.value = tl('沒有可取代的項目');
     return;
   }
   go(1);
@@ -291,7 +291,7 @@ function confirmReview() {
   const stale = [...reviewDocs].some(([id, doc]) => parts.find((p) => p.id === id)?.doc !== doc);
   if (stale) {
     openReview();
-    message.value = '文件已變更，已重新列出相符項目，請再確認。';
+    message.value = tl('文件已變更，已重新列出相符項目，請再確認。');
     return;
   }
   const groups = new Map<string, SearchMatch[]>();
@@ -306,8 +306,8 @@ function confirmReview() {
   const done = changed.map((id) => ({ area: parts.find((p) => p.id === id)!.area, n: groups.get(id)!.length }));
   closeReview();
   const total = done.reduce((n, d) => n + d.n, 0);
-  const rest = skipped ? `，略過 ${skipped} 處` : '';
-  message.value = total ? `已取代 ${total} 處（${byArea(areaCounts(done))}）${rest}` : `沒有取代任何項目${rest}`;
+  const rest = skipped ? tl('，略過 {0} 處', skipped) : '';
+  message.value = total ? tl('已取代 {0} 處（{1}）{2}', total, byArea(areaCounts(done)), rest) : tl('沒有取代任何項目{0}', rest);
 }
 
 // ----- keys, closing, focus -----
@@ -380,8 +380,8 @@ defineExpose({ focus });
         v-else
         type="button"
         class="dx-toggle"
-        :title="replace ? '隱藏取代' : '顯示取代 (Ctrl+H)'"
-        :aria-label="replace ? '隱藏取代' : '顯示取代'"
+        :title="replace ? tl('隱藏取代') : tl('顯示取代 (Ctrl+H)')"
+        :aria-label="replace ? tl('隱藏取代') : tl('顯示取代')"
         :aria-expanded="replace"
         @click="emit('update:replace', !replace)"
       >{{ replace ? '▾' : '▸' }}</button>
@@ -434,9 +434,9 @@ defineExpose({ focus });
       :aria-labelledby="`${uid}-review`"
       @keydown.esc="onEscape($event, () => closeReview(), true)"
     >
-      <div :id="`${uid}-review`" class="dx-review-title">{{ tl('將「') }}{{ query }}{{ tl('」取代為「') }}{{ replacement }}{{ tl('」：共') }} {{ reviewItems.length }} {{ tl('處，請確認要取代的項目') }}</div>
+      <div :id="`${uid}-review`" class="dx-review-title">{{ tl('將「{0}」取代為「{1}」：共 {2} 處，請確認要取代的項目', query, replacement, reviewItems.length) }}</div>
       <p v-if="flaggedCount" class="dx-review-note">
-        {{ tl('標示「後面還有文字」的') }} {{ flaggedCount }} {{ tl('處可能是較長的詞（如「第十二條之一」），預設不取代；確認要取代再勾選。') }}
+        {{ tl('標示「後面還有文字」的 {0} 處可能是較長的詞（如「第十二條之一」），預設不取代；確認要取代再勾選。', flaggedCount) }}
       </p>
       <div class="dx-review-bulk">
         <button type="button" @click="checkAll(true)">{{ tl('全選') }}</button>
@@ -453,7 +453,7 @@ defineExpose({ focus });
         </li>
       </ul>
       <div class="dx-review-actions">
-        <button type="button" class="dx-primary" :disabled="!checkedCount" @click="confirmReview">{{ tl('全部取代（') }}{{ checkedCount }} {{ tl('處）') }}</button>
+        <button type="button" class="dx-primary" :disabled="!checkedCount" @click="confirmReview">{{ tl('全部取代（{0} 處）', checkedCount) }}</button>
         <button type="button" @click="closeReview()">{{ tl('取消') }}</button>
       </div>
     </div>

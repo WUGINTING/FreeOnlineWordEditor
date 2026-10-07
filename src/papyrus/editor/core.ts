@@ -81,6 +81,7 @@ import {
   WATERMARK_Z_INDEX, watermarkRunXml, watermarkSettings, watermarkShapetype, type Watermark, type WatermarkArea,
 } from '../docx/watermark';
 import { twipsToPx } from '../units';
+import { tl } from '../i18n';
 import './editor.css';
 
 export const PAGE_GAP = 24;
@@ -707,7 +708,7 @@ export class DocxEditor {
   /** Section and page setup changes can't be recorded as tracked changes: refused while tracking. */
   private refusedWhileTracking(): boolean {
     if (!this.trackOn) return false;
-    this.options.onNotice?.('追蹤修訂開啟時，無法變更分節符號或版面設定，請先關閉「追蹤修訂」。');
+    this.options.onNotice?.(tl('追蹤修訂開啟時，無法變更分節符號或版面設定，請先關閉「追蹤修訂」。'));
     return true;
   }
 
@@ -880,13 +881,13 @@ export class DocxEditor {
   /** A picture file read for the document (see readImageFile); null, with a notice, when it can't be used. */
   private async readPicture(file: File): Promise<{ src: string; width: number; height: number } | null> {
     if (!(await isImageFile(file))) {
-      this.options.onNotice?.(NOT_AN_IMAGE);
+      this.options.onNotice?.(tl(NOT_AN_IMAGE));
       return null;
     }
     try {
       return await readImageFile(file);
     } catch {
-      this.options.onNotice?.(UNSUPPORTED_IMAGE);
+      this.options.onNotice?.(tl(UNSUPPORTED_IMAGE));
       return null;
     }
   }
@@ -1123,7 +1124,7 @@ export class DocxEditor {
   /** A table of contents can't be made or rebuilt as tracked changes: refused while tracking. */
   private tocRefusedWhileTracking(): boolean {
     if (!this.trackOn) return false;
-    this.options.onNotice?.('追蹤修訂開啟時，無法插入或重建目錄，請先關閉「追蹤修訂」。');
+    this.options.onNotice?.(tl('追蹤修訂開啟時，無法插入或重建目錄，請先關閉「追蹤修訂」。'));
     return true;
   }
 
@@ -1138,14 +1139,14 @@ export class DocxEditor {
     if (this.tocRefusedWhileTracking()) return false;
     if (tocFields(view.state.doc).length) {
       this.updateTableOfContents();
-      this.options.onNotice?.('這份文件已有目錄，已依目前的標題更新目錄。');
+      this.options.onNotice?.(tl('這份文件已有目錄，已依目前的標題更新目錄。'));
       return true;
     }
     const { state } = view;
     const $from = state.selection.$from;
     const block = $from.depth >= 1 ? state.doc.child($from.index(0)) : null;
     if (!block || block.type !== schema.nodes.paragraph) {
-      this.options.onNotice?.('目錄只能插入在正文的段落中（不能在表格內）。');
+      this.options.onNotice?.(tl('目錄只能插入在正文的段落中（不能在表格內）。'));
       return false;
     }
     const ctx = this.tocContext();
@@ -1654,7 +1655,7 @@ export class DocxEditor {
       const kept = this.hfStates.get(hf);
       view = new EditorView(area, {
         state: kept && kept.doc === hf.doc ? kept : EditorState.create({ schema, doc: hf.doc, plugins: this.plugins(false) }),
-        attributes: () => ({ class: 'dx-doc dx-hf-doc', spellcheck: String(this.spellcheck), translate: 'no', 'aria-label': kind === 'header' ? '頁首' : '頁尾', lang: 'zh-TW' }),
+        attributes: () => ({ class: 'dx-doc dx-hf-doc', spellcheck: String(this.spellcheck), translate: 'no', 'aria-label': kind === 'header' ? tl('頁首') : tl('頁尾'), lang: 'zh-TW' }),
         nodeViews: {
           field: (node) => new FieldView(node, (k, f) => this.fieldValue(k, this.hfSession?.pageIndex ?? 0, f), this.fieldViews),
           image: imageNodeView,
@@ -1735,7 +1736,7 @@ export class DocxEditor {
         const type = variantFor(section, page.inSection, page.number, this.model.evenAndOdd);
         const hf = sectionHeaderFooter(this.model, sections, section.index, kind, type);
         if (!hf || hf.pending || out.has(this.hfKey(hf))) return;
-        const label = AREA_LABEL[kind] + VARIANT_LABEL[type] + (sections.length > 1 ? `－第 ${section.index + 1} 節` : '');
+        const label = tl(AREA_LABEL[kind]) + tl(VARIANT_LABEL[type]) + (sections.length > 1 ? tl('－第 {0} 節', section.index + 1) : '');
         out.set(this.hfKey(hf), { hf, pageIndex, label });
       });
     }
@@ -1750,7 +1751,7 @@ export class DocxEditor {
    */
   searchParts(): SearchPart[] {
     if (!this.view) return [];
-    const parts: SearchPart[] = [{ id: 'body', area: 'body', label: AREA_LABEL.body, doc: this.view.state.doc }];
+    const parts: SearchPart[] = [{ id: 'body', area: 'body', label: tl(AREA_LABEL.body), doc: this.view.state.doc }];
     if (this.options.editable === false) return parts;
     const hfParts: SearchPart[] = [];
     for (const { hf, label } of this.shownHeaderFooters()) {
@@ -1762,7 +1763,7 @@ export class DocxEditor {
       editableTextBoxes(host.doc).map(({ key, frame }) => {
         const id = textBoxPartId(host.id, key, frame.i);
         const live = this.shapeSession && this.activeSearchPart() === id ? this.shapeSession.view.state.doc : frameDoc(frame);
-        return { id, area: 'textbox' as const, label: host.id === 'body' ? AREA_LABEL.textbox : `${AREA_LABEL.textbox}（${host.label}）`, doc: live };
+        return { id, area: 'textbox' as const, label: host.id === 'body' ? tl(AREA_LABEL.textbox) : tl('{0}（{1}）', tl(AREA_LABEL.textbox), host.label), doc: live };
       });
     parts.push(...boxes(parts[0]));
     for (const p of hfParts) parts.push(p, ...boxes(p));
@@ -1834,7 +1835,7 @@ export class DocxEditor {
       next = state.apply(tr);
     } catch (err) {
       console.error('papyrus: edit failed', err);
-      this.options.onNotice?.('這項編輯無法完成，文件保持在上一個狀態。');
+      this.options.onNotice?.(tl('這項編輯無法完成，文件保持在上一個狀態。'));
       return false;
     }
     this.setKeptPart(hf, next);
@@ -1971,7 +1972,7 @@ export class DocxEditor {
     const found = findShape(view.state.doc, key);
     if (!found || !textFrames(found.shape).some((f) => f.i === index)) return false;
     if (!found.shape.drawable) {
-      this.options.onNotice?.(`${WORD_ONLY}。`);
+      this.options.onNotice?.(tl('{0}。', tl(WORD_ONLY)));
       return false;
     }
     const session = new ShapeTextSession(
@@ -2174,9 +2175,9 @@ export class DocxEditor {
     const current = section.pos == null ? this.lastSectPr() : (view.state.doc.nodeAt(section.pos)!.attrs.sectPr as string);
     if (link) {
       const own = this.ownHeaderFooter(section, kind, type, at.last)!;
-      const name = kind === 'header' ? '頁首' : '頁尾';
+      const name = kind === 'header' ? tl('頁首') : tl('頁尾');
       const ask = this.options.confirm ?? ((m: string) => window.confirm(m));
-      if (hasContent(own.doc) && !ask(`要刪除這一節自己的${name}，改為和前一節相同嗎？`)) {
+      if (hasContent(own.doc) && !ask(tl('要刪除這一節自己的{0}，改為和前一節相同嗎？', name))) {
         return this.editHeaderFooter(kind, s.pageIndex); // the check box shows the state again
       }
       sectPr(withoutReference(current, kind, type));
@@ -2260,7 +2261,7 @@ export class DocxEditor {
     const view = this.view;
     if (!view || this.options.editable === false) return false;
     if (this.trackOn) {
-      this.options.onNotice?.('追蹤修訂開啟時無法設定或移除浮水印（這項變更無法記錄為修訂），請先關閉「追蹤修訂」。');
+      this.options.onNotice?.(tl('追蹤修訂開啟時無法設定或移除浮水印（這項變更無法記錄為修訂），請先關閉「追蹤修訂」。'));
       return false;
     }
     // The header being edited is closed while its parts change and opened again afterwards.
@@ -2284,7 +2285,7 @@ export class DocxEditor {
         newRefs.set(section, [...(newRefs.get(section) ?? []), { type, relId: hf.relId! }]);
       }
       if (!targets.size) {
-        this.options.onNotice?.('找不到可以放浮水印的頁首（這份文件的頁首無法讀取），浮水印沒有設定。');
+        this.options.onNotice?.(tl('找不到可以放浮水印的頁首（這份文件的頁首無法讀取），浮水印沒有設定。'));
         if (session) this.editHeaderFooter(session.kind, session.pageIndex);
         return false;
       }
@@ -2403,7 +2404,7 @@ export class DocxEditor {
     bar.style.cssText = kind === 'header' ? `top:${edge}px` : `top:${edge}px;transform:translateY(-100%)`;
     const label = el('span', 'dx-hf-label');
     label.textContent =
-      (kind === 'header' ? '頁首' : '頁尾') + VARIANT_LABEL[type] + (sectionCount > 1 ? `－第 ${section.index + 1} 節` : '');
+      (kind === 'header' ? tl('頁首') : tl('頁尾')) + tl(VARIANT_LABEL[type]) + (sectionCount > 1 ? tl('－第 {0} 節', section.index + 1) : '');
 
     const first = document.createElement('label');
     first.className = 'dx-hf-check';
@@ -2411,7 +2412,7 @@ export class DocxEditor {
     box.type = 'checkbox';
     box.checked = section.titlePage;
     box.addEventListener('change', () => this.setTitlePage(box.checked));
-    first.append(box, document.createTextNode('首頁不同'));
+    first.append(box, document.createTextNode(tl('首頁不同')));
 
     // 連結到前一節 (not for the first section, which has none before it). The bar is made before the
     // session starts: worked out from the section itself.
@@ -2422,8 +2423,8 @@ export class DocxEditor {
     linkBox.type = 'checkbox';
     linkBox.checked = !!linked;
     linkBox.addEventListener('change', () => this.setHeaderFooterLinked(linkBox.checked));
-    link.title = '勾選：和前一節用同一個' + (kind === 'header' ? '頁首' : '頁尾') + '；取消勾選：這一節用自己的';
-    link.append(linkBox, document.createTextNode('連結到前一節'));
+    link.title = tl('勾選：和前一節用同一個{0}；取消勾選：這一節用自己的', kind === 'header' ? tl('頁首') : tl('頁尾'));
+    link.append(linkBox, document.createTextNode(tl('連結到前一節')));
 
     const button = (text: string, title: string, fn: () => void) => {
       const b = document.createElement('button');
@@ -2438,9 +2439,9 @@ export class DocxEditor {
       label,
       first,
       ...(linked == null ? [] : [link]),
-      button('插入頁碼', '在游標處插入目前頁碼', () => this.insertField('PAGE')),
-      button('插入總頁數', '在游標處插入總頁數', () => this.insertField('NUMPAGES')),
-      button('關閉頁首及頁尾', '回到內文 (Esc)', () => this.closeHeaderFooter()),
+      button(tl('插入頁碼'), tl('在游標處插入目前頁碼'), () => this.insertField('PAGE')),
+      button(tl('插入總頁數'), tl('在游標處插入總頁數'), () => this.insertField('NUMPAGES')),
+      button(tl('關閉頁首及頁尾'), tl('回到內文 (Esc)'), () => this.closeHeaderFooter()),
     );
     return bar;
   }
@@ -2452,7 +2453,7 @@ export class DocxEditor {
     // A text box or a shape with text: edit its text (in the body, or in the header being edited).
     const box = (e.target as Element).closest?.('.dx-pages') ? null : textBoxAt(e.target as Element);
     if (box) {
-      if ('wordOnly' in box) this.options.onNotice?.(`${WORD_ONLY}。`);
+      if ('wordOnly' in box) this.options.onNotice?.(tl('{0}。', tl(WORD_ONLY)));
       else this.editShapeText(box.key, box.index, { x: e.clientX, y: e.clientY });
       return;
     }
@@ -2560,7 +2561,7 @@ export class DocxEditor {
         // translate="no" (here and in the header/footer editor): a browser's page translation rewrites
         // the text in place, and the editor would take that for typing and save the translation.
         // An accessible name and the page's language for screen readers (persona-300).
-        attributes: () => ({ class: 'dx-doc', spellcheck: String(this.spellcheck), translate: 'no', style: this.bodyStyle, 'aria-label': '文件內容', lang: 'zh-TW' }),
+        attributes: () => ({ class: 'dx-doc', spellcheck: String(this.spellcheck), translate: 'no', style: this.bodyStyle, 'aria-label': tl('文件內容'), lang: 'zh-TW' }),
         nodeViews: { image: imageNodeView },
         dispatchTransaction: (sent) =>
           this.safeDispatch(view, sent, (tr) => {
@@ -2635,7 +2636,7 @@ export class DocxEditor {
       } catch {
         // the view can't even be redrawn: leave it
       }
-      this.options.onNotice?.('這項編輯無法完成，文件保持在上一個狀態。');
+      this.options.onNotice?.(tl('這項編輯無法完成，文件保持在上一個狀態。'));
     }
   }
 
@@ -2727,7 +2728,7 @@ export class DocxEditor {
     const pictures = await Promise.all(slots.files.map((f) => this.readPicture(f).catch(() => null)));
     if (!this.view) return; // the editor is gone
     if (view.isDestroyed) {
-      this.options.onNotice?.(PASTE_PART_CLOSED);
+      this.options.onNotice?.(tl(PASTE_PART_CLOSED));
       return;
     }
     let missing = 0;
@@ -2822,7 +2823,7 @@ export class DocxEditor {
     if (!images.length) {
       const types = Array.from(data?.types ?? []);
       if (!files.length || types.includes('text/plain') || types.includes('text/html')) return false;
-      this.options.onNotice?.(NOT_AN_IMAGE);
+      this.options.onNotice?.(tl(NOT_AN_IMAGE));
       return true;
     }
     (async () => {
@@ -2885,7 +2886,7 @@ export class DocxEditor {
       keys['Mod-Shift-Enter'] = chainCommands(splitTable, insertColumnBreak);
       keys.Escape = () => {
         this.escapePressed = true;
-        this.options.onNotice?.('已離開文字輸入：按 Tab 移到下一個控制項，按其他鍵繼續編輯。');
+        this.options.onNotice?.(tl('已離開文字輸入：按 Tab 移到下一個控制項，按其他鍵繼續編輯。'));
         return true;
       };
     } else {
@@ -2945,7 +2946,7 @@ export class DocxEditor {
       listMarkers(() => this.model.numbering),
       tableStyleClasses(),
       fieldPlaceholders(),
-      lockedFields((f) => this.options.onNotice?.(`「${f.title}」已鎖定${f.locked ? '，內容不能修改' : '，欄位不能刪除'}。`)),
+      lockedFields((f) => this.options.onNotice?.(f.locked ? tl('「{0}」已鎖定，內容不能修改。', f.title) : tl('「{0}」已鎖定，欄位不能刪除。', f.title))),
       searchPlugin(),
       review(),
       runLanguages(),
@@ -3070,8 +3071,8 @@ export class DocxEditor {
     const parts = this.shownHeaderFooters()
       .map(({ hf, label }) => ({ label, text: hf.doc.textBetween(0, hf.doc.content.size, ' ', ' ').replace(/\s+/g, ' ').trim() }))
       .filter((p) => p.text)
-      .map((p) => `${p.label}：${p.text}`);
-    const text = parts.length ? parts.join('。') + '。' : '';
+      .map((p) => tl('{0}：{1}', p.label, p.text));
+    const text = parts.length ? parts.join(tl('。')) + tl('。') : '';
     if (this.hfSummary.textContent !== text) this.hfSummary.textContent = text;
   }
 
@@ -3296,12 +3297,12 @@ export class DocxEditor {
 /** Friendly names of package parts, for notices. */
 function partName(part: string): string {
   const file = part.split('/').pop() ?? part;
-  if (/^header\d*\.xml$/.test(file)) return '頁首';
-  if (/^footer\d*\.xml$/.test(file)) return '頁尾';
-  if (file === 'styles.xml') return '樣式';
-  if (file === 'numbering.xml') return '編號';
-  if (file === 'settings.xml') return '文件設定';
-  if (file.endsWith('.rels')) return '關聯';
+  if (/^header\d*\.xml$/.test(file)) return tl('頁首');
+  if (/^footer\d*\.xml$/.test(file)) return tl('頁尾');
+  if (file === 'styles.xml') return tl('樣式');
+  if (file === 'numbering.xml') return tl('編號');
+  if (file === 'settings.xml') return tl('文件設定');
+  if (file.endsWith('.rels')) return tl('關聯');
   return file;
 }
 
@@ -3318,11 +3319,11 @@ function imageFiles(data: DataTransfer | null | undefined): File[] {
 export function promptLink(editor: DocxEditor | null | undefined): boolean {
   if (!editor?.activeView) return false;
   const current = editor.snapshot()?.link ?? '';
-  const href = window.prompt('連結網址（留空 = 移除連結）', current || 'https://');
+  const href = window.prompt(tl('連結網址（留空 = 移除連結）'), current || 'https://');
   if (href === null) return false;
   const clean = href.trim();
   if (clean && !hasExplicitSafeScheme(clean)) {
-    window.alert('只支援 http://、https://、mailto: 或 # 開頭的連結');
+    window.alert(tl('只支援 http://、https://、mailto: 或 # 開頭的連結'));
     return false;
   }
   return editor.run(setLink(clean || null));
@@ -3342,21 +3343,21 @@ export function sameProportions(width: number | null | undefined, height: number
 
 /** Told when pasted pictures could not come along (persona-300 A-9). */
 export function droppedPicturesNotice(n: number): string {
-  return `有 ${n} 張圖片無法一起貼上，請用『插入 › 圖片』加入。`;
+  return tl('有 {0} 張圖片無法一起貼上，請用『插入 › 圖片』加入。', n);
 }
 
 export function brokenPartsNotice(parts: string[]): string {
-  const names = [...new Set(parts.map(partName))].join('、');
-  return `這份文件有部分內容格式錯誤（${names}），已略過顯示，存檔時會原樣保留。`;
+  const names = [...new Set(parts.map(partName))].join(tl('、'));
+  return tl('這份文件有部分內容格式錯誤（{0}），已略過顯示，存檔時會原樣保留。', names);
 }
 
 export function saveWarningsNotice(warnings: WriteWarning[]): string {
   const images = warnings.filter((w) => w.kind === 'image').length;
   const parts = [...new Set(warnings.filter((w) => w.kind === 'part').map((w) => partName(w.part ?? '')))];
   const out: string[] = [];
-  if (images) out.push(`${images} 張圖片無法寫入，已保留原圖或略過`);
-  if (parts.length) out.push(`部分內容（${parts.join('、')}）無法寫入新內容，已原樣保留`);
-  return `已存檔，但${out.join('；')}。`;
+  if (images) out.push(tl('{0} 張圖片無法寫入，已保留原圖或略過', images));
+  if (parts.length) out.push(tl('部分內容（{0}）無法寫入新內容，已原樣保留', parts.join(tl('、'))));
+  return tl('已存檔，但{0}。', out.join(tl('；')));
 }
 
 /** A page's margins for placing shapes: "top,right,bottom,left" px (see editor/shapeView.ts). */

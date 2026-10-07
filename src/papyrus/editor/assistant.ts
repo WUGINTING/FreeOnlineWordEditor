@@ -28,6 +28,7 @@ import { splitParagraphPPr } from '../docx/revisions';
 import { inheritedAlign, inheritedToggle, type StyleInheritance } from '../docx/inheritance';
 import type { ParagraphStyleInfo } from '../docx/model';
 import type { DocxEditor } from './core';
+import { tl } from '../i18n';
 
 const TAB = '\t';
 const BREAK = '↵';
@@ -462,10 +463,10 @@ export function numberRuns(numbers: number[]): string {
   for (let i = 0; i < sorted.length; ) {
     let j = i;
     while (j + 1 < sorted.length && sorted[j + 1] === sorted[j] + 1) j++;
-    runs.push(j > i ? `${sorted[i]}～${sorted[j]}` : String(sorted[i]));
+    runs.push(j > i ? tl('{0}～{1}', sorted[i], sorted[j]) : String(sorted[i]));
     i = j + 1;
   }
-  return runs.join('、');
+  return runs.join(tl('、'));
 }
 
 // ----- changing -----
@@ -669,7 +670,7 @@ export function planAssistantActions(
   editor: DocxEditor, actions: AssistantAction[], shown: AssistantContext,
 ): { tr: Transaction | null; outcomes: ActionOutcome[] } {
   const view = editor.view;
-  if (!view || !editor.editable) return { tr: null, outcomes: actions.map(() => ({ ok: false, message: '文件是唯讀的，無法修改。' })) };
+  if (!view || !editor.editable) return { tr: null, outcomes: actions.map(() => ({ ok: false, message: tl('文件是唯讀的，無法修改。') })) };
   const state = view.state;
   let tr = state.tr;
   const styles: StyleInheritance | undefined = editor.model?.styles;
@@ -685,16 +686,16 @@ export function planAssistantActions(
   /** Paragraph `n` as it is in `tr.doc` now. */
   const locate = (n: number): number => {
     const p = original[n - 1];
-    if (!p || !shownText.has(n)) throw new Refused(`沒有第 ${n} 段。`);
-    if (!partial.has(n) && paragraphLine(p.node) !== shownText.get(n)) throw new Refused(`第 ${n} 段在小助手讀過之後改過了，請再問一次。`);
+    if (!p || !shownText.has(n)) throw new Refused(tl('沒有第 {0} 段。', n));
+    if (!partial.has(n) && paragraphLine(p.node) !== shownText.get(n)) throw new Refused(tl('第 {0} 段在小助手讀過之後改過了，請再問一次。', n));
     // After what was put right before it (a new first paragraph). Not mapResult().deleted: changing a
     // paragraph's attributes replaces its opening token, which counts as deleted there.
     const pos = tr.mapping.map(p.pos, 1);
-    if (gone.has(n) || tr.doc.nodeAt(pos)?.type !== schema.nodes.paragraph) throw new Refused(`第 ${n} 段已經不在了。`);
+    if (gone.has(n) || tr.doc.nodeAt(pos)?.type !== schema.nodes.paragraph) throw new Refused(tl('第 {0} 段已經不在了。', n));
     return pos;
   };
   const range = (from: number, to: number): number[] => {
-    if (!(from >= 1 && to >= from)) throw new Refused('段落範圍不對。');
+    if (!(from >= 1 && to >= from)) throw new Refused(tl('段落範圍不對。'));
     const out: number[] = [];
     for (let n = from; n <= to; n++) out.push(n);
     return out;
@@ -704,7 +705,7 @@ export function planAssistantActions(
     switch (action.type) {
       case 'replace_text': {
         const find = action.find;
-        if (!find || find === action.replace) throw new Refused('沒有要取代的文字。');
+        if (!find || find === action.replace) throw new Refused(tl('沒有要取代的文字。'));
         // Exactly as written: 「台北」 does not find 「臺北」, 114 does not find １１４. Where it is found, only the
         // characters that differ between the two are changed: 「其二為癮蔽的邏輯錯誤」 to 「其二為隱蔽的邏輯錯誤」 is one character.
         const inner = textEdits(find, plain(action.replace));
@@ -722,12 +723,12 @@ export function planAssistantActions(
             if (edits.length) editSegment(tr, paras[k].pos + 1, segments[s], edits);
           }
         }
-        if (!found) throw new Refused(`文件裡找不到「${find}」。`);
-        return `已取代 ${found} 處`;
+        if (!found) throw new Refused(tl('文件裡找不到「{0}」。', find));
+        return tl('已取代 {0} 處', found);
       }
       case 'set_paragraph_text': {
-        if (partial.has(action.paragraph)) throw new Refused(`第 ${action.paragraph} 段太長，小助手只讀了一部分，不能整段改寫。`);
-        return rewriteParagraph(tr, locate(action.paragraph), action.text) ? `已修改第 ${action.paragraph} 段` : `第 ${action.paragraph} 段沒有變化`;
+        if (partial.has(action.paragraph)) throw new Refused(tl('第 {0} 段太長，小助手只讀了一部分，不能整段改寫。', action.paragraph));
+        return rewriteParagraph(tr, locate(action.paragraph), action.text) ? tl('已修改第 {0} 段', action.paragraph) : tl('第 {0} 段沒有變化', action.paragraph);
       }
       case 'insert_paragraph': {
         const lines = action.text.split(/\r\n?|\n/).map(plain).slice(0, 200);
@@ -736,12 +737,12 @@ export function planAssistantActions(
         for (const line of lines) {
           if (at != null) at = paragraphAfter(tr, at, line);
           else if (action.after === 0) {
-            if (!original.length) throw new Refused('文件沒有段落。');
+            if (!original.length) throw new Refused(tl('文件沒有段落。'));
             at = paragraphBefore(tr, tr.mapping.map(original[0].pos, 1), line);
           } else at = paragraphAfter(tr, locate(action.after), line);
         }
         if (at != null) tails.set(action.after, { pos: at, steps: tr.steps.length });
-        return lines.length > 1 ? `已新增 ${lines.length} 段` : '已新增一段';
+        return lines.length > 1 ? tl('已新增 {0} 段', lines.length) : tl('已新增一段');
       }
       case 'delete_paragraphs': {
         const targets = range(action.from, action.to).map((n) => ({ n, pos: locate(n) }));
@@ -753,14 +754,14 @@ export function planAssistantActions(
             tr.delete(pos, pos + para.nodeSize);
           } else if (para.content.size) tr.delete(pos + 1, pos + 1 + para.content.size);
         }
-        return targets.length > 1 ? `已刪除 ${targets.length} 段` : `已刪除第 ${action.from} 段`;
+        return targets.length > 1 ? tl('已刪除 {0} 段', targets.length) : tl('已刪除第 {0} 段', action.from);
       }
       case 'format_paragraphs': {
         let styleId: string | null | undefined;
         if (action.style) {
           const wanted = action.style.trim().toLowerCase();
           const found = styleList.find((s) => s.name.trim().toLowerCase() === wanted);
-          if (!found) throw new Refused(`這份文件沒有「${action.style}」樣式。`);
+          if (!found) throw new Refused(tl('這份文件沒有「{0}」樣式。', action.style));
           // The default style is a paragraph naming none (as the ribbon's style box does).
           styleId = found.name.toLowerCase() === 'normal' ? null : found.id;
         }
@@ -777,7 +778,7 @@ export function planAssistantActions(
           tr.setNodeMarkup(pos, undefined, attrs, para.marks);
           changed++;
         }
-        return changed ? `已調整 ${changed} 段的格式` : '格式已經是這樣了';
+        return changed ? tl('已調整 {0} 段的格式', changed) : tl('格式已經是這樣了');
       }
       case 'format_text': {
         const part = action.from === action.to ? action.text : '';
@@ -785,7 +786,7 @@ export function planAssistantActions(
         for (const pos of range(action.from, action.to).map(locate)) {
           const para = tr.doc.nodeAt(pos)!;
           const found = textRanges(tr.doc, pos, part);
-          if (part && !found.length) throw new Refused(`第 ${action.from} 段找不到「${part}」。`);
+          if (part && !found.length) throw new Refused(tl('第 {0} 段找不到「{1}」。', action.from, part));
           for (const { from, to } of found) {
             for (const name of ['bold', 'italic'] as const) {
               const want = action[name];
@@ -801,10 +802,10 @@ export function planAssistantActions(
             ranges++;
           }
         }
-        return ranges ? '已調整文字格式' : '沒有文字可以調整';
+        return ranges ? tl('已調整文字格式') : tl('沒有文字可以調整');
       }
       default:
-        throw new Refused('小助手不會這種修改。');
+        throw new Refused(tl('小助手不會這種修改。'));
     }
   };
 
@@ -822,7 +823,7 @@ export function planAssistantActions(
         for (const [n, at] of gone) if (at >= steps) gone.delete(n);
         for (const [n, tail] of tails) if (tail.steps > steps) tails.delete(n);
       }
-      outcomes.push({ ok: false, message: err instanceof Refused ? err.message : '這項修改無法套用。' });
+      outcomes.push({ ok: false, message: err instanceof Refused ? err.message : tl('這項修改無法套用。') });
     }
   }
   return { tr: tr.docChanged ? tr : null, outcomes };
@@ -839,7 +840,7 @@ export function applyAssistantActions(editor: DocxEditor, actions: AssistantActi
   const before = view.state.doc;
   view.dispatch(closeHistory(tr));
   // Refused as a whole (a locked field, or something 追蹤修訂 cannot record): the editor said why.
-  if (view.state.doc === before) return outcomes.map((o) => (o.ok ? { ok: false, message: '文件沒有接受這項修改（例如鎖定的欄位，或追蹤修訂無法記錄的變更）。' } : o));
+  if (view.state.doc === before) return outcomes.map((o) => (o.ok ? { ok: false, message: tl('文件沒有接受這項修改（例如鎖定的欄位，或追蹤修訂無法記錄的變更）。') } : o));
   return outcomes;
 }
 
@@ -848,49 +849,49 @@ export function applyAssistantActions(editor: DocxEditor, actions: AssistantActi
  * was shown, so a rewritten paragraph can be said as what changes in it.
  */
 export function describeAction(action: AssistantAction, shown?: AssistantContext): string {
-  const span = (from: number, to: number) => (from === to ? `第 ${from} 段` : `第 ${from}～${to} 段`);
-  const quote = (text: string, max = 60) => `「${text.length > max ? text.slice(0, max) + '…' : text}」`;
+  const span = (from: number, to: number) => (from === to ? tl('第 {0} 段', from) : tl('第 {0}～{1} 段', from, to));
+  const quote = (text: string, max = 60) => tl('「{0}」', text.length > max ? text.slice(0, max) + '…' : text);
   switch (action.type) {
     case 'replace_text': {
       // A long phrase replaced by a corrected one: the characters that change, with a little of what is around each.
       const edits = action.find.length > 6 ? textEdits(action.find, action.replace) : [];
       if (edits.length && edits.length <= 4 && edits.every((e) => e.to - e.from <= 10 && e.text.length <= 10)) {
-        const around = (e: TextEdit, middle: string) => `「${action.find.slice(Math.max(0, e.from - 1), e.from)}${middle}${action.find.slice(e.to, e.to + 1)}」`;
-        return `${quote(action.find, 30)}裡的${edits.map((e) => `${around(e, action.find.slice(e.from, e.to))}改成${around(e, e.text)}`).join('、')}`;
+        const around = (e: TextEdit, middle: string) => tl('「{0}」', `${action.find.slice(Math.max(0, e.from - 1), e.from)}${middle}${action.find.slice(e.to, e.to + 1)}`);
+        return tl('{0}裡的{1}', quote(action.find, 30), edits.map((e) => tl('{0}改成{1}', around(e, action.find.slice(e.from, e.to)), around(e, e.text))).join(tl('、')));
       }
-      return `把所有的${quote(action.find, 30)}改成${quote(action.replace, 30)}`;
+      return tl('把所有的{0}改成{1}', quote(action.find, 30), quote(action.replace, 30));
     }
     case 'set_paragraph_text': {
       // A correction is said as the few places it changes (with a little of what is around each), not as the whole new paragraph.
       const before = shown?.paragraphs.find((p) => p.n === action.paragraph)?.text;
       const edits = before == null ? [] : textEdits(before, action.text.replace(/\r\n?|\n/g, ' '));
       if (before != null && edits.length && edits.length <= 5 && edits.every((e) => e.to - e.from <= 20 && e.text.length <= 20)) {
-        const around = (e: TextEdit, middle: string) => `「${before.slice(Math.max(0, e.from - 2), e.from)}${middle}${before.slice(e.to, e.to + 2)}」`;
-        return `第 ${action.paragraph} 段：${edits.map((e) => `${around(e, before.slice(e.from, e.to))}→${around(e, e.text)}`).join('、')}`;
+        const around = (e: TextEdit, middle: string) => tl('「{0}」', `${before.slice(Math.max(0, e.from - 2), e.from)}${middle}${before.slice(e.to, e.to + 2)}`);
+        return tl('第 {0} 段：{1}', action.paragraph, edits.map((e) => `${around(e, before.slice(e.from, e.to))}→${around(e, e.text)}`).join(tl('、')));
       }
-      return `第 ${action.paragraph} 段改為：${quote(action.text, 120)}`;
+      return tl('第 {0} 段改為：{1}', action.paragraph, quote(action.text, 120));
     }
     case 'insert_paragraph':
-      return `${action.after === 0 ? '在最前面' : `在第 ${action.after} 段後面`}新增：${quote(action.text, 120)}`;
+      return action.after === 0 ? tl('在最前面新增：{0}', quote(action.text, 120)) : tl('在第 {0} 段後面新增：{1}', action.after, quote(action.text, 120));
     case 'delete_paragraphs':
-      return `刪除${span(action.from, action.to)}`;
+      return tl('刪除{0}', span(action.from, action.to));
     case 'format_paragraphs': {
-      const ALIGN = { left: '靠左對齊', center: '置中', right: '靠右對齊', justify: '左右對齊' };
-      const what = [action.style ? `套用「${action.style}」樣式` : '', action.align ? ALIGN[action.align] : ''].filter(Boolean).join('、');
-      return `${span(action.from, action.to)}${what}`;
+      const ALIGN = { left: tl('靠左對齊'), center: tl('置中'), right: tl('靠右對齊'), justify: tl('左右對齊') };
+      const what = [action.style ? tl('套用「{0}」樣式', action.style) : '', action.align ? ALIGN[action.align] : ''].filter(Boolean).join(tl('、'));
+      return tl('{0}{1}', span(action.from, action.to), what);
     }
     case 'format_text': {
       const what = [
-        action.bold == null ? '' : action.bold ? '粗體' : '取消粗體',
-        action.italic == null ? '' : action.italic ? '斜體' : '取消斜體',
-        action.underline == null ? '' : action.underline ? '底線' : '取消底線',
-        action.fontSize ? `${action.fontSize} 點` : '',
-        action.color ? `顏色 #${action.color}` : '',
-      ].filter(Boolean).join('、');
-      const where = action.from === action.to && action.text ? `第 ${action.from} 段的${quote(action.text, 30)}` : span(action.from, action.to);
-      return `${where}設為${what}`;
+        action.bold == null ? '' : action.bold ? tl('粗體') : tl('取消粗體'),
+        action.italic == null ? '' : action.italic ? tl('斜體') : tl('取消斜體'),
+        action.underline == null ? '' : action.underline ? tl('底線') : tl('取消底線'),
+        action.fontSize ? tl('{0} 點', action.fontSize) : '',
+        action.color ? tl('顏色 #{0}', action.color) : '',
+      ].filter(Boolean).join(tl('、'));
+      const where = action.from === action.to && action.text ? tl('第 {0} 段的{1}', action.from, quote(action.text, 30)) : span(action.from, action.to);
+      return tl('{0}設為{1}', where, what);
     }
     default:
-      return '（不支援的修改）';
+      return tl('（不支援的修改）');
   }
 }

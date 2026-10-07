@@ -1,0 +1,270 @@
+[
+  {
+    "text": "　",
+    "why": "U+3000 ideographic space: key of the table of space characters that get a formatting mark (matched against document text)"
+  },
+  {
+    "text": "、。，；：？！「」『』（）〔〕【】《》〈〉…—～．‧",
+    "why": "symbols offered for insertion: document content, rule 1"
+  },
+  {
+    "text": "（%2）",
+    "why": "numbering level text (w:lvlText) written into the document, and compared to recognise the 公文 list"
+  },
+  {
+    "text": "（%4）",
+    "why": "numbering level text (w:lvlText) written into the document, and compared to recognise the 公文 list"
+  },
+  {
+    "text": "（%6）",
+    "why": "numbering level text (w:lvlText) written into the document, and compared to recognise the 公文 list"
+  },
+  {
+    "text": "（%8）",
+    "why": "numbering level text (w:lvlText) written into the document, and compared to recognise the 公文 list"
+  },
+  {
+    "text": "%1、",
+    "why": "numbering level text (w:lvlText) written into the document, and compared to recognise the 公文 list"
+  },
+  {
+    "text": "%5、",
+    "why": "numbering level text (w:lvlText) written into the document, and compared to recognise the 公文 list"
+  },
+  {
+    "text": "%7、",
+    "why": "numbering level text (w:lvlText) written into the document, and compared to recognise the 公文 list"
+  },
+  {
+    "text": "※○●◎☐☑✓①②③、…—℃±×÷≦≧→",
+    "why": "symbols offered for insertion: document content, rule 1"
+  },
+  {
+    "text": "±×÷=≠≒≈≦≧<>∞√∑∫∵∴∠⊥∩∪∈⊂⊃°‰％′″",
+    "why": "symbols offered for insertion: document content, rule 1"
+  },
+  {
+    "text": "○一二三四五六七八九",
+    "why": "page number format: digits / units of a Chinese numbering format (document content)"
+  },
+  {
+    "text": "＄￥€£¢₩",
+    "why": "symbols offered for insertion: document content, rule 1"
+  },
+  {
+    "text": "〇",
+    "why": "page number format: digits / units of a Chinese numbering format (document content)"
+  },
+  {
+    "text": "〇一二三四五六七八九",
+    "why": "CJK_DIGITS: digits for reading a pasted list number (logic)"
+  },
+  {
+    "text": "十",
+    "why": "page number format: digits / units of a Chinese numbering format (document content)"
+  },
+  {
+    "text": "万",
+    "why": "page number format: digits / units of a Chinese numbering format (document content)"
+  },
+  {
+    "text": "亿",
+    "why": "page number format: digits / units of a Chinese numbering format (document content)"
+  },
+  {
+    "text": "千",
+    "why": "page number format: digits / units of a Chinese numbering format (document content)"
+  },
+  {
+    "text": "子丑寅卯辰巳午未申酉戌亥",
+    "why": "list number format: digits / units / stems of a Chinese numbering format (document content)"
+  },
+  {
+    "text": "子丑寅卯辰巳午未申酉戍亥",
+    "why": "page number format: digits / units of a Chinese numbering format (document content)"
+  },
+  {
+    "text": "之",
+    "why": "compared with the document's text after a match (第十二條之一)"
+  },
+  {
+    "text": "內部傳閱",
+    "why": "watermark preset (WATERMARK_PRESETS): document content"
+  },
+  {
+    "text": "仟",
+    "why": "page number format: digits / units of a Chinese numbering format (document content)"
+  },
+  {
+    "text": "甲乙丙丁戊己庚辛壬癸",
+    "why": "STEMS: heavenly stems for reading a pasted list number (logic)"
+  },
+  {
+    "text": "目錄",
+    "why": "TOC_TITLE: the title paragraph put into the document above a new table of contents"
+  },
+  {
+    "text": "百",
+    "why": "page number format: digits / units of a Chinese numbering format (document content)"
+  },
+  {
+    "text": "宋体",
+    "why": "font name (FAMILIES names / label / similar): proper name, rule 3"
+  },
+  {
+    "text": "找不到目錄項目。",
+    "why": "NO_ENTRIES: written into the document as the table of contents' result (what Word writes)"
+  },
+  {
+    "text": "佰",
+    "why": "page number format: digits / units of a Chinese numbering format (document content)"
+  },
+  {
+    "text": "使用者",
+    "why": "DEFAULT_AUTHOR: the author name written into the .docx (comments, tracked changes) when the host page gives none: document content"
+  },
+  {
+    "text": "拾",
+    "why": "page number format: digits / units of a Chinese numbering format (document content)"
+  },
+  {
+    "text": "流程圖",
+    "why": "compared with a shape kind's label (startsWith) to pick the flowchart shapes; the same text as the group label, which is shown through tl(g.label)"
+  },
+  {
+    "text": "限閱",
+    "why": "watermark preset (WATERMARK_PRESETS): document content"
+  },
+  {
+    "text": "浮水印",
+    "why": "label attr of the watermark's raw_inline node, kept in the document model and never shown (the chip on the page is schema.ts's own tl('浮水印'))"
+  },
+  {
+    "text": "草稿",
+    "why": "watermark preset (WATERMARK_PRESETS): document content"
+  },
+  {
+    "text": "密",
+    "why": "watermark preset (WATERMARK_PRESETS): document content"
+  },
+  {
+    "text": "細明體",
+    "why": "font name (FAMILIES names / label / similar): proper name, rule 3"
+  },
+  {
+    "text": "細明體-ExtB",
+    "why": "font name (FONT_NAMES, local() sources of @font-face): proper name, rule 3"
+  },
+  {
+    "text": "註解",
+    "why": "the label attribute of the raw_inline node of a comment reference: a stored value compared in logic (COMMENT_LABELS, the set of marker labels below it, label === …) and given to the nodes made by markerNode; shown through tl(label) in editor/schema.ts"
+  },
+  {
+    "text": "黑体",
+    "why": "font name (FONT_NAMES, local() sources of @font-face): proper name, rule 3"
+  },
+  {
+    "text": "微软雅黑",
+    "why": "font name (FONT_NAMES, local() sources of @font-face): proper name, rule 3"
+  },
+  {
+    "text": "微軟正黑體",
+    "why": "font name (FONTS label): proper name, rule 3"
+  },
+  {
+    "text": "新宋体",
+    "why": "font name (FAMILIES names / label / similar): proper name, rule 3"
+  },
+  {
+    "text": "新宋體",
+    "why": "font name (FAMILIES names / label / similar): proper name, rule 3"
+  },
+  {
+    "text": "新細明體",
+    "why": "font name (FONTS label): proper name, rule 3"
+  },
+  {
+    "text": "新細明體-ExtB",
+    "why": "font name (FONT_NAMES, local() sources of @font-face): proper name, rule 3"
+  },
+  {
+    "text": "楷体",
+    "why": "font name (FAMILIES names / label / similar): proper name, rule 3"
+  },
+  {
+    "text": "楷體",
+    "why": "font name (FAMILIES names / label / similar): proper name, rule 3"
+  },
+  {
+    "text": "萬",
+    "why": "page number format: digits / units of a Chinese numbering format (document content)"
+  },
+  {
+    "text": "群組 {0}",
+    "why": "template `群組 ${docId % 1000}` (line 374): the new group's name written into the .docx (wp:docPr name)"
+  },
+  {
+    "text": "零",
+    "why": "list number format: digits / units / stems of a Chinese numbering format (document content)"
+  },
+  {
+    "text": "零一二三四五六七八九",
+    "why": "list number format: digits / units / stems of a Chinese numbering format (document content)"
+  },
+  {
+    "text": "零壹貳參肆伍陸柒捌玖",
+    "why": "page number format: digits / units of a Chinese numbering format (document content)"
+  },
+  {
+    "text": "圖形",
+    "why": "raw_inline node attribute `label` (3 places): a value stored in the document model, the same one docx/convert.ts gives on import; shown, if at all, by schema.ts toDOM"
+  },
+  {
+    "text": "圖案 {0}",
+    "why": "template `圖案 ${id}` (lines 358, 409): default shape name written into the .docx (wps:cNvPr name)"
+  },
+  {
+    "text": "緊急",
+    "why": "watermark preset (WATERMARK_PRESETS): document content"
+  },
+  {
+    "text": "億",
+    "why": "page number format: digits / units of a Chinese numbering format (document content)"
+  },
+  {
+    "text": "標楷體",
+    "why": "font name (FONTS label): proper name, rule 3"
+  },
+  {
+    "text": "樣本",
+    "why": "watermark preset (WATERMARK_PRESETS): document content"
+  },
+  {
+    "text": "線上文件自動標題",
+    "why": "TITLE_PROPERTY: name of a custom property written into the .docx and looked up in it"
+  },
+  {
+    "text": "請勿複製",
+    "why": "watermark preset (WATERMARK_PRESETS): document content"
+  },
+  {
+    "text": "機密",
+    "why": "watermark preset (WATERMARK_PRESETS): document content"
+  },
+  {
+    "text": "錯誤! 數字無法以指定格式顯示。",
+    "why": "LETTER_OVERFLOW: what Word itself shows in the document for a letter page number past its range (field result)"
+  },
+  {
+    "text": "mmmmmmmmmmlli1WQ@#%&0123456789中文",
+    "why": "sample text measured on a canvas to tell whether a font is installed: never shown"
+  },
+  {
+    "text": "ＭＳ 明朝",
+    "why": "font name (FONT_NAMES, local() sources of @font-face): proper name, rule 3"
+  },
+  {
+    "text": "ＭＳ ゴシック",
+    "why": "font name (FONT_NAMES, local() sources of @font-face): proper name, rule 3"
+  }
+]

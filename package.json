@@ -1,6 +1,6 @@
 {
   "name": "papyrus-docx",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Open, edit and save Word (.docx) files in the browser without losing what the editor does not understand. Vue 3 + ProseMirror.",
   "keywords": [
     "docx",
@@ -47,6 +47,7 @@
     "preview": "vite preview --mode demo",
     "type-check": "vue-tsc --noEmit",
     "test": "vitest run",
+    "i18n": "node tests/papyrus/i18n/scan.mjs",
     "prepare": "npm run build"
   },
   "peerDependencies": {

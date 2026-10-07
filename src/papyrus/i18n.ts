@@ -28,7 +28,7 @@ export function tl(text: string, ...values: unknown[]): string {
   if (typeof text !== 'string') return text;
   const out = messages?.[text] ?? text;
   if (!values.length) return out;
-  return out.replace(/\{(\d+)\}/g, (place, i) => (Number(i) < values.length ? String(values[Number(i)]) : place));
+  return out.replace(/\{(\d+)\}/g, (place, i) => (Number(i) < values.length ? String(values[Number(i)] ?? '') : place));
 }
 
 /** The languages the interface has, the one it is written in first. */

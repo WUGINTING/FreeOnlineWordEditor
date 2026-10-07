@@ -110,7 +110,7 @@ function onDocumentDown(e: MouseEvent) {
 onMounted(() => document.addEventListener('mousedown', onDocumentDown, true));
 onBeforeUnmount(() => document.removeEventListener('mousedown', onDocumentDown, true));
 
-const label = (ch: string) => `${ch}（${symbolCode(ch)}）`;
+const label = (ch: string) => tl('{0}（{1}）', ch, symbolCode(ch));
 </script>
 
 <template>

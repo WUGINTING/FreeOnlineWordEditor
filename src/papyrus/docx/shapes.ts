@@ -21,6 +21,7 @@ import type { Node as PMNode } from 'prosemirror-model';
 import { NS, child, children, parseFragment, serializeXml } from './xml';
 import { colorIn, readColor, vmlColor, type Color, type ThemeColors } from './theme';
 import { isKnownPreset, isLinePreset, type CustomPath } from './shapeGeometry';
+import { tl } from '../i18n';
 
 export const SHAPE_NS = {
   wps: 'http://schemas.microsoft.com/office/word/2010/wordprocessingShape',
@@ -908,9 +909,9 @@ export function hasEditedText(m: ShapeModel | null | undefined): boolean {
 
 /** What a screen reader says for the shape: its title and description, else what it is. */
 export function shapeLabel(m: ShapeModel): string {
-  const what = m.kind === 'textbox' ? '文字方塊' : m.kind === 'canvas' ? '繪圖畫布' : m.kind === 'group' ? '圖案群組' : '圖案';
-  const alt = [m.title, m.descr].filter(Boolean).join('：');
-  return alt ? `${what}：${alt}` : what;
+  const what = m.kind === 'textbox' ? tl('文字方塊') : m.kind === 'canvas' ? tl('繪圖畫布') : m.kind === 'group' ? tl('圖案群組') : tl('圖案');
+  const alt = [m.title, m.descr].filter(Boolean).join(tl('：'));
+  return alt ? tl('{0}：{1}', what, alt) : what;
 }
 
 // ----- writing -----

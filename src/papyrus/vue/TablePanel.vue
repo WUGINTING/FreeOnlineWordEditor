@@ -27,7 +27,7 @@ const keepFirst = ref(true);
 const sortBlocked = computed(() => {
   void props.snapshot;
   const state = props.editor?.activeView?.state;
-  return state ? sortRefusal(state) : '游標不在表格中。';
+  return state ? sortRefusal(state) : tl('游標不在表格中。');
 });
 
 const BORDERS: { value: BorderMode; label: string }[] = [
@@ -111,7 +111,7 @@ function applyWidth() {
 
     <select :title="tl('框線（套用到選取的儲存格）')" value="" @change="onBorders">
       <option value="" disabled>{{ tl('框線') }}</option>
-      <option v-for="b in BORDERS" :key="b.value" :value="b.value">{{ b.label }}</option>
+      <option v-for="b in BORDERS" :key="b.value" :value="b.value">{{ tl(b.label) }}</option>
     </select>
 
     <span class="dx-seg" role="group" :aria-label="tl('垂直對齊')">
@@ -163,7 +163,7 @@ function applyWidth() {
 
     <span class="dx-height" :title="tl('游標所在欄（或選取的欄）的寬度')">
       {{ tl('欄寬') }}
-      <input v-model="widthText" type="text" inputmode="decimal" :placeholder="info?.colWidth ? '' : '不一'" :aria-label="tl('欄寬（公分）')" @change="applyWidth" @keydown="onEnter(applyWidth)($event)" />
+      <input v-model="widthText" type="text" inputmode="decimal" :placeholder="info?.colWidth ? '' : tl('不一')" :aria-label="tl('欄寬（公分）')" @change="applyWidth" @keydown="onEnter(applyWidth)($event)" />
       {{ tl('公分') }}
     </span>
 
@@ -177,8 +177,8 @@ function applyWidth() {
     </label>
 
     <span class="dx-sort" role="group" :aria-label="tl('依游標所在欄排序')">
-      <button type="button" :disabled="!!sortBlocked" :title="sortBlocked ?? '依游標所在欄由小到大排序（數字依大小、日期依先後、文字依筆畫）'" @click="run(sortTable(false, keepFirst))">{{ tl('排序↑') }}</button>
-      <button type="button" :disabled="!!sortBlocked" :title="sortBlocked ?? '依游標所在欄由大到小排序'" @click="run(sortTable(true, keepFirst))">{{ tl('排序↓') }}</button>
+      <button type="button" :disabled="!!sortBlocked" :title="sortBlocked ?? tl('依游標所在欄由小到大排序（數字依大小、日期依先後、文字依筆畫）')" @click="run(sortTable(false, keepFirst))">{{ tl('排序↑') }}</button>
+      <button type="button" :disabled="!!sortBlocked" :title="sortBlocked ?? tl('依游標所在欄由大到小排序')" @click="run(sortTable(true, keepFirst))">{{ tl('排序↓') }}</button>
       <label class="dx-check" :title="tl('第一列是標題時不參與排序（已設為「標題列」的列一律保留在上方）')">
         <input v-model="keepFirst" type="checkbox" />
         {{ tl('保留第一列') }}

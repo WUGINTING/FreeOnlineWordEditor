@@ -51,7 +51,7 @@ function rebuild() {
     const row = {
       key: r.key,
       label: revisionLabel(r),
-      author: r.author || '未知作者',
+      author: r.author || tl('未知作者'),
       when: rocDate(r.date, r.dateUtc),
       excerpt: revisionExcerpt(doc, r),
       color: authorColor(r.author),
@@ -77,7 +77,7 @@ const current = computed(() => {
   void props.snapshot;
   return reviewSummary(view()?.state).current?.key ?? null;
 });
-const where = computed(() => (props.snapshot?.target === 'header' ? '頁首' : props.snapshot?.target === 'footer' ? '頁尾' : '正文'));
+const where = computed(() => (props.snapshot?.target === 'header' ? tl('頁首') : props.snapshot?.target === 'footer' ? tl('頁尾') : tl('正文')));
 
 function go(row: Row) {
   props.editor?.run(goToRevisionKey(row.key));
@@ -85,7 +85,7 @@ function go(row: Row) {
 function resolveOne(row: Row, accept: boolean) {
   if (props.editor?.run(resolveRevisionKey(row.key, accept))) {
     rebuild();
-    emit('announce', `已${accept ? '接受' : '拒絕'}：${row.label}，${row.author}`);
+    emit('announce', accept ? tl('已接受：{0}，{1}', row.label, row.author) : tl('已拒絕：{0}，{1}', row.label, row.author));
   }
 }
 </script>
@@ -93,7 +93,7 @@ function resolveOne(row: Row, accept: boolean) {
 <template>
   <aside class="dx-revs" :aria-label="tl('修訂窗格')" @pointerdown.capture="rebuild" @focusin="rebuild">
     <header>
-      <span class="dx-revs-title">{{ tl('修訂（') }}{{ where }} {{ rows.length }} {{ tl('處）') }}</span>
+      <span class="dx-revs-title">{{ tl('修訂（{0} {1} 處）', where, rows.length) }}</span>
       <button type="button" class="dx-revs-close" :title="tl('關閉修訂窗格')" :aria-label="tl('關閉修訂窗格')" @click="emit('close')">×</button>
     </header>
     <p v-if="!rows.length" class="dx-revs-note">{{ tl('這部分沒有修訂。') }}</p>
@@ -105,12 +105,12 @@ function resolveOne(row: Row, accept: boolean) {
             <span class="dx-revs-author">{{ r.author }}</span>
             <span class="dx-revs-when">{{ r.when }}</span>
           </span>
-          <span v-if="r.excerpt" class="dx-revs-text" :class="{ 'dx-revs-deleted': r.label === '刪除' || r.label === '移出' }">{{ r.excerpt }}</span>
-          <span class="dx-sr">{{ tl('第') }} {{ i + 1 }} {{ tl('處，共') }} {{ rows.length }} {{ tl('處') }}</span>
+          <span v-if="r.excerpt" class="dx-revs-text" :class="{ 'dx-revs-deleted': r.label === tl('刪除') || r.label === tl('移出') }">{{ r.excerpt }}</span>
+          <span class="dx-sr">{{ tl('第 {0} 處，共 {1} 處', i + 1, rows.length) }}</span>
         </button>
         <div v-if="editable" class="dx-revs-actions">
-          <button type="button" :aria-label="`接受：${r.label}，${r.author}`" @click="resolveOne(r, true)">{{ tl('接受') }}</button>
-          <button type="button" :aria-label="`拒絕：${r.label}，${r.author}`" @click="resolveOne(r, false)">{{ tl('拒絕') }}</button>
+          <button type="button" :aria-label="tl('接受：{0}，{1}', r.label, r.author)" @click="resolveOne(r, true)">{{ tl('接受') }}</button>
+          <button type="button" :aria-label="tl('拒絕：{0}，{1}', r.label, r.author)" @click="resolveOne(r, false)">{{ tl('拒絕') }}</button>
         </div>
       </li>
     </ol>

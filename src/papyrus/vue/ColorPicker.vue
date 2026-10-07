@@ -78,12 +78,13 @@ const lower = (v: string | null | undefined) => (v ?? '').toLowerCase();
 const menuId = `dx-cp-${++menus}`;
 /** The button's name: what it colours and the colour it shows now (「文字顏色：深藍」). */
 const buttonName = computed(() => {
+  const named = props.colors.find((c) => c.value === lower(props.value))?.name;
   const current = props.mixed
-    ? '多種顏色'
+    ? tl('多種顏色')
     : !props.value
-      ? props.noneLabel ?? '無'
-      : props.colors.find((c) => c.value === lower(props.value))?.name ?? `其他色彩 ${props.value.toUpperCase()}`;
-  return `${props.label}：${current}`;
+      ? props.noneLabel ?? tl('無')
+      : named != null ? tl(named) : tl('其他色彩 {0}', props.value.toUpperCase());
+  return tl('{0}：{1}', props.label, current);
 });
 
 function toggle() {
@@ -133,7 +134,7 @@ onBeforeUnmount(() => document.removeEventListener('mousedown', onDocumentDown, 
       ref="button"
       type="button"
       class="dx-cp-button"
-      :title="mixed ? `${label}（選取範圍有多種顏色）` : label"
+      :title="mixed ? tl('{0}（選取範圍有多種顏色）', label) : label"
       :aria-label="buttonName"
       aria-haspopup="dialog"
       :aria-expanded="open"
@@ -152,8 +153,8 @@ onBeforeUnmount(() => document.removeEventListener('mousedown', onDocumentDown, 
           :key="c.value"
           type="button"
           class="dx-cp-swatch"
-          :title="c.name"
-          :aria-label="c.name"
+          :title="tl(c.name)"
+          :aria-label="tl(c.name)"
           :aria-pressed="lower(value) === c.value"
           :style="{ background: c.value }"
           @click="pick(c.value)"
@@ -161,7 +162,7 @@ onBeforeUnmount(() => document.removeEventListener('mousedown', onDocumentDown, 
       </div>
       <label class="dx-cp-other">
         {{ tl('其他色彩…') }}
-        <input type="color" :aria-label="`${label}：其他色彩`" :value="value ?? '#000000'" @change="onOther" />
+        <input type="color" :aria-label="tl('{0}：其他色彩', label)" :value="value ?? '#000000'" @change="onOther" />
       </label>
     </div>
   </span>

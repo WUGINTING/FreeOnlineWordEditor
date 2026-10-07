@@ -192,7 +192,7 @@ const unequalKept = computed(() => {
 const preview = computed(() => {
   const n = restart.value ? startAt.value : continued.value;
   const ed = props.editor;
-  return ed && Number.isInteger(n) && n >= 0 ? ed.pageNumberText(n, numberFormat.value) || '（空白）' : '';
+  return ed && Number.isInteger(n) && n >= 0 ? ed.pageNumberText(n, numberFormat.value) || tl('（空白）') : '';
 });
 
 /** Only the column values that differ from the section's. */
@@ -212,30 +212,30 @@ function apply() {
   const m = margins.value;
   const values = [width.value, height.value, m.top, m.bottom, m.left, m.right, m.header, m.footer];
   if (values.some((v) => !Number.isFinite(v) || v < 0)) {
-    error.value = '請輸入 0 以上的數字。';
+    error.value = tl('請輸入 0 以上的數字。');
     return;
   }
   if (width.value < 5 || height.value < 5 || width.value > 150 || height.value > 150) {
-    error.value = '紙張大小需介於 5 到 150 公分。';
+    error.value = tl('紙張大小需介於 5 到 150 公分。');
     return;
   }
   if (m.left + m.right >= width.value - 1 || m.top + m.bottom >= height.value - 1) {
-    error.value = '邊界太大，頁面上沒有可以寫字的地方了。';
+    error.value = tl('邊界太大，頁面上沒有可以寫字的地方了。');
     return;
   }
   if (restart.value && (!Number.isInteger(startAt.value) || startAt.value < 0 || startAt.value > MAX_START)) {
-    error.value = `起始頁碼請輸入 0 到 ${MAX_START} 的整數。`;
+    error.value = tl('起始頁碼請輸入 0 到 {0} 的整數。', MAX_START);
     return;
   }
   const n = columnCount.value;
   if (n > 1) {
     if (!Number.isFinite(columnSpace.value) || columnSpace.value < 0) {
-      error.value = '欄間距請輸入 0 以上的數字。';
+      error.value = tl('欄間距請輸入 0 以上的數字。');
       return;
     }
     const text = width.value - m.left - m.right;
     if ((text - (n - 1) * columnSpace.value) / n < MIN_COLUMN_CM) {
-      error.value = `欄間距太大：${n} 欄時每欄至少要 ${MIN_COLUMN_CM} 公分寬，請縮小間距或邊界。`;
+      error.value = tl('欄間距太大：{0} 欄時每欄至少要 {1} 公分寬，請縮小間距或邊界。', n, MIN_COLUMN_CM);
       return;
     }
   }
@@ -299,7 +299,7 @@ function apply() {
         <label class="dx-row">
           {{ tl('大小') }}
           <select v-model="paper" @change="onPaper">
-            <option v-for="p in PAPERS" :key="p.id" :value="p.id">{{ p.label }}</option>
+            <option v-for="p in PAPERS" :key="p.id" :value="p.id">{{ tl(p.label) }}</option>
             <option value="custom">{{ tl('自訂') }}</option>
           </select>
         </label>
@@ -331,8 +331,8 @@ function apply() {
         <label class="dx-row">
           {{ tl('頁碼格式') }}
           <select v-model="numberFormat" :aria-label="tl('頁碼格式')">
-            <option v-for="f in NUMBER_FORMATS" :key="f.id" :value="f.id">{{ f.label }}</option>
-            <option v-if="otherFormat" :value="otherFormat">{{ tl('文件原有格式（') }}{{ otherFormat }}{{ tl('）') }}</option>
+            <option v-for="f in NUMBER_FORMATS" :key="f.id" :value="f.id">{{ tl(f.label) }}</option>
+            <option v-if="otherFormat" :value="otherFormat">{{ tl('文件原有格式（{0}）', otherFormat) }}</option>
           </select>
         </label>
         <div class="dx-row" role="radiogroup" :aria-label="tl('頁碼編排')">
@@ -374,7 +374,7 @@ function apply() {
         <label v-if="sectionInfo.index > 0" class="dx-row">
           {{ tl('這一節的開始位置') }}
           <select v-model="sectionStart" :aria-label="tl('這一節的開始位置')">
-            <option v-for="k in startOptions" :key="k" :value="k">{{ START_LABELS[k] }}</option>
+            <option v-for="k in startOptions" :key="k" :value="k">{{ tl(START_LABELS[k]) }}</option>
           </select>
           <span class="dx-hint-inline">{{ tl('標題單欄、內文分欄時，把內文這一節設為「接續本頁」，兩者就在同一頁。') }}</span>
         </label>
@@ -382,8 +382,8 @@ function apply() {
           <label>
             {{ tl('欄數') }}
             <select v-model.number="columnCount" :aria-label="tl('欄數')">
-              <option v-for="n in COLUMN_COUNTS" :key="n" :value="n">{{ n === 1 ? '1（不分欄）' : n }}</option>
-              <option v-if="otherCount" :value="otherCount">{{ otherCount }}{{ tl('（文件原有）') }}</option>
+              <option v-for="n in COLUMN_COUNTS" :key="n" :value="n">{{ n === 1 ? tl('1（不分欄）') : n }}</option>
+              <option v-if="otherCount" :value="otherCount">{{ tl('{0}（文件原有）', otherCount) }}</option>
             </select>
           </label>
           <label>
@@ -406,7 +406,7 @@ function apply() {
           </label>
         </div>
         <p v-if="unequalKept" class="dx-hint">{{ tl('這一節在 Word 中各欄寬度不同；變更欄數或間距後會改為欄寬相等。') }}</p>
-        <p v-if="columnCount > 1" class="dx-hint dx-cols-note" role="note">{{ ONE_COLUMN_NOTE }}</p>
+        <p v-if="columnCount > 1" class="dx-hint dx-cols-note" role="note">{{ tl(ONE_COLUMN_NOTE) }}</p>
         <p class="dx-hint">{{ tl('要讓後面的文字從下一欄開始，請在該處按「版面配置 › 分隔設定 › 分欄符號」（Ctrl+Shift+Enter）。') }}</p>
       </fieldset>
 
@@ -414,7 +414,7 @@ function apply() {
         <legend>{{ tl('套用範圍') }}</legend>
         <label class="dx-row">
           <input v-model="scope" type="radio" name="dx-ps-scope" value="section" />
-          {{ multi ? `目前這一節（第 ${sectionInfo.index + 1} 節，共 ${sectionInfo.count} 節）` : '整份文件' }}
+          {{ multi ? tl('目前這一節（第 {0} 節，共 {1} 節）', sectionInfo.index + 1, sectionInfo.count) : tl('整份文件') }}
         </label>
         <label v-if="multi" class="dx-row"><input v-model="scope" type="radio" name="dx-ps-scope" value="all" /> {{ tl('整份文件（所有分節）') }}</label>
       </fieldset>

@@ -12,6 +12,7 @@ import { keptTcPr } from '../docx/tableLayout';
 import { Converter } from '../docx/convert';
 import { parseLayers } from '../docx/wrappers';
 import { schema } from './schema';
+import { tl } from '../i18n';
 
 export type BorderMode = 'all' | 'outer' | 'inner' | 'none';
 /** w:trHeight/@w:hRule; "auto" (height ignored) only keeps what the file says. */
@@ -464,14 +465,14 @@ export function compareCellText(a: string, b: string): number {
 /** Why the table at the cursor can't be sorted (merged cells), or null when it can. */
 export function sortRefusal(state: EditorState): string | null {
   const sel = selection(state);
-  if (!sel) return '游標不在表格中。';
+  if (!sel) return tl('游標不在表格中。');
   let merged = false;
   sel.table.forEach((row) =>
     row.forEach((cell) => {
       if ((cell.attrs.rowspan ?? 1) > 1 || (cell.attrs.colspan ?? 1) > 1) merged = true;
     }),
   );
-  return merged ? '表格有合併儲存格，無法排序。' : null;
+  return merged ? tl('表格有合併儲存格，無法排序。') : null;
 }
 
 /**

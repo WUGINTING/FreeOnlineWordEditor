@@ -42,6 +42,7 @@ import { deletedRunXml, groupId, paraModel, runModel } from '../docx/writer';
 import { writePPr, writeRPr } from '../docx/props';
 import { escapeAttr, parseFragment, serializeXml, NS, child } from '../docx/xml';
 import { isWatermarkRun } from '../docx/watermark';
+import { tl } from '../i18n';
 
 /** Transactions with this meta are never tracked (accept / reject, comments ...). */
 export const NO_TRACK = 'dx-no-track';
@@ -218,7 +219,7 @@ export function trackTransaction(state: EditorState, tr: Transaction): Transacti
     res = track(state, tr, session);
   } catch (e) {
     if (!(e instanceof Refused)) throw e;
-    session.opts.onNotice?.(e.notice);
+    session.opts.onNotice?.(tl(e.notice));
     return null;
   }
   if (res.doc.eq(tr.doc) && res.anchor === tr.selection.anchor && res.head === tr.selection.head) return tr;

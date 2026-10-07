@@ -23,6 +23,7 @@ import { repaginate } from './pagination';
 import { ListCounter, levelOf } from '../docx/numbering';
 import type { Numbering } from '../docx/model';
 import { twipsToPx } from '../units';
+import { tl } from '../i18n';
 import './shapes.css';
 
 const SVG = 'http://www.w3.org/2000/svg';
@@ -249,9 +250,9 @@ export function shapeDOM(node: PMNode): HTMLElement | null {
   let box: HTMLElement;
   if (!m.drawable) {
     // Where Word has it and as big, with Word's preview picture when there is one; Word only.
-    outer.title = WORD_ONLY;
+    outer.title = tl(WORD_ONLY);
     outer.setAttribute('role', 'img');
-    outer.setAttribute('aria-label', `${label}（${WORD_ONLY}）`);
+    outer.setAttribute('aria-label', tl('{0}（{1}）', label, tl(WORD_ONLY)));
     box = document.createElement('span');
     box.className = 'dx-shape-box dx-shape-unknown';
     box.style.width = `${r2(px(m.w))}px`;
@@ -266,14 +267,14 @@ export function shapeDOM(node: PMNode): HTMLElement | null {
     }
     const note = document.createElement('span');
     note.className = 'dx-shape-note';
-    note.textContent = WORD_ONLY;
+    note.textContent = tl(WORD_ONLY);
     box.append(note);
   } else {
     const hasText = placedNodes(m).some((p) => p.node.t === 'sp' && p.node.text);
     if (hasText) {
       outer.setAttribute('role', 'group');
       outer.setAttribute('aria-label', label);
-      outer.title = '按兩下可編輯文字';
+      outer.title = tl('按兩下可編輯文字');
     } else if (m.title || m.descr) {
       outer.setAttribute('role', 'img');
       outer.setAttribute('aria-label', label);

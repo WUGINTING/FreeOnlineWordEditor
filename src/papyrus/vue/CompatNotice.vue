@@ -28,8 +28,8 @@ watch(
   <div v-if="report && report.items.length && !dismissed" class="dx-compat" role="status">
     <div class="dx-compat-bar">
       <span class="dx-compat-icon" aria-hidden="true">!</span>
-      <span class="dx-compat-text">{{ tl('這份文件有') }} {{ report.items.length }} {{ tl('項內容在網頁上無法完整顯示或編輯') }}</span>
-      <button type="button" class="dx-compat-link" :aria-expanded="open" @click="open = !open">{{ open ? '收合' : '查看詳情' }}</button>
+      <span class="dx-compat-text">{{ tl('這份文件有 {0} 項內容在網頁上無法完整顯示或編輯', report.items.length) }}</span>
+      <button type="button" class="dx-compat-link" :aria-expanded="open" @click="open = !open">{{ open ? tl('收合') : tl('查看詳情') }}</button>
       <button type="button" class="dx-compat-close" :title="tl('關閉提示')" :aria-label="tl('關閉提示')" @click="dismissed = true">×</button>
     </div>
     <div v-if="open" class="dx-compat-panel">
@@ -42,7 +42,7 @@ watch(
           <div class="dx-compat-effect">{{ item.effect }}</div>
         </li>
       </ul>
-      <p class="dx-compat-keep"><b>{{ tl('保留原檔：') }}</b>{{ keepOriginal }}</p>
+      <p class="dx-compat-keep"><b>{{ tl('保留原檔：') }}</b>{{ tl(keepOriginal) }}</p>
     </div>
   </div>
 </template>

@@ -2,6 +2,7 @@ import { Plugin, PluginKey } from 'prosemirror-state';
 import { Decoration, DecorationSet } from 'prosemirror-view';
 import type { Node as PMNode } from 'prosemirror-model';
 import { SECTION_LABEL } from './schema';
+import { tl } from '../i18n';
 
 const key = new PluginKey<DecorationSet>('dx-section-marks');
 
@@ -24,7 +25,7 @@ function labels(doc: PMNode): DecorationSet {
   const decorations = ends.map(({ pos, node }, i) => {
     const next = i + 1 < ends.length ? ends[i + 1].node.attrs.sectPr : doc.attrs.sectPr;
     const label = SECTION_LABEL[startOf(next)] ?? SECTION_LABEL.nextPage;
-    return Decoration.node(pos, pos + node.nodeSize, { 'data-sect-label': label });
+    return Decoration.node(pos, pos + node.nodeSize, { 'data-sect-label': tl(label) });
   });
   return DecorationSet.create(doc, decorations);
 }

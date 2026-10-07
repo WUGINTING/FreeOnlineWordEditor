@@ -1,5 +1,5 @@
-// The demo pages' own words in three languages. The editor's interface itself is in
-// Traditional Chinese for now.
+// The demo pages' own words in three languages; the editor's interface follows the same choice.
+import { setLocale } from '../src/papyrus';
 
 export type Lang = 'en' | 'zh-TW' | 'zh-CN';
 export const LANGS: { id: Lang; label: string }[] = [
@@ -27,7 +27,6 @@ const en = {
   showingOwn: 'Your file',
   fictional: 'The sample documents are fictional (in Traditional Chinese)',
   local: 'Files stay in your browser; nothing is uploaded',
-  editorLanguage: 'The editor’s interface is in Traditional Chinese for now',
   // playground
   options: 'Options',
   optionsNote: 'Changing an option starts the editor again with the same document.',
@@ -65,7 +64,6 @@ const zhTW: Words = {
   showingOwn: '您的檔案',
   fictional: '示範文件為虛構內容，不代表任何機關的實際公文',
   local: '檔案只在您的瀏覽器裡處理，不會上傳',
-  editorLanguage: '編輯器的介面文字目前是繁體中文',
   options: '選項',
   optionsNote: '改變選項會用同一份文件重新建立編輯器。',
   actions: '操作',
@@ -101,7 +99,6 @@ const zhCN: Words = {
   showingOwn: '您的文件',
   fictional: '示例文档为虚构内容（繁体中文），不代表任何机关的实际公文',
   local: '文件只在您的浏览器里处理，不会上传',
-  editorLanguage: '编辑器的界面文字目前是繁体中文',
   options: '选项',
   optionsNote: '更改选项会用同一份文档重新创建编辑器。',
   actions: '操作',
@@ -177,7 +174,8 @@ export function chooseLang(lang: Lang): void {
 
 /** The words of the page's language. Also marks the page as being in it. */
 export function words(lang: Lang): Words {
-  document.documentElement.lang = lang === 'en' ? 'en' : lang === 'zh-CN' ? 'zh-Hans-CN' : 'zh-Hant-TW';
+  setLocale(lang);
+  document.documentElement.lang =lang === 'en' ? 'en' : lang === 'zh-CN' ? 'zh-Hans-CN' : 'zh-Hant-TW';
   return WORDS[lang];
 }
 

@@ -24,9 +24,9 @@ const done = computed(() => props.fields.filter((f) => f.filled).length);
 const missing = computed(() => props.fields.filter((f) => f.required && !f.filled).length);
 
 function snippet(f: DocField): string {
-  if (f.placeholder) return '（尚未填寫）';
+  if (f.placeholder) return tl('（尚未填寫）');
   const t = f.text.replace(/￼/g, '').replace(/\s+/g, ' ').trim();
-  if (!t) return '（空白）';
+  if (!t) return tl('（空白）');
   return t.length > 40 ? t.slice(0, 40) + '…' : t;
 }
 </script>
@@ -34,19 +34,19 @@ function snippet(f: DocField): string {
 <template>
   <aside class="dx-fields" :aria-label="tl('填寫欄位')">
     <header>
-      <span class="dx-fields-title">{{ tl('欄位（已填') }} {{ done }} / {{ fields.length }}{{ tl('）') }}</span>
+      <span class="dx-fields-title">{{ tl('欄位（已填 {0} / {1}）', done, fields.length) }}</span>
       <button type="button" class="dx-fields-close" :title="tl('關閉欄位面板')" :aria-label="tl('關閉欄位面板')" @click="emit('close')">×</button>
     </header>
-    <p v-if="missing" class="dx-fields-missing" role="status">{{ tl('還有') }} {{ missing }} {{ tl('個必填欄位沒有填寫') }}</p>
+    <p v-if="missing" class="dx-fields-missing" role="status">{{ tl('還有 {0} 個必填欄位沒有填寫', missing) }}</p>
     <p v-else class="dx-fields-ok" role="status">{{ tl('必填欄位都已填寫') }}</p>
     <button v-if="editable && done < fields.length" type="button" class="dx-fields-next" @click="emit('next')">{{ tl('下一個未填欄位') }}</button>
     <ol>
       <li v-for="f in fields" :key="f.id" :class="{ active: activeId === f.id, filled: f.filled, required: f.required && !f.filled }">
         <button type="button" class="dx-field-card" @click="emit('select', f.id)">
-          <span class="dx-field-state" :aria-label="f.filled ? '已填寫' : '未填寫'">{{ f.filled ? '✓' : f.required ? '!' : '○' }}</span>
+          <span class="dx-field-state" :aria-label="f.filled ? tl('已填寫') : tl('未填寫')">{{ f.filled ? '✓' : f.required ? '!' : '○' }}</span>
           <span class="dx-field-body">
             <span class="dx-field-name">{{ f.title }}<span v-if="f.required" class="dx-field-req">{{ tl('必填') }}</span><span v-if="f.locked" class="dx-field-lock">{{ tl('鎖定') }}</span></span>
-            <span class="dx-field-meta">{{ KIND[f.kind] }}・{{ snippet(f) }}</span>
+            <span class="dx-field-meta">{{ tl(KIND[f.kind]) }}・{{ snippet(f) }}</span>
           </span>
         </button>
       </li>

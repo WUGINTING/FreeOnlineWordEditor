@@ -177,25 +177,25 @@ async function onFile(e: Event) {
   const n = opening;
   error.value = '';
   if (file.size > MAX_BYTES) {
-    error.value = '圖片檔案太大（超過 10 MB），請改用較小的圖片。';
+    error.value = tl('圖片檔案太大（超過 10 MB），請改用較小的圖片。');
     return;
   }
   const isImage = await isImageFile(file);
   if (n !== opening) return;
   if (!isImage) {
-    error.value = '請選擇圖片檔（PNG、JPEG 或 GIF）。';
+    error.value = tl('請選擇圖片檔（PNG、JPEG 或 GIF）。');
     return;
   }
   let image: { src: string; width: number; height: number };
   try {
     image = await readImageFile(file);
   } catch {
-    if (n === opening) error.value = UNSUPPORTED_IMAGE;
+    if (n === opening) error.value = tl(UNSUPPORTED_IMAGE);
     return;
   }
   if (n !== opening) return;
   if (!/^data:image\/(?:png|jpeg|gif)[;,]/i.test(image.src)) {
-    error.value = '浮水印圖片請使用 PNG、JPEG 或 GIF 格式。';
+    error.value = tl('浮水印圖片請使用 PNG、JPEG 或 GIF 格式。');
     return;
   }
   form.value = { ...form.value, kind: 'picture', picture: { ...image, name: file.name, title: pictureTitle(file.name) } };
@@ -205,15 +205,15 @@ async function onFile(e: Event) {
 function watermarkOf(f: Form): Watermark | string | null {
   if (f.kind === 'none') return null;
   if (f.kind === 'picture') {
-    if (!f.picture) return '請先選擇浮水印要用的圖片。';
+    if (!f.picture) return tl('請先選擇浮水印要用的圖片。');
     return {
       kind: 'picture', src: f.picture.src, width: f.picture.width, height: f.picture.height,
       scale: f.scale === 'auto' ? null : Number(f.scale), washout: f.washout, title: f.picture.title,
     };
   }
   const text = f.text.replace(/\s+/g, ' ').trim();
-  if (!text) return '請輸入浮水印的文字。';
-  if (!/^#[0-9a-f]{6}$/i.test(f.color)) return '請選擇色彩。';
+  if (!text) return tl('請輸入浮水印的文字。');
+  if (!/^#[0-9a-f]{6}$/i.test(f.color)) return tl('請選擇色彩。');
   return {
     kind: 'text', text, font: f.font || WATERMARK_FONT, size: f.size === 'auto' ? null : Number(f.size),
     color: f.color.toLowerCase(), semitransparent: f.semi, layout: f.layout,
@@ -251,7 +251,7 @@ function apply() {
         <div class="dx-line">
           <input :id="`${uid}-file`" ref="fileInput" class="dx-file-input" type="file" accept="image/png,image/jpeg,image/gif" tabindex="-1" @change="onFile" />
           <button type="button" @click="fileInput?.click()">{{ tl('選擇圖片…') }}</button>
-          <span class="dx-file-name">{{ form.picture ? form.picture.name || '目前的圖片' : '尚未選擇圖片' }}</span>
+          <span class="dx-file-name">{{ form.picture ? form.picture.name || tl('目前的圖片') : tl('尚未選擇圖片') }}</span>
         </div>
         <div class="dx-line">
           <label>{{ tl('縮放') }}

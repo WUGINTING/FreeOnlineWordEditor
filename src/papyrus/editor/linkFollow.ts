@@ -12,6 +12,7 @@
 // will contact it (punycode, so a look-alike name in another script shows as xn--…) and the
 // whole address.
 import { isSafeHref, safeHref } from '../docx/links';
+import { tl } from '../i18n';
 
 /**
  * What the user is asked before a link opens: for a web address its host (punycode) and the whole
@@ -24,14 +25,14 @@ export function externalLinkQuestion(url: string): string {
   } catch {
     u = null;
   }
-  if (u && (u.protocol === 'http:' || u.protocol === 'https:')) return `即將開啟外部網站「${u.host}」：\n${u.href}\n確定要開啟嗎？`;
-  if (u?.protocol === 'mailto:') return `即將開啟郵件程式，寄信給：${decodeAnchor(u.pathname)}，確定要開啟嗎？`;
-  if (u?.protocol === 'tel:') return `即將撥打電話：${decodeAnchor(u.pathname)}，確定要開啟嗎？`;
-  return `即將開啟：${url}，確定要開啟嗎？`;
+  if (u && (u.protocol === 'http:' || u.protocol === 'https:')) return tl('即將開啟外部網站「{0}」：\n{1}\n確定要開啟嗎？', u.host, u.href);
+  if (u?.protocol === 'mailto:') return tl('即將開啟郵件程式，寄信給：{0}，確定要開啟嗎？', decodeAnchor(u.pathname));
+  if (u?.protocol === 'tel:') return tl('即將撥打電話：{0}，確定要開啟嗎？', decodeAnchor(u.pathname));
+  return tl('即將開啟：{0}，確定要開啟嗎？', url);
 }
 
 /** Said for a link to a file beside the document (a relative target), which the page cannot open. */
-export const relativeLinkNotice = (target: string): string => `這個連結指向和原檔案放在一起的檔案（${target}），網頁上無法開啟；請下載文件後用 Word 開啟。`;
+export const relativeLinkNotice = (target: string): string => tl('這個連結指向和原檔案放在一起的檔案（{0}），網頁上無法開啟；請下載文件後用 Word 開啟。', target);
 
 /** The schemes a link opens with (see isSafeHref for what may be shown as a link at all). */
 const OPENS = /^(?:https?|mailto|tel):$/i;
@@ -60,7 +61,7 @@ export function followLink(href: string, host: FollowHost): boolean {
   if (target.startsWith('#')) {
     const name = decodeAnchor(target.slice(1));
     if (host.goToBookmark(name)) return true;
-    host.onNotice?.(MISSING_ANCHOR);
+    host.onNotice?.(tl(MISSING_ANCHOR));
     return false;
   }
   if (!/^[a-z][a-z0-9+.-]*:/i.test(target)) {

@@ -1,6 +1,7 @@
 // Actions the ribbon (DocxToolbar.vue) and the right-click menu (ContextMenu.vue) share, so both do
 // exactly the same: the clipboard and 超連結.
 import { promptLink as corePromptLink, type DocxEditor } from '../editor/core';
+import { tl } from './locale';
 
 type Notice = (message: string) => void;
 
@@ -18,7 +19,7 @@ export function clipboardCommand(editor: DocxEditor | null | undefined, command:
   } catch {
     ok = false;
   }
-  if (!ok) notice(`請按 ${command === 'cut' ? 'Ctrl+X' : 'Ctrl+C'} ${command === 'cut' ? '剪下' : '複製'}。`);
+  if (!ok) notice(command === 'cut' ? tl('請按 Ctrl+X 剪下。') : tl('請按 Ctrl+C 複製。'));
 }
 
 /** 貼上 from a button or menu: only with the user's permission to read the clipboard; else they are told to press Ctrl+V. */
@@ -51,7 +52,7 @@ export async function pasteClipboard(editor: DocxEditor | null | undefined, noti
   } catch {
     // no permission: below
   }
-  notice('瀏覽器不允許按鈕讀取剪貼簿，請按 Ctrl+V 貼上。');
+  notice(tl('瀏覽器不允許按鈕讀取剪貼簿，請按 Ctrl+V 貼上。'));
 }
 
 /** 超連結: the editor's own (editor/core.ts promptLink), so the ribbon, Ctrl+K and this menu ask the same way. */

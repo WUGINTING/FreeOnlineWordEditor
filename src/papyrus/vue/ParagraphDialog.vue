@@ -107,7 +107,7 @@ function apply() {
   const f = form.value;
   const values = [f.left, f.right, f.by, f.before, f.after, f.lineValue].map(num);
   if (values.some((v) => v != null && (!Number.isFinite(v) || v < 0))) {
-    error.value = '請輸入 0 以上的數字，或留空（依樣式）。';
+    error.value = tl('請輸入 0 以上的數字，或留空（依樣式）。');
     return;
   }
   const patch: Record<string, number | string | null> = {};
@@ -213,7 +213,7 @@ function onLineKind() {
             </select>
           </label>
           <label>
-            {{ form.line === 'atLeast' || form.line === 'exact' ? '點數' : '倍數' }}
+            {{ form.line === 'atLeast' || form.line === 'exact' ? tl('點數') : tl('倍數') }}
             <input v-model="form.lineValue" type="text" inputmode="decimal" :disabled="!['multiple', 'atLeast', 'exact'].includes(form.line)" />
           </label>
         </div>

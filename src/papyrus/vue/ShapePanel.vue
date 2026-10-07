@@ -88,7 +88,7 @@ function onWidth(e: Event) {
 
 <template>
   <div v-if="info" class="dx-group dx-shape-panel" role="group" :aria-label="tl('圖形格式')">
-    <span class="dx-shape-name" aria-live="off">{{ info.count > 1 ? `已選取 ${info.count} 個圖形` : info.name }}</span>
+    <span class="dx-shape-name" aria-live="off">{{ info.count > 1 ? tl('已選取 {0} 個圖形', info.count) : info.name }}</span>
     <template v-if="info.drawable">
       <span class="dx-field" role="group" :aria-label="tl('圖案樣式')">
         <ColorPicker v-if="!info.line1" :label="tl('圖案填滿')" :colors="STANDARD_COLORS" :value="info.fill" :none-label="tl('無填滿')" @pick="(c) => tools()?.setFill(c)">
@@ -99,14 +99,14 @@ function onWidth(e: Event) {
         </ColorPicker>
         <select :aria-label="tl('外框粗細（點）')" :title="tl('外框粗細')" :value="info.lineWidth ?? ''" @change="onWidth">
           <option v-if="info.lineWidth == null" value="" disabled>{{ tl('粗細') }}</option>
-          <option v-for="v in WIDTHS" :key="v" :value="v">{{ v }} {{ tl('點') }}</option>
-          <option v-if="info.lineWidth != null && !WIDTHS.includes(info.lineWidth)" :value="info.lineWidth">{{ info.lineWidth }} {{ tl('點') }}</option>
+          <option v-for="v in WIDTHS" :key="v" :value="v">{{ tl('{0} 點', v) }}</option>
+          <option v-if="info.lineWidth != null && !WIDTHS.includes(info.lineWidth)" :value="info.lineWidth">{{ tl('{0} 點', info.lineWidth) }}</option>
         </select>
       </span>
       <label class="dx-field">
         {{ tl('文繞圖') }}
         <select :aria-label="tl('文繞圖')" :value="info.wrap" @change="onWrap">
-          <option v-for="o in WRAPS" :key="o.value" :value="o.value">{{ o.label }}</option>
+          <option v-for="o in WRAPS" :key="o.value" :value="o.value">{{ tl(o.label) }}</option>
         </select>
       </label>
       <span class="dx-field" role="group" :aria-label="tl('排列')">
@@ -131,9 +131,9 @@ function onWidth(e: Event) {
       <span class="dx-field" role="group" :aria-label="tl('位置')">
         <template v-if="info.floating">
           {{ tl('水平') }}
-          <input v-model="x" type="text" inputmode="decimal" :aria-label="`水平位置（公分，相對於${info.xFrom}）`" :title="`相對於${info.xFrom}`" @change="applyPosition" @keydown="onEnter(applyPosition)($event)" />
+          <input v-model="x" type="text" inputmode="decimal" :aria-label="tl('水平位置（公分，相對於{0}）', info.xFrom)" :title="tl('相對於{0}', info.xFrom)" @change="applyPosition" @keydown="onEnter(applyPosition)($event)" />
           {{ tl('垂直') }}
-          <input v-model="y" type="text" inputmode="decimal" :aria-label="`垂直位置（公分，相對於${info.yFrom}）`" :title="`相對於${info.yFrom}`" @change="applyPosition" @keydown="onEnter(applyPosition)($event)" />
+          <input v-model="y" type="text" inputmode="decimal" :aria-label="tl('垂直位置（公分，相對於{0}）', info.yFrom)" :title="tl('相對於{0}', info.yFrom)" @change="applyPosition" @keydown="onEnter(applyPosition)($event)" />
           {{ tl('公分') }}
         </template>
       </span>

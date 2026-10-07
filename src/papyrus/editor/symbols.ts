@@ -4,6 +4,7 @@
 // are single Unicode characters, so they need no special formatting and look the same in Word.
 // Pure data and checks; the insertion is `insertSymbol` in commands.ts.
 import { inHintRanges } from '../docx/eastAsiaFonts';
+import { tl } from '../i18n';
 
 /** A 子集 of the 符號 dialog. */
 export interface SymbolCategory {
@@ -114,10 +115,10 @@ export const MAX_RECENT_SYMBOLS = 20;
  * Word could not open the file), and noncharacters are reserved by Unicode.
  */
 export function codePointError(cp: number): string | null {
-  if (!Number.isInteger(cp) || cp < 0 || cp > 0x10ffff) return '字元代碼超出 Unicode 範圍（0 到 10FFFF）。';
-  if (cp >= 0xd800 && cp <= 0xdfff) return '這是 UTF-16 代理字元（D800–DFFF），只是字元的一半，無法單獨插入。';
-  if (cp <= 0x1f || (cp >= 0x7f && cp <= 0x9f)) return '這是控制字元，不是可以顯示的文字，無法插入。';
-  if ((cp >= 0xfdd0 && cp <= 0xfdef) || (cp & 0xfffe) === 0xfffe) return '這是 Unicode 保留的非字元，無法插入。';
+  if (!Number.isInteger(cp) || cp < 0 || cp > 0x10ffff) return tl('字元代碼超出 Unicode 範圍（0 到 10FFFF）。');
+  if (cp >= 0xd800 && cp <= 0xdfff) return tl('這是 UTF-16 代理字元（D800–DFFF），只是字元的一半，無法單獨插入。');
+  if (cp <= 0x1f || (cp >= 0x7f && cp <= 0x9f)) return tl('這是控制字元，不是可以顯示的文字，無法插入。');
+  if ((cp >= 0xfdd0 && cp <= 0xfdef) || (cp & 0xfffe) === 0xfffe) return tl('這是 Unicode 保留的非字元，無法插入。');
   return null;
 }
 
@@ -137,8 +138,8 @@ export type SymbolCodeResult = { ok: true; char: string } | { ok: false; error: 
  */
 export function parseSymbolCode(text: string): SymbolCodeResult {
   const code = text.trim().replace(/^u\+/i, '');
-  if (!code) return { ok: false, error: '請輸入字元代碼（16 進位，例如 2605）。' };
-  if (!/^[0-9a-f]+$/i.test(code)) return { ok: false, error: '字元代碼只能是 16 進位數字（0–9、A–F），例如 2605。' };
+  if (!code) return { ok: false, error: tl('請輸入字元代碼（16 進位，例如 2605）。') };
+  if (!/^[0-9a-f]+$/i.test(code)) return { ok: false, error: tl('字元代碼只能是 16 進位數字（0–9、A–F），例如 2605。') };
   const digits = code.replace(/^0+(?=.)/, ''); // 002605 is 2605
   const cp = digits.length > 6 ? Infinity : parseInt(digits, 16);
   const error = codePointError(cp);

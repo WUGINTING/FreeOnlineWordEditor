@@ -8,6 +8,7 @@ const LOADED_PIXEL_RATIO = typeof window !== 'undefined' && window.devicePixelRa
 
 <script setup lang="ts">
 import { tl } from './locale';
+import { setLocale } from '../i18n';
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, shallowRef, watch } from 'vue';
 import { DocxEditor, LARGE_DOCUMENT_BYTES, promptLink, type EditorSnapshot } from '../editor/core';
 import type { MissingFont } from '../docx/fonts';
@@ -46,8 +47,18 @@ const props = withDefaults(
     fileMenu?: boolean;
     /** Read-only, but comments may be added, replied to and resolved (editor option `commenting`). */
     commenting?: boolean;
+    /**
+     * The interface language, for the whole page: 'zh-TW' (the default), 'zh-CN', 'en', or a tag
+     * such as navigator.language (see setLocale). Without it the page's language stays as it is.
+     */
+    locale?: string | null;
   }>(),
-  { src: null, editable: true, toolbar: true, author: null, fileMenu: false, commenting: false },
+  { src: null, editable: true, toolbar: true, author: null, fileMenu: false, commenting: false, locale: null },
+);
+if (props.locale) setLocale(props.locale);
+watch(
+  () => props.locale,
+  (locale) => locale && setLocale(locale),
 );
 
 const emit = defineEmits<{
@@ -309,10 +320,10 @@ async function loadReview(ed: DocxEditor, current: () => boolean) {
           ...scanned.items,
           {
             id: 'broken-parts',
-            title: '格式錯誤的內容',
+            title: tl('格式錯誤的內容'),
             count: broken.length,
-            where: broken.join('、'),
-            effect: '這些部分無法讀取，網頁上略過不顯示；存檔時會原樣保留，不會修改。',
+            where: broken.join(tl('、')),
+            effect: tl('這些部分無法讀取，網頁上略過不顯示；存檔時會原樣保留，不會修改。'),
           },
         ],
       }
@@ -358,7 +369,7 @@ function startComment() {
   if ((!props.editable && !props.commenting) || !ed?.view) return;
   const target = ed.commentTarget();
   if (!target) {
-    showNotice(ed.target === 'textbox' ? '文字方塊不能加入留言。' : ed.target !== 'body' ? '頁首頁尾不能加入留言。' : '這裡不能加入留言，請選取要留言的文字。');
+    showNotice(ed.target === 'textbox' ? tl('文字方塊不能加入留言。') : ed.target !== 'body' ? tl('頁首頁尾不能加入留言。') : tl('這裡不能加入留言，請選取要留言的文字。'));
     return;
   }
   const doc = ed.view.state.doc;
@@ -373,20 +384,20 @@ function addComment(text: string) {
     // The text changed while the comment was being written: ask again where it goes.
     commentDraft.value = null;
     startComment();
-    if (commentDraft.value) showNotice('文件已變更，請確認留言的位置後再送出。');
+    if (commentDraft.value) showNotice(tl('文件已變更，請確認留言的位置後再送出。'));
     return;
   }
-  if (ed.addComment(text, { from: draft.from, to: draft.to }) == null) showNotice('無法在這裡加入留言。');
+  if (ed.addComment(text, { from: draft.from, to: draft.to }) == null) showNotice(tl('無法在這裡加入留言。'));
   commentDraft.value = null;
 }
 function replyComment(id: string, text: string) {
-  if (editor.value?.replyComment(id, text) == null) showNotice('無法回覆這則留言。');
+  if (editor.value?.replyComment(id, text) == null) showNotice(tl('無法回覆這則留言。'));
 }
 function editComment(id: string, text: string) {
-  if (!editor.value?.editComment(id, text) && !editor.value?.canChangeComment(id)) showNotice('只能編輯自己的留言。');
+  if (!editor.value?.editComment(id, text) && !editor.value?.canChangeComment(id)) showNotice(tl('只能編輯自己的留言。'));
 }
 function removeComment(id: string) {
-  if (!editor.value?.deleteComment(id)) showNotice('只能刪除自己的留言。');
+  if (!editor.value?.deleteComment(id)) showNotice(tl('只能刪除自己的留言。'));
 }
 watch(commentsOpen, (open) => {
   if (!open) commentDraft.value = null;
@@ -430,13 +441,13 @@ const pageRefs = computed(() => {
 });
 function updatePages() {
   const n = editor.value?.updatePageReferences() ?? 0;
-  showNotice(n ? `已更新 ${n} 個頁碼。` : '頁碼都已是最新的。');
+  showNotice(n ? tl('已更新 {0} 個頁碼。', n) : tl('頁碼都已是最新的。'));
 }
 /** 參考資料 › 更新目錄: the entries from the headings (editor/toc.ts), then the page numbers. */
 function updateToc() {
   const r = editor.value?.updateTableOfContents();
   if (!r) return;
-  showNotice(r.rebuilt ? '已依目前的標題更新目錄。' : r.pages ? `已更新 ${r.pages} 個頁碼。` : '目錄已是最新的。');
+  showNotice(r.rebuilt ? tl('已依目前的標題更新目錄。') : r.pages ? tl('已更新 {0} 個頁碼。', r.pages) : tl('目錄已是最新的。'));
 }
 const fields = computed(() => {
   void snapshot.value; // re-evaluated on every editor update (cached per document)
@@ -465,8 +476,8 @@ const countTitle = computed(() => {
   const c = counts.value;
   if (!c) return '';
   const part = (label: string, w: { words: number; chars: number; charsWithSpaces: number }) =>
-    `${label}：字數 ${n(w.words)}，字元（不含空白）${n(w.chars)}，字元（含空白）${n(w.charsWithSpaces)}`;
-  return [c.selected && part('選取範圍', c.selected), part('整份文件（本文）', c.all)].filter(Boolean).join('\n');
+    tl('{0}：字數 {1}，字元（不含空白）{2}，字元（含空白）{3}', label, n(w.words), n(w.chars), n(w.charsWithSpaces));
+  return [c.selected && part(tl('選取範圍'), c.selected), part(tl('整份文件（本文）'), c.all)].filter(Boolean).join('\n');
 });
 const SPELL_KEY = 'papyrus.spellcheck';
 const spellcheck = ref(false);
@@ -686,35 +697,35 @@ defineExpose({ save, download, editor, open: load, compat, startComment });
       />
     </div>
     <div class="dx-status">
-      <span aria-live="polite">{{ tl('第') }} {{ snapshot?.currentPage ?? 1 }} {{ tl('頁，共') }} {{ snapshot?.pageCount ?? 1 }} {{ tl('頁') }}</span>
-      <span v-if="(snapshot?.sectionCount ?? 1) > 1" class="dx-status-item">{{ tl('第') }} {{ (snapshot?.section ?? 0) + 1 }} {{ tl('節，共') }} {{ snapshot?.sectionCount }} {{ tl('節') }}</span>
+      <span aria-live="polite">{{ tl('第 {0} 頁，共 {1} 頁', snapshot?.currentPage ?? 1, snapshot?.pageCount ?? 1) }}</span>
+      <span v-if="(snapshot?.sectionCount ?? 1) > 1" class="dx-status-item">{{ tl('第 {0} 節，共 {1} 節', (snapshot?.section ?? 0) + 1, snapshot?.sectionCount) }}</span>
       <label class="dx-status-item">
         {{ tl('跳至') }}
         <input class="dx-page-input" type="number" min="1" :max="snapshot?.pageCount ?? 1" :placeholder="String(snapshot?.currentPage ?? 1)" :aria-label="tl('跳至頁碼')" @change="goToPage" @keydown.enter="!composing($event) && goToPage($event)" />
         {{ tl('頁') }}
       </label>
       <span v-if="counts" class="dx-status-item" :title="countTitle">
-        {{ counts.selected ? `已選 ${n(counts.selected.words)}／共 ${n(counts.all.words)} 字` : `字數 ${n(counts.all.words)}` }}
+        {{ counts.selected ? tl('已選 {0}／共 {1} 字', n(counts.selected.words), n(counts.all.words)) : tl('字數 {0}', n(counts.all.words)) }}
       </span>
       <button v-if="editable" type="button" class="dx-status-btn" :aria-pressed="spellcheck"
               :title="tl('使用瀏覽器的拼字檢查（主要檢查英文；多數瀏覽器不檢查中文）')" @click="toggleSpellcheck">
-        {{ tl('拼字檢查：') }}{{ spellcheck ? '開' : '關' }}
+        {{ spellcheck ? tl('拼字檢查：開') : tl('拼字檢查：關') }}
       </button>
       <label class="dx-status-item dx-zoom">
         {{ tl('縮放') }}
         <select :value="zoomChoice" :aria-label="tl('縮放')" @change="onZoom">
           <option v-for="z in ZOOMS" :key="z" :value="String(z)">{{ Math.round(z * 100) }}%</option>
-          <option value="fit">{{ tl('符合寬度（') }}{{ zoomLabel }}{{ tl('）') }}</option>
+          <option value="fit">{{ tl('符合寬度（{0}）', zoomLabel) }}</option>
         </select>
       </label>
       <button type="button" class="dx-status-btn" :aria-pressed="outlineOpen" :title="tl('依標題瀏覽文件（導覽窗格）')" @click="outlineOpen = !outlineOpen">
         {{ tl('導覽') }}
       </button>
       <button v-if="fields.length" type="button" class="dx-status-btn" :aria-pressed="fieldsOpen" @click="fieldsOpen = !fieldsOpen">
-        {{ tl('欄位') }} {{ fields.filter((f) => f.filled).length }}/{{ fields.length }}
+        {{ tl('欄位 {0}/{1}', fields.filter((f) => f.filled).length, fields.length) }}
       </button>
       <button v-if="comments.length" type="button" class="dx-status-btn" :aria-pressed="commentsOpen" @click="commentsOpen = !commentsOpen">
-        {{ tl('留言') }} {{ comments.length }}
+        {{ tl('留言 {0}', comments.length) }}
       </button>
     </div>
   </div>

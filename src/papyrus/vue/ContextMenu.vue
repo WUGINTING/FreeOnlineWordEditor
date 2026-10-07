@@ -81,36 +81,36 @@ const entries = computed<Entry[]>(() => {
   const inTable = !!view && isInTable(view.state);
   const edit = props.editable;
   const out: Entry[] = [];
-  if (edit) out.push({ key: 'cut', label: '剪下', keys: 'Ctrl+X', disabled: empty, run: () => clipboardCommand(ed, 'cut', notice) });
-  out.push({ key: 'copy', label: '複製', keys: 'Ctrl+C', disabled: empty, run: () => clipboardCommand(ed, 'copy', notice) });
-  if (edit) out.push({ key: 'paste', label: '貼上', keys: 'Ctrl+V', run: () => void pasteClipboard(ed, notice) });
-  out.push({ key: 'all', label: '全選', keys: 'Ctrl+A', run: () => ed?.run(selectAll) });
+  if (edit) out.push({ key: 'cut', label: tl('剪下'), keys: 'Ctrl+X', disabled: empty, run: () => clipboardCommand(ed, 'cut', notice) });
+  out.push({ key: 'copy', label: tl('複製'), keys: 'Ctrl+C', disabled: empty, run: () => clipboardCommand(ed, 'copy', notice) });
+  if (edit) out.push({ key: 'paste', label: tl('貼上'), keys: 'Ctrl+V', run: () => void pasteClipboard(ed, notice) });
+  out.push({ key: 'all', label: tl('全選'), keys: 'Ctrl+A', run: () => ed?.run(selectAll) });
   if (edit) {
-    out.push('sep', { key: 'paragraph', label: '段落…', run: () => emit('paragraph'), stay: true });
-    out.push({ key: 'link', label: link ? '編輯超連結…' : '超連結…', run: () => promptLink(ed, link) });
-    if (link) out.push({ key: 'unlink', label: '移除超連結', run: () => ed?.run(setLink(null)) });
+    out.push('sep', { key: 'paragraph', label: tl('段落…'), run: () => emit('paragraph'), stay: true });
+    out.push({ key: 'link', label: link ? tl('編輯超連結…') : tl('超連結…'), run: () => promptLink(ed, link) });
+    if (link) out.push({ key: 'unlink', label: tl('移除超連結'), run: () => ed?.run(setLink(null)) });
   }
   if (link && isSafeHref(link)) {
     const href = safeHref(link);
     // Another site opens only once confirmed (the editor's own confirm, as for a click); a place in
     // the document is gone to (linkFollow.ts).
-    out.push({ key: 'open-link', label: '開啟超連結', run: () => void ed?.followLink(href) });
+    out.push({ key: 'open-link', label: tl('開啟超連結'), run: () => void ed?.followLink(href) });
   }
   if (edit && ed?.target === 'body') {
-    out.push({ key: 'comment', label: '新增留言', keys: 'Ctrl+Alt+M', run: () => emit('comment'), stay: true });
+    out.push({ key: 'comment', label: tl('新增留言'), keys: 'Ctrl+Alt+M', run: () => emit('comment'), stay: true });
   }
   if (edit && inTable) {
     out.push(
       'sep',
-      command('row-before', '在上方插入列', addRowBefore),
-      command('row-after', '在下方插入列', addRowAfter),
-      command('col-before', '在左側插入欄', addColumnBefore),
-      command('col-after', '在右側插入欄', addColumnAfter),
-      command('merge', '合併儲存格', mergeCells),
-      command('split', '分割儲存格', splitCell),
-      command('del-row', '刪除列', deleteRow),
-      command('del-col', '刪除欄', deleteColumn),
-      command('del-table', '刪除表格', deleteTable),
+      command('row-before', tl('在上方插入列'), addRowBefore),
+      command('row-after', tl('在下方插入列'), addRowAfter),
+      command('col-before', tl('在左側插入欄'), addColumnBefore),
+      command('col-after', tl('在右側插入欄'), addColumnAfter),
+      command('merge', tl('合併儲存格'), mergeCells),
+      command('split', tl('分割儲存格'), splitCell),
+      command('del-row', tl('刪除列'), deleteRow),
+      command('del-col', tl('刪除欄'), deleteColumn),
+      command('del-table', tl('刪除表格'), deleteTable),
     );
   }
   return out;

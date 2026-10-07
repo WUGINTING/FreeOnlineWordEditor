@@ -13,6 +13,7 @@ import { localNames } from '../docx/eastAsiaFonts';
 import { Lru, memo } from '../docx/memo';
 import { sectionHeaderFooter, type Section } from '../docx/sections';
 import type { DocxModel, HeaderFooterPart, HeaderFooterType } from '../docx/model';
+import { tl } from '../i18n';
 
 /**
  * Set on the transactions that change a header's watermarks on purpose, which keepWatermarks
@@ -273,7 +274,7 @@ export function keepWatermarks(onNotice: (message: string) => void): Plugin<Wate
         if (at > tr.doc.content.size || !tr.doc.resolve(at).parent.inlineContent) at = firstParagraphStart(tr);
         tr.insert(at, node);
       }
-      if (restore.length && !history) onNotice('浮水印不會因編輯頁首而刪除；要移除請用「設計」›「浮水印」›「移除浮水印」。');
+      if (restore.length && !history) onNotice(tl('浮水印不會因編輯頁首而刪除；要移除請用「設計」›「浮水印」›「移除浮水印」。'));
       return tr.setMeta(WATERMARK_META, 'keep');
     },
   });

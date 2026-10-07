@@ -5,6 +5,7 @@
 import { createApp, h, shallowRef, type App } from 'vue';
 import DocxEditorVue from './vue/DocxEditor.vue';
 import type { DocxEditor } from './editor/core';
+import { setLocale } from './i18n';
 import type { CommentAuthor } from './docx/comments';
 import type { CompatReport } from './docx/compat';
 import type { MissingFont } from './docx/fonts';
@@ -23,6 +24,11 @@ export interface CreateDocxEditorOptions {
   fileMenu?: boolean;
   /** Read-only, but comments may be added, replied to and resolved. */
   commenting?: boolean;
+  /**
+   * The interface language, for the whole page: 'zh-TW' (the default), 'zh-CN', 'en', or a tag
+   * such as navigator.language (see setLocale).
+   */
+  locale?: string;
   /** The editor is there and the first document is open. */
   onReady?: (editor: DocxEditor) => void;
   onChange?: () => void;
@@ -66,6 +72,7 @@ export function createDocxEditor(target: Element | string, options: CreateDocxEd
   const el = typeof target === 'string' ? document.querySelector(target) : target;
   if (!el) throw new Error(`createDocxEditor: no element for ${String(target)}`);
 
+  if (options.locale) setLocale(options.locale);
   const component = shallowRef<Exposed | null>(null);
   const app: App = createApp({
     render: () =>

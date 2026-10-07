@@ -244,7 +244,7 @@ function trapFocus(e: KeyboardEvent) {
   }
 }
 
-const label = (ch: string) => `${ch}（${symbolCode(ch)}）`;
+const label = (ch: string) => tl('{0}（{1}）', ch, symbolCode(ch));
 </script>
 
 <template>
@@ -255,7 +255,7 @@ const label = (ch: string) => `${ch}（${symbolCode(ch)}）`;
       <label class="dx-sy-subset">
         {{ tl('子集') }}
         <select v-model="categoryId" @change="onCategory">
-          <option v-for="c in SYMBOL_CATEGORIES" :key="c.id" :value="c.id">{{ c.label }}</option>
+          <option v-for="c in SYMBOL_CATEGORIES" :key="c.id" :value="c.id">{{ tl(c.label) }}</option>
         </select>
       </label>
 
@@ -309,7 +309,7 @@ const label = (ch: string) => `${ch}（${symbolCode(ch)}）`;
       <!-- The code is read out with the symbol (its cell's name), so this line isn't announced again. -->
       <div class="dx-sy-info">
         <span class="dx-sy-glyph" aria-hidden="true">{{ current ?? '' }}</span>
-        <span>{{ tl('字元代碼：') }}{{ current ? symbolCode(current) : '—' }}</span>
+        <span>{{ tl('字元代碼：{0}', current ? symbolCode(current) : '—') }}</span>
         <label class="dx-sy-code">
           {{ tl('字元代碼（16 進位）') }}
           <input

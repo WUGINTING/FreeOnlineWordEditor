@@ -16,6 +16,7 @@ import { NO_TRACK } from './trackChanges';
 import { frameDoc, WORD_ONLY } from './shapeView';
 import { newShapeKey, textFrames, withText, type ShapeModel, type TextFrame } from '../docx/shapes';
 import { drawingIds, reidentified } from '../docx/shapeOps';
+import { tl } from '../i18n';
 
 /** The shape with model key `key` in a document. */
 export function findShape(doc: PMNode, key: string): { pos: number; node: PMNode; shape: ShapeModel } | null {
@@ -126,7 +127,7 @@ export class ShapeTextSession {
     });
     const view: EditorView = new EditorView(mount, {
       state: EditorState.create({ schema, doc: frameDoc(frame), plugins: [close, ...host.plugins()] }),
-      attributes: () => ({ ...host.attributes(), class: 'dx-doc dx-shape-doc', role: 'textbox', 'aria-multiline': 'true', 'aria-label': '文字方塊' }),
+      attributes: () => ({ ...host.attributes(), class: 'dx-doc dx-shape-doc', role: 'textbox', 'aria-multiline': 'true', 'aria-label': tl('文字方塊') }),
       nodeViews: host.nodeViews,
       dispatchTransaction: (tr) => host.dispatch(view, tr, (done) => {
         if (done.docChanged) this.commit();

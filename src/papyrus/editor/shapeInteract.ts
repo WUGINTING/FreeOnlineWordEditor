@@ -24,6 +24,7 @@ import { changedModel } from '../docx/shapeWrite';
 import { currentShapeXml } from '../docx/writer';
 import { textFrames, type Connection, type ShapeModel, type ShapeNode, type SpNode } from '../docx/shapes';
 import type { ThemeColors } from '../docx/theme';
+import { tl } from '../i18n';
 
 export const TRACKING_REFUSED = '追蹤修訂時不能移動或變更圖形，請先關閉追蹤修訂';
 
@@ -459,7 +460,7 @@ export class ShapeTools {
       const tr = view.state.tr.setMeta(SELECT, { keys: [], kid: null }).setMeta('addToHistory', false);
       if (found) tr.setSelection(TextSelection.near(view.state.doc.resolve(found.pos + 1)));
       view.dispatch(tr);
-      this.opts.announce('已回到文字。');
+      this.opts.announce(tl('已回到文字。'));
       return true;
     }
     if ((e.key === 'Delete' || e.key === 'Backspace') && keys.length > 1) {
@@ -482,7 +483,7 @@ export class ShapeTools {
       return true;
     });
     if (!all.length) {
-      this.opts.announce('這裡沒有圖形。');
+      this.opts.announce(tl('這裡沒有圖形。'));
       return false;
     }
     const at = view.state.selection.from;
@@ -499,7 +500,7 @@ export class ShapeTools {
     this.select(view, [s.shape.key]);
     view.dispatch(view.state.tr.scrollIntoView().setMeta('addToHistory', false));
     const p = placed(view, s.shape.key);
-    this.opts.announce(`已選取${describe(s.shape, p)}。${s.shape.anchor ? '方向鍵移動，' : ''}${textFrames(s.shape).length && s.shape.drawable ? 'Enter 編輯文字，' : ''}Esc 回到文字。`);
+    this.opts.announce(tl('已選取{0}。{1}{2}Esc 回到文字。', describe(s.shape, p), s.shape.anchor ? tl('方向鍵移動，') : '', textFrames(s.shape).length && s.shape.drawable ? tl('Enter 編輯文字，') : ''));
     return true;
   }
 
@@ -508,7 +509,7 @@ export class ShapeTools {
   /** Refused while tracking, with the notice. */
   private refused(): boolean {
     if (!this.opts.tracking()) return false;
-    this.opts.notice(`${TRACKING_REFUSED}。`);
+    this.opts.notice(tl('{0}。', tl(TRACKING_REFUSED)));
     return true;
   }
 
@@ -678,7 +679,7 @@ export class ShapeTools {
       for (const [k, m] of this.rerouted(view, boxes)) if (!models.has(k)) models.set(k, m);
     }
     const p = sel.items[0];
-    return this.commit(view, models, sel.kid != null ? '已移動畫布上的圖形。' : `已移動圖形：${position(p, dx, dy)}`, anchors);
+    return this.commit(view, models, sel.kid != null ? tl('已移動畫布上的圖形。') : tl('已移動圖形：{0}', position(p, dx, dy)), anchors);
   }
 
   /**
@@ -736,7 +737,7 @@ export class ShapeTools {
     if (first == null) return false;
     tr.setSelection(NodeSelection.create(tr.doc, first)).setMeta(SELECT, { keys, kid: null });
     view.dispatch(closeHistory(tr));
-    this.opts.announce(`已複製 ${keys.length} 個圖形。`);
+    this.opts.announce(tl('已複製 {0} 個圖形。', keys.length));
     return true;
   }
 
@@ -761,7 +762,7 @@ export class ShapeTools {
         for (const [k, c] of this.rerouted(view, new Map([[p.shape.docId, { box, node: p.shape.root }]]))) models.set(k, c);
       }
     }
-    return this.commit(view, models, `已調整圖形大小：寬 ${cm(w(box))} 公分，高 ${cm(h(box))} 公分。`);
+    return this.commit(view, models, tl('已調整圖形大小：寬 {0} 公分，高 {1} 公分。', cm(w(box)), cm(h(box))));
   }
 
   /** Drag a connector's end by (dx, dy) page px, attaching it to a connection site it reaches. */
@@ -795,7 +796,7 @@ export class ShapeTools {
       const next = this.connectorAt(p, a, b, end === 0 ? snap?.at.dir : undefined);
       models.set(p.key, { ...next, root: attach(next.root as SpNode) });
     }
-    return this.commit(view, models, snap ? '已連接到圖形。' : '已移動線條的端點。');
+    return this.commit(view, models, snap ? tl('已連接到圖形。') : tl('已移動線條的端點。'));
   }
 
   /** Set the selected shape's position (cm from its references) and size (cm). */
@@ -810,7 +811,7 @@ export class ShapeTools {
       const at = offsetsNow(p) ?? { h: m.anchor.h.offset ?? 0, v: m.anchor.v.offset ?? 0 };
       m = moved(m, g.x != null ? g.x * EMU_CM : at.h, g.y != null ? g.y * EMU_CM : at.v);
     }
-    return this.commit(sel.view, new Map([[p.key, m]]), '已變更圖形的位置與大小。');
+    return this.commit(sel.view, new Map([[p.key, m]]), tl('已變更圖形的位置與大小。'));
   }
 
   /** Change every selected shape with `f` (fill, outline, wrapping ...). */
@@ -824,11 +825,11 @@ export class ShapeTools {
   }
 
   setFill(color: string | null): boolean {
-    return this.changeSelected((m) => filled(m, color ? color.replace('#', '').toUpperCase() : null), color ? '已變更填滿色彩。' : '已移除填滿。');
+    return this.changeSelected((m) => filled(m, color ? color.replace('#', '').toUpperCase() : null), color ? tl('已變更填滿色彩。') : tl('已移除填滿。'));
   }
 
   setOutline(color: string | null, widthPt?: number): boolean {
-    return this.changeSelected((m) => outlined(m, color ? color.replace('#', '').toUpperCase() : null, widthPt != null ? Math.round(widthPt * 12700) : undefined), color ? '已變更外框。' : '已移除外框。');
+    return this.changeSelected((m) => outlined(m, color ? color.replace('#', '').toUpperCase() : null, widthPt != null ? Math.round(widthPt * 12700) : undefined), color ? tl('已變更外框。') : tl('已移除外框。'));
   }
 
   setWrap(choice: WrapChoice): boolean {
@@ -838,7 +839,7 @@ export class ShapeTools {
       // Out of the line of text: placed where it is, from the column and its paragraph.
       const { frame } = measureFrame(p.el);
       return wrapped(m, choice, { h: (p.box.left - areaStart('column', frame, true)) * EMU_PX, v: (p.box.top - areaStart('paragraph', frame, false)) * EMU_PX }, z);
-    }, `文繞圖：${WRAP_LABEL[choice]}。`);
+    }, tl('文繞圖：{0}。', tl(WRAP_LABEL[choice])));
   }
 
   /** The highest stacking order of the shapes in the selected editor's document. */
@@ -868,12 +869,12 @@ export class ShapeTools {
     const i = all.findIndex((m) => m.key === p.key);
     const other = all[i + dir];
     if (!other) {
-      this.opts.announce(dir > 0 ? '已在最上層。' : '已在最下層。');
+      this.opts.announce(dir > 0 ? tl('已在最上層。') : tl('已在最下層。'));
       return false;
     }
     const mine = p.shape.anchor!.z;
     const theirs = other.anchor!.z === mine ? mine + dir : other.anchor!.z;
-    return this.commit(sel.view, new Map([[p.key, stacked(p.shape, theirs)], [other.key, stacked(other, mine)]]), dir > 0 ? '已上移一層。' : '已下移一層。');
+    return this.commit(sel.view, new Map([[p.key, stacked(p.shape, theirs)], [other.key, stacked(other, mine)]]), dir > 0 ? tl('已上移一層。') : tl('已下移一層。'));
   }
 
   /** 對齊: the selected shapes to one another (one shape: to the margins). */
@@ -903,7 +904,7 @@ export class ShapeTools {
       if (p.shape.docId != null && p.shape.root.t === 'sp') boxes.set(p.shape.docId, { box: shift(p.box, dx, dy), node: p.shape.root });
     }
     for (const [k, m] of this.rerouted(sel.view, boxes)) if (!models.has(k)) models.set(k, m);
-    return this.commit(sel.view, models, `已${ALIGN_LABEL[how]}。`);
+    return this.commit(sel.view, models, tl('已{0}。', tl(ALIGN_LABEL[how])));
   }
 
   /** 均分: three or more selected shapes, the gaps between them made equal. */
@@ -913,7 +914,7 @@ export class ShapeTools {
     if (!sel) return false;
     const items = sel.items.filter((p) => p.shape.anchor).sort((a, b) => (axis === 'h' ? a.box.left - b.box.left : a.box.top - b.box.top));
     if (items.length < 3) {
-      this.opts.notice('請選取三個以上的圖形再均分。');
+      this.opts.notice(tl('請選取三個以上的圖形再均分。'));
       return false;
     }
     const size = (r: Rect) => (axis === 'h' ? w(r) : h(r));
@@ -932,7 +933,7 @@ export class ShapeTools {
       if (p.shape.docId != null && p.shape.root.t === 'sp') boxes.set(p.shape.docId, { box: shift(p.box, axis === 'h' ? d : 0, axis === 'v' ? d : 0), node: p.shape.root });
     }
     for (const [k, m] of this.rerouted(sel.view, boxes)) if (!models.has(k)) models.set(k, m);
-    return this.commit(sel.view, models, axis === 'h' ? '已水平均分。' : '已垂直均分。') || true;
+    return this.commit(sel.view, models, axis === 'h' ? tl('已水平均分。') : tl('已垂直均分。')) || true;
   }
 
   /** Whether the selection can be grouped / ungrouped. */
@@ -951,7 +952,7 @@ export class ShapeTools {
     if (this.refused()) return false;
     const sel = this.selected();
     if (!sel || !this.canGroup()) {
-      if (sel) this.opts.notice('請選取兩個以上浮動的圖形再群組。');
+      if (sel) this.opts.notice(tl('請選取兩個以上浮動的圖形再群組。'));
       return false;
     }
     const view = sel.view;
@@ -974,7 +975,7 @@ export class ShapeTools {
     tr.replaceWith(at, at + 1, node);
     tr.setSelection(NodeSelection.create(tr.doc, at)).setMeta(SELECT, { keys: [model.key], kid: null });
     view.dispatch(closeHistory(tr).setMeta(NO_TRACK, true));
-    this.opts.announce(`已將 ${items.length} 個圖形群組。`);
+    this.opts.announce(tl('已將 {0} 個圖形群組。', items.length));
     return true;
   }
 
@@ -988,7 +989,7 @@ export class ShapeTools {
     const kids = p.shape.root.t === 'grp' ? p.shape.root.kids.length : 0;
     const parts = ungroupXml(currentShapeXml(p.node), p.shape, Array.from({ length: kids }, () => newDrawingId(used)));
     if (!parts) {
-      this.opts.notice('這個群組無法在網頁上取消群組，請在 Word 中進行。');
+      this.opts.notice(tl('這個群組無法在網頁上取消群組，請在 Word 中進行。'));
       return false;
     }
     const nodes = parts.map((q) => schema.nodes.raw_inline.create({ xml: q.xml, label: '圖形', shape: readRunShape(q.xml, this.opts.theme()) }, null, p.node.marks));
@@ -996,7 +997,7 @@ export class ShapeTools {
     const keys = nodes.map((n) => (n.attrs.shape as ShapeModel).key);
     tr.setSelection(NodeSelection.create(tr.doc, p.pos)).setMeta(SELECT, { keys, kid: null });
     sel.view.dispatch(closeHistory(tr).setMeta(NO_TRACK, true));
-    this.opts.announce(`已取消群組：${nodes.length} 個圖形。`);
+    this.opts.announce(tl('已取消群組：{0} 個圖形。', nodes.length));
     return true;
   }
 
@@ -1010,7 +1011,7 @@ export class ShapeTools {
     for (const pos of positions) tr.delete(pos, pos + 1);
     tr.setMeta(SELECT, { keys: [], kid: null });
     view.dispatch(tr);
-    this.opts.announce(`已刪除 ${positions.length} 個圖形。`);
+    this.opts.announce(tl('已刪除 {0} 個圖形。', positions.length));
     return true;
   }
 
@@ -1046,7 +1047,7 @@ export class ShapeTools {
     this.placeCover = cover;
     canvas?.append(cover);
     view.focus();
-    this.opts.notice(kind.line ? `請在頁面上拖曳畫出${kind.label}（Esc 取消）。` : `請在頁面上按一下或拖曳，放置${kind.label}（Enter 放在游標處，Esc 取消）。`);
+    this.opts.notice(kind.line ? tl('請在頁面上拖曳畫出{0}（Esc 取消）。', tl(kind.label)) : tl('請在頁面上按一下或拖曳，放置{0}（Enter 放在游標處，Esc 取消）。', tl(kind.label)));
     return true;
   }
 
@@ -1088,7 +1089,7 @@ export class ShapeTools {
     const paraNode = dropped ? dropped.el : $pos.parent.type === schema.nodes.paragraph ? view.nodeDOM($pos.before()) : null;
     const para = paraNode instanceof HTMLElement && paraNode.classList.contains('dx-p') ? paraNode : null;
     if (!para) {
-      this.opts.notice('請先把游標放在要放圖案的段落。');
+      this.opts.notice(tl('請先把游標放在要放圖案的段落。'));
       return false;
     }
     const { frame } = measureFrame(para);
@@ -1157,7 +1158,7 @@ export class ShapeTools {
     // Not scrolled to the cursor: the shape is where it was put, in view.
     view.dispatch(closeHistory(tr));
     view.focus();
-    this.opts.announce(`已插入${kind.label}。方向鍵移動，${kind.line ? '' : 'Enter 輸入文字，'}Esc 回到文字。`);
+    this.opts.announce(tl('已插入{0}。方向鍵移動，{1}Esc 回到文字。', tl(kind.label), kind.line ? '' : tl('Enter 輸入文字，')));
     if (kind.textbox) this.opts.editText(model.key, 0);
     return true;
   }
@@ -1208,8 +1209,8 @@ export class ShapeTools {
       floating: !!p.shape.anchor,
       x: at ? cm(at.h / EMU_PX) : null,
       y: at ? cm(at.v / EMU_PX) : null,
-      xFrom: p.shape.anchor ? H_LABEL[p.shape.anchor.h.rel] ?? '欄' : null,
-      yFrom: p.shape.anchor ? V_LABEL[p.shape.anchor.v.rel] ?? '段落' : null,
+      xFrom: p.shape.anchor ? tl(H_LABEL[p.shape.anchor.h.rel] ?? '欄') : null,
+      yFrom: p.shape.anchor ? tl(V_LABEL[p.shape.anchor.v.rel] ?? '段落') : null,
       w: cm(w(p.box)),
       h: cm(h(p.box)),
       wrap: wrapOf(p.shape),
@@ -1277,17 +1278,17 @@ export function resizeBox(r: Rect, handle: Handle, dx: number, dy: number, keep:
 }
 
 function describe(m: ShapeModel, p: Placed | null): string {
-  const what = m.kind === 'textbox' ? '文字方塊' : m.kind === 'canvas' ? '繪圖畫布' : m.kind === 'group' ? '群組' : '圖案';
+  const what = m.kind === 'textbox' ? tl('文字方塊') : m.kind === 'canvas' ? tl('繪圖畫布') : m.kind === 'group' ? tl('群組') : tl('圖案');
   const name = m.title || m.name;
-  const wrap = WRAP_LABEL[wrapOf(m)];
-  const size = p ? `，寬 ${cm(w(p.box))} 公分、高 ${cm(h(p.box))} 公分` : '';
-  return `${what}${name ? `「${name}」` : ''}（${wrap}${size}）`;
+  const wrap = tl(WRAP_LABEL[wrapOf(m)]);
+  const size = p ? tl('，寬 {0} 公分、高 {1} 公分', cm(w(p.box)), cm(h(p.box))) : '';
+  return tl('{0}{1}（{2}{3}）', what, name ? tl('「{0}」', name) : '', wrap, size);
 }
 
 function position(p: Placed, dx: number, dy: number): string {
   const at = offsetsNow(p);
   if (!at) return '';
-  return `水平 ${cm(at.h / EMU_PX + dx)} 公分，垂直 ${cm(at.v / EMU_PX + dy)} 公分。`;
+  return tl('水平 {0} 公分，垂直 {1} 公分。', cm(at.h / EMU_PX + dx), cm(at.v / EMU_PX + dy));
 }
 
 /** The text of the first text box in a run's XML (for the VML copy of a group). */

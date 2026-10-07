@@ -12,6 +12,7 @@ import { fieldNumberFormat } from '../docx/pageNumbers';
 import { fontStack } from '../docx/fonts';
 import { pastedBorders } from './pasteExcel';
 import { isWatermarkRun } from '../docx/watermark';
+import { tl } from '../i18n';
 
 // ----- pictures: what a pasted <img> may show -----
 
@@ -467,7 +468,7 @@ const nodes: Record<string, NodeSpec> = {
       if (a.sectPr) {
         out.class += ' dx-sect-end';
         const type = /<w:type\b[^>]*w:val="(\w+)"/.exec(a.sectPr)?.[1] ?? 'nextPage';
-        out['data-sect-label'] = SECTION_LABEL[type] ?? SECTION_LABEL.nextPage;
+        out['data-sect-label'] = tl(SECTION_LABEL[type] ?? SECTION_LABEL.nextPage);
       }
       // Lets a list paragraph copied inside the editor keep its list when pasted.
       if (a.numId) {
@@ -516,7 +517,7 @@ const nodes: Record<string, NodeSpec> = {
     toDOM: (node) =>
       node.attrs.hidden
         ? ['div', { class: 'dx-raw-hidden', contenteditable: 'false' }]
-        : ['div', { class: 'dx-raw', contenteditable: 'false' }, `[${node.attrs.label}]`],
+        : ['div', { class: 'dx-raw', contenteditable: 'false' }, `[${tl(node.attrs.label)}]`],
   },
 
   text: { group: 'inline' },
@@ -566,7 +567,7 @@ const nodes: Record<string, NodeSpec> = {
       // A watermark (浮水印) is drawn on the pages (DocxEditor.renderPages): in the header it is a
       // chip naming it, shown while the header is edited and taking no room on the page.
       if (isWatermarkRun(node.attrs.xml)) {
-        return ['span', { class: 'dx-raw-inline dx-wm-chip', title: '浮水印：要變更或移除，請用「設計」›「浮水印」' }, '浮水印'];
+        return ['span', { class: 'dx-raw-inline dx-wm-chip', title: tl('浮水印：要變更或移除，請用「設計」›「浮水印」') }, tl('浮水印')];
       }
       if (hidden) return ['span', { class: 'dx-hidden-mark' }];
       if (plain) return ['span', { class: 'dx-raw-plain' }, label];
@@ -574,12 +575,12 @@ const nodes: Record<string, NodeSpec> = {
       const shape = node.attrs.shape ? shapeRenderer(node) : null;
       if (shape) return shape;
       if (src) {
-        const a: Record<string, string> = { src, class: 'dx-img dx-raw-img', title: label, alt: label };
+        const a: Record<string, string> = { src, class: 'dx-img dx-raw-img', title: tl(label), alt: tl(label) };
         if (width) a.width = String(Math.round(width));
         if (height) a.height = String(Math.round(height));
         return ['img', a];
       }
-      return ['span', { class: 'dx-raw-inline', title: '此內容無法在這裡編輯，存檔時會原樣保留' }, label];
+      return ['span', { class: 'dx-raw-inline', title: tl('此內容無法在這裡編輯，存檔時會原樣保留') }, tl(label)];
     },
   },
 
@@ -593,7 +594,7 @@ const nodes: Record<string, NodeSpec> = {
     // editor shows one column (in Word the text after it starts the next column).
     toDOM: (node) =>
       node.attrs.type === 'column'
-        ? ['span', { class: 'dx-col-break', contenteditable: 'false', 'data-label': '分欄符號' }]
+        ? ['span', { class: 'dx-col-break', contenteditable: 'false', 'data-label': tl('分欄符號') }]
         : ['br'],
   },
 
@@ -753,7 +754,7 @@ const nodes: Record<string, NodeSpec> = {
         if (height && heightRule !== 'auto') out.style = `height:${twipsToPx(height)}px`;
         const cls = [header && 'dx-tr-header', heightRule === 'exact' && 'dx-tr-exact', cantSplit && 'dx-tr-keep'].filter(Boolean);
         if (cls.length) out.class = cls.join(' ');
-        if (header) out.title = '標題列（跨頁重複）';
+        if (header) out.title = tl('標題列（跨頁重複）');
         return ['tr', out, 0];
       },
     };

@@ -1,4 +1,5 @@
 // Public API
+export { setLocale, getLocale, locales, matchLocale, addMessages, onLocaleChange, DEFAULT_LOCALE, tl as translate } from './i18n';
 export { createDocxEditor, type CreateDocxEditorOptions, type DocxEditorHandle, type DocxSource } from './mount';
 export { default as DocxEditorVue } from './vue/DocxEditor.vue';
 export { default as DocxToolbar } from './vue/DocxToolbar.vue';

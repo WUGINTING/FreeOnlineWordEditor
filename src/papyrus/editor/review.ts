@@ -43,6 +43,7 @@ import {
 import { threadRoot, withReplies, type DocComment } from '../docx/comments';
 import { closeHistory } from 'prosemirror-history';
 import { NO_TRACK, trackingMarks } from './trackChanges';
+import { tl } from '../i18n';
 
 export type RevisionKind = 'ins' | 'del' | 'format' | 'paraFormat' | 'paraMark';
 
@@ -74,9 +75,9 @@ const KIND_LABEL: Record<RevisionKind, string> = {
 };
 
 export function revisionLabel(r: Revision): string {
-  if (r.kind === 'paraMark') return r.mark === 'ins' ? '插入段落標記' : '刪除段落標記';
-  if (r.move) return r.kind === 'ins' ? '移入' : '移出';
-  return KIND_LABEL[r.kind];
+  if (r.kind === 'paraMark') return r.mark === 'ins' ? tl('插入段落標記') : tl('刪除段落標記');
+  if (r.move) return r.kind === 'ins' ? tl('移入') : tl('移出');
+  return tl(KIND_LABEL[r.kind]);
 }
 
 // ----- finding revisions -----
@@ -414,18 +415,18 @@ function revisionDecorations(doc: PMNode, revs: Revision[], decos: Decoration[])
   for (const r of revs) {
     const style = `--dx-rev:${authorColor(r.author)}`;
     if (r.kind === 'format') {
-      decos.push(Decoration.inline(r.from, r.to, { class: 'dx-rev-fmt', title: describeRevision('格式變更', r), style }, REV));
+      decos.push(Decoration.inline(r.from, r.to, { class: 'dx-rev-fmt', title: describeRevision(tl('格式變更'), r), style }, REV));
     } else if (r.kind === 'paraFormat') {
-      const title = describeRevision('段落格式變更', r);
+      const title = describeRevision(tl('段落格式變更'), r);
       groupNodes(doc, r.group, r.groupEnd, (n, pos) => {
         if (isPara(n)) decos.push(Decoration.node(pos, pos + n.nodeSize, { class: 'dx-rev-pfmt dx-rev-bar', title }, REV));
       });
     } else if (r.kind === 'paraMark') {
-      const title = describeRevision(r.mark === 'ins' ? '插入段落標記' : '刪除段落標記', r);
+      const title = describeRevision(r.mark === 'ins' ? tl('插入段落標記') : tl('刪除段落標記'), r);
       decos.push(Decoration.widget(r.to, () => markWidget(r.mark!, title, style), { side: 1, key: `pm:${r.mark}:${r.author}`, ignoreSelection: true, rev: true }));
     } else if (r.kind === 'ins' && (isBreak(doc.nodeAt(r.from)) || doc.resolve(r.from).parent !== doc.resolve(r.to).parent)) {
       // A page break inside an insertion is shown as inserted too.
-      const title = describeRevision(r.move ? '移入' : '插入', r);
+      const title = describeRevision(r.move ? tl('移入') : tl('插入'), r);
       groupNodes(doc, r.from, r.to, (n, pos) => {
         if (isBreak(n) && layersOf(n).some((l) => l.id === r.layerId)) {
           decos.push(Decoration.node(pos, pos + 1, { class: 'dx-rev-ins dx-rev-break dx-rev-bar', title, style }, REV));
@@ -439,7 +440,7 @@ function commentDecorations(doc: PMNode, comments: DocComment[], decos: Decorati
   const byId = new Map(comments.map((c) => [c.id, c]));
   for (const [id, range] of commentRanges(doc)) {
     const c = byId.get(id);
-    const title = c ? `留言（${c.author || '未知作者'}）：${c.text}` : '留言';
+    const title = c ? tl('留言（{0}）：{1}', c.author || tl('未知作者'), c.text) : tl('留言');
     if (range.to > range.from) {
       // Text typed at either end is inside the markers, so inside the range.
       decos.push(Decoration.inline(range.from, range.to, { class: 'dx-comment', 'data-comment-id': id, title }, { ...COMMENT, inclusiveStart: true, inclusiveEnd: true }));
@@ -1184,7 +1185,8 @@ export function revisionExcerpt(doc: PMNode, r: Revision, max = 40): string {
 /** How a revision is said: 「插入，王小明，115/09/26 14:32」. */
 export function revisionSpoken(r: Revision): string {
   const when = rocDate(r.date, r.dateUtc);
-  return `${revisionLabel(r)}，${r.author || '未知作者'}${when ? '，' + when : ''}`;
+  const who = r.author || tl('未知作者');
+  return when ? tl('{0}，{1}，{2}', revisionLabel(r), who, when) : tl('{0}，{1}', revisionLabel(r), who);
 }
 
 /** Show or hide revision marks (hidden = the document as if every change were accepted). */

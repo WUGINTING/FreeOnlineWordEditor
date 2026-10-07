@@ -17,8 +17,6 @@ Vue 3 + ProseMirror，MIT 授權。檔案全程在瀏覽器裡處理，不需要
 Office Open XML（ECMA-376）公開標準，**沒有**看過或複製 SuperDoc 的原始碼。
 紀錄在 [CLEAN_ROOM.md](CLEAN_ROOM.md)。
 
-> 編輯器本身的介面文字（工具列、對話框）目前是繁體中文。
-
 ## 馬上試試看
 
 需要 Node 20 以上。
@@ -162,6 +160,24 @@ export function WordEditor({ file }: { file: Blob | null }) {
 上面網址裡的 `0.1.0` 是套件的版本：請寫明要用的版本，新版出來時你的頁面才不會跟著變。
 
 偏好 ES 模組的話，用 `papyrus-docx/standalone`（`dist/papyrus-docx.standalone.js`），內容相同。
+
+### 介面語言
+
+介面有繁體中文（`zh-TW`，預設）、簡體中文（`zh-CN`）與英文（`en`）。請在建立編輯器之前選好語言：
+
+```ts
+import { setLocale, createDocxEditor } from 'papyrus-docx';
+
+setLocale(navigator.language);   // 'en-US' → en、'zh-Hans-CN' → zh-CN、'zh-HK' → zh-TW，其他 → en
+// 或： createDocxEditor('#editor', { locale: 'en' })   ·   <DocxEditorVue locale="en" />
+```
+
+語言是整個頁面共用一種，不是每個編輯器各自設定。`setLocale` 會回傳實際使用的語言；`locales()` 列出有哪些語言。
+
+想改某一句，或加上自己的語言，用原文（繁體中文）當索引把文字交給它：
+`addMessages('de', { '檔案': 'Datei', '尋找': 'Suchen' })`。某個語言沒有的句子會以繁體中文顯示。
+完整的文字清單在 [src/papyrus/locales/en.ts](src/papyrus/locales/en.ts)；`npm run i18n` 會列出每個語言檔還缺哪些。
+字型名稱、樣式名稱與文件本身的內容不會被翻譯。
 
 ### 只要讀寫檔案，不要畫面
 

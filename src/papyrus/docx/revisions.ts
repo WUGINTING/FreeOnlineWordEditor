@@ -7,6 +7,7 @@
 
 import type { DOMOutputSpec } from 'prosemirror-model';
 import { NS, child, parseFragment, parseFragments, serializeXml } from './xml';
+import { tl } from '../i18n';
 
 export interface RevisionInfo {
   author: string;
@@ -102,7 +103,7 @@ function contentText(el: Element): string {
       else if (w === 'tab' || w === 'ptab') out += '\t';
       else if (w === 'br' || w === 'cr') out += '\n';
       else if (w === 'noBreakHyphen') out += '‑';
-      else if (w === 'drawing' || w === 'pict' || w === 'object') out += '[圖形]';
+      else if (w === 'drawing' || w === 'pict' || w === 'object') out += tl('[圖形]');
       else if (w === 'rPr' || w === 'instrText' || w === 'delInstrText' || w === 'fldChar') continue;
       else walk(c);
     }
@@ -410,9 +411,9 @@ export function authorColor(author: string): string {
 
 /** "王小明，2026/01/02 10:30" for tooltips. */
 export function describeRevision(verb: string, info: RevisionInfo): string {
-  const who = info.author || '未知作者';
+  const who = info.author || tl('未知作者');
   const when = formatDate(info.date, info.dateUtc);
-  return `${verb}：${who}${when ? '，' + when : ''}`;
+  return when ? tl('{0}：{1}，{2}', verb, who, when) : tl('{0}：{1}', verb, who);
 }
 
 /**
@@ -450,13 +451,13 @@ export function rocDate(date: string | null, dateUtc?: string | null): string {
 export function deletionDOM(xml: string): DOMOutputSpec | null {
   const d = deletedInfo(xml);
   if (!d) return null;
-  const verb = d.kind === 'moveFrom' ? '移出' : '刪除';
+  const verb = d.kind === 'moveFrom' ? tl('移出') : tl('刪除');
   return ['span', {
     class: `dx-rev-del dx-rev-${d.kind}`,
     'data-text': d.text || ' ',
     title: describeRevision(verb, d),
     style: `--dx-rev:${authorColor(d.author)}`,
-  }, ['span', { class: 'dx-sr' }, `${verb}：`], ['span', { class: 'dx-rev-del-text' }, d.text || ' '], ['span', { class: 'dx-sr' }, `（${verb}結束）`]];
+  }, ['span', { class: 'dx-sr' }, tl('{0}：', verb)], ['span', { class: 'dx-rev-del-text' }, d.text || ' '], ['span', { class: 'dx-sr' }, tl('（{0}結束）', verb)]];
 }
 
 const wrapCache = new Map<string, Record<string, string> | null>();
@@ -480,7 +481,7 @@ export function insertionAttrs(layers: string): Record<string, string> | null {
           class: `dx-rev-ins dx-rev-${ins.kind}`,
           // Said by screen readers that know it, besides the colour and underline (persona-300).
           role: 'insertion',
-          title: describeRevision(ins.kind === 'moveTo' ? '移入' : '插入', ins.info),
+          title: describeRevision(ins.kind === 'moveTo' ? tl('移入') : tl('插入'), ins.info),
           style: `--dx-rev:${authorColor(ins.info.author)}`,
         };
       }

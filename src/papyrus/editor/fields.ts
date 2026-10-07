@@ -3,6 +3,7 @@ import { AddMarkStep, AddNodeMarkStep, AttrStep, DocAttrStep, RemoveMarkStep, Re
 import type { Node as PMNode } from 'prosemirror-model';
 import type { EditorView } from 'prosemirror-view';
 import { parseLayers, type Layer } from '../docx/wrappers';
+import { tl } from '../i18n';
 
 /**
  * Fields to fill in: Word's content controls (w:sdt) in a template, e.g. 「客戶名稱」 or
@@ -71,7 +72,7 @@ function fieldOf(layer: Layer): Omit<DocField, 'filled' | 'text' | 'from' | 'to'
   const lock = attrVal(pr, 'lock') ?? '';
   return {
     id: layer.id,
-    title: alias || tag || '未命名欄位',
+    title: alias || tag || tl('未命名欄位'),
     tag,
     kind: kindOf(pr),
     required: REQUIRED.test(tag) || REQUIRED.test(alias) || /\*\s*$/.test(alias),

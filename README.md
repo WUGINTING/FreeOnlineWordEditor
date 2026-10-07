@@ -18,8 +18,6 @@ The editor was written from scratch in a clean room: only SuperDoc's **public fe
 description** and the public Office Open XML standard (ECMA-376) were consulted; SuperDoc's
 source code was **never** read or copied. See [CLEAN_ROOM.md](CLEAN_ROOM.md).
 
-> The editor's own interface (ribbon, dialogs) is in Traditional Chinese for now.
-
 ## Try it
 
 Node 20 or newer.
@@ -171,6 +169,27 @@ one you want, so that your page keeps working when a newer one comes out.
 
 If you prefer an ES module, `papyrus-docx/standalone` (`dist/papyrus-docx.standalone.js`) has
 the same content.
+
+### Interface language
+
+The interface comes in Traditional Chinese (`zh-TW`, the default), Simplified Chinese (`zh-CN`)
+and English (`en`). Choose the language before creating the editor:
+
+```ts
+import { setLocale, createDocxEditor } from 'papyrus-docx';
+
+setLocale(navigator.language);   // 'en-US' → en, 'zh-Hans-CN' → zh-CN, 'zh-HK' → zh-TW, anything else → en
+// or: createDocxEditor('#editor', { locale: 'en' })   ·   <DocxEditorVue locale="en" />
+```
+
+The language is one for the whole page, not per editor. `setLocale` returns the language it used;
+`locales()` lists the ones there are.
+
+To change a text, or add a language of your own, give the texts with the source text (Traditional
+Chinese) as the key: `addMessages('de', { '檔案': 'Datei', '尋找': 'Suchen' })`. A text a language
+does not have is shown in Traditional Chinese. The full list of texts is
+[src/papyrus/locales/en.ts](src/papyrus/locales/en.ts); `npm run i18n` says what each language
+file lacks. Font names, style names and the document's own text are never translated.
 
 ### Reading and writing files only, without the interface
 

@@ -147,7 +147,10 @@ const PREFERRED = ['normal', 'title', 'subtitle', 'heading 1', 'heading 2', 'hea
 const GALLERY = ['normal', 'heading 1', 'heading 2', 'heading 3', 'title'];
 
 const styleOptions = computed(() => {
-  const list = props.styles.map((s) => ({ id: s.id, key: s.name.toLowerCase(), label: STYLE_NAMES[s.name.toLowerCase()] ?? s.name }));
+  const list = props.styles.map((s) => {
+    const known = STYLE_NAMES[s.name.toLowerCase()];
+    return { id: s.id, key: s.name.toLowerCase(), label: known != null ? tl(known) : s.name };
+  });
   const rank = (k: string) => {
     const i = PREFERRED.indexOf(k);
     return i < 0 ? PREFERRED.length : i;
@@ -176,7 +179,7 @@ function goRevision(dir: 1 | -1) {
   const r = reviewSummary(state).current;
   if (!state || !r) return;
   const all = collectRevisions(state.doc);
-  spoken.value = `第 ${all.findIndex((x) => x.key === r.key) + 1} 處，共 ${all.length} 處：${revisionSpoken(r)}`;
+  spoken.value = tl('第 {0} 處，共 {1} 處：{2}', all.findIndex((x) => x.key === r.key) + 1, all.length, revisionSpoken(r));
 }
 /** The open document's styles, so bold / alignment act on what the text really shows. */
 const styles = () => props.editor?.model.styles;
@@ -238,7 +241,7 @@ async function onImage(e: Event) {
     try {
       await props.editor?.insertImageFile(file);
     } catch {
-      window.alert(UNSUPPORTED_IMAGE);
+      window.alert(tl(UNSUPPORTED_IMAGE));
     }
   }
 }
@@ -291,7 +294,7 @@ function setPage(change: (p: PageSetup) => PageSetup) {
   if (!p || !props.editor) return;
   const next = change(p);
   if (next.marginLeft + next.marginRight >= next.width - 567 || next.marginTop + next.marginBottom >= next.height - 567) {
-    emit('notice', '邊界太大，頁面上沒有可以寫字的地方了。請改用「自訂邊界…」調整。');
+    emit('notice', tl('邊界太大，頁面上沒有可以寫字的地方了。請改用「自訂邊界…」調整。'));
     return;
   }
   props.editor.setPageSetup(next);
@@ -310,7 +313,7 @@ const isPaper = (p: PageSetup | null, paper: (typeof PAPERS)[number]) =>
 const cursorColumns = () => (props.editor?.view ? props.editor.cursorSection().columns.count : 1);
 function setColumns(count: number) {
   props.editor?.setColumns({ count });
-  if (count > 1) emit('notice', `已設為 ${count} 欄。`);
+  if (count > 1) emit('notice', tl('已設為 {0} 欄。', count));
 }
 
 // ----- 參考資料 / 校閱 -----
@@ -347,19 +350,19 @@ const canMerge = computed(() => {
   return inTable.value && !!props.editor?.can(mergeCells);
 });
 const tabs = computed<Tab[]>(() => {
-  if (props.readOnly) return [{ id: 'view', label: '檢視' }];
+  if (props.readOnly) return [{ id: 'view', label: tl('檢視') }];
   const out: Tab[] = [
-    { id: 'home', label: '常用' },
-    { id: 'insert', label: '插入' },
-    { id: 'design', label: '設計' },
-    { id: 'layout', label: '版面配置' },
-    { id: 'references', label: '參考資料' },
-    { id: 'review', label: '校閱' },
-    { id: 'view', label: '檢視' },
+    { id: 'home', label: tl('常用') },
+    { id: 'insert', label: tl('插入') },
+    { id: 'design', label: tl('設計') },
+    { id: 'layout', label: tl('版面配置') },
+    { id: 'references', label: tl('參考資料') },
+    { id: 'review', label: tl('校閱') },
+    { id: 'view', label: tl('檢視') },
   ];
-  if (inTable.value) out.push({ id: 'tableDesign', label: '表格設計', context: '表格工具' }, { id: 'tableLayout', label: '表格版面配置', context: '表格工具' });
-  if (imageSelected.value) out.push({ id: 'picture', label: '圖片格式', context: '圖片工具' });
-  if (shapeSelected.value) out.push({ id: 'shape', label: '圖形格式', context: '繪圖工具' });
+  if (inTable.value) out.push({ id: 'tableDesign', label: tl('表格設計'), context: tl('表格工具') }, { id: 'tableLayout', label: tl('表格版面配置'), context: tl('表格工具') });
+  if (imageSelected.value) out.push({ id: 'picture', label: tl('圖片格式'), context: tl('圖片工具') });
+  if (shapeSelected.value) out.push({ id: 'shape', label: tl('圖形格式'), context: tl('繪圖工具') });
   return out;
 });
 const tab = ref<TabId>(props.readOnly ? 'view' : 'home');
@@ -545,7 +548,7 @@ function submitTableForm() {
   const r = Math.round(Number(tableRows.value));
   const c = Math.round(Number(tableCols.value));
   if (!(r >= 1 && r <= MAX_TABLE_ROWS && c >= 1 && c <= MAX_TABLE_COLS)) {
-    emit('notice', `列數請輸入 1～${MAX_TABLE_ROWS}，欄數請輸入 1～${MAX_TABLE_COLS}。`);
+    emit('notice', tl('列數請輸入 1～{0}，欄數請輸入 1～{1}。', MAX_TABLE_ROWS, MAX_TABLE_COLS));
     return;
   }
   tableForm.value = false;
@@ -690,7 +693,7 @@ onBeforeUnmount(() => {
           :aria-selected="t.id === activeTab.id"
           :aria-controls="panelId"
           :tabindex="t.id === activeTab.id ? 0 : -1"
-          :title="t.context ? `${t.context}：${t.label}` : undefined"
+          :title="t.context ? tl('{0}：{1}', t.context, t.label) : undefined"
           @click="selectTab(t.id)"
           @dblclick="toggleCollapsed"
         >{{ t.label }}</button>
@@ -699,8 +702,8 @@ onBeforeUnmount(() => {
         type="button"
         class="dx-collapse"
         :aria-pressed="collapsed"
-        :title="collapsed ? '固定功能區：一直顯示工具 (Ctrl+F1)' : '摺疊功能區：只顯示索引標籤，按標籤才顯示工具 (Ctrl+F1)'"
-        :aria-label="collapsed ? '固定功能區' : '摺疊功能區'"
+        :title="collapsed ? tl('固定功能區：一直顯示工具 (Ctrl+F1)') : tl('摺疊功能區：只顯示索引標籤，按標籤才顯示工具 (Ctrl+F1)')"
+        :aria-label="collapsed ? tl('固定功能區') : tl('摺疊功能區')"
         @click="toggleCollapsed"
       >
         <svg class="dx-ico" viewBox="0 0 24 24" v-html="collapsed ? ICONS.pin : ICONS.collapse" />
@@ -766,12 +769,12 @@ onBeforeUnmount(() => {
             <div class="dx-rbody dx-rows">
               <div class="dx-rrow">
                 <select :title="tl('字型')" :aria-label="tl('字型')" class="dx-w-font" :value="s?.fontFamily ?? ''" @change="onFont">
-                  <option value="">{{ s?.mixed?.fontFamily ? '（多種字型）' : '（預設字型）' }}</option>
+                  <option value="">{{ s?.mixed?.fontFamily ? tl('（多種字型）') : tl('（預設字型）') }}</option>
                   <option v-if="s?.fontFamily && !FONTS.some((f) => f.value === s!.fontFamily)" :value="s.fontFamily">{{ s.fontFamily }}</option>
                   <option v-for="f in FONTS" :key="f.value" :value="f.value">{{ f.label }}</option>
                 </select>
                 <select :title="tl('字型大小')" :aria-label="tl('字型大小')" class="dx-w-size" :value="s?.fontSize ?? ''" @change="onSize">
-                  <option value="">{{ s?.mixed?.fontSize ? '多種' : '—' }}</option>
+                  <option value="">{{ s?.mixed?.fontSize ? tl('多種') : '—' }}</option>
                   <option v-if="s?.fontSize && !SIZES.includes(s.fontSize)" :value="s.fontSize">{{ s.fontSize }}</option>
                   <option v-for="size in SIZES" :key="size" :value="size">{{ size }}</option>
                 </select>
@@ -856,7 +859,7 @@ onBeforeUnmount(() => {
                 </button>
                 <select :title="tl('行距')" :aria-label="tl('行距')" class="dx-w-size" value="" @change="onSpacing">
                   <option value="" disabled>{{ tl('行距') }}</option>
-                  <option v-for="o in SPACING" :key="o.value" :value="o.value">{{ o.label }}</option>
+                  <option v-for="o in SPACING" :key="o.value" :value="o.value">{{ tl(o.label) }}</option>
                 </select>
               </div>
             </div>
@@ -878,7 +881,7 @@ onBeforeUnmount(() => {
                   class="dx-style"
                   :class="['dx-style-' + o.key.replace(' ', ''), { on: currentStyle === o.id }]"
                   :aria-pressed="currentStyle === o.id"
-                  :title="`樣式：${o.label}`"
+                  :title="tl('樣式：{0}', o.label)"
                   @click="applyStyle(o.id)"
                 >{{ o.label }}</button>
               </div>
@@ -945,7 +948,7 @@ onBeforeUnmount(() => {
                     </div>
                   </form>
                   <template v-else>
-                  <div class="dx-grid-label">{{ hover.r ? `${hover.r} × ${hover.c} 表格` : '插入表格' }}</div>
+                  <div class="dx-grid-label">{{ hover.r ? tl('{0} × {1} 表格', hover.r, hover.c) : tl('插入表格') }}</div>
                   <div ref="gridCells" class="dx-grid-cells">
                     <template v-for="r in 8" :key="r">
                       <button
@@ -955,7 +958,7 @@ onBeforeUnmount(() => {
                         class="dx-cell"
                         :class="{ on: r <= hover.r && c <= hover.c }"
                         :tabindex="r === gridStop.r && c === gridStop.c ? 0 : -1"
-                        :aria-label="`${r} 列 ${c} 欄`"
+                        :aria-label="tl('{0} 列 {1} 欄', r, c)"
                         @mouseenter="hover = { r, c }"
                         @focus="hover = { r, c }"
                         @click="pickTable(r, c)"
@@ -982,8 +985,8 @@ onBeforeUnmount(() => {
                 </button>
                 <div v-if="menu === 'shapes'" class="dx-menu dx-popup dx-shape-menu" role="menu" :aria-label="tl('圖案')" @keydown="onMenuKey">
                   <template v-for="g in SHAPE_MENU" :key="g.label">
-                    <div class="dx-menu-head" role="presentation">{{ g.label }}</div>
-                    <button v-for="k in g.kinds" :key="k.id" type="button" role="menuitem" tabindex="-1" :title="`插入${k.label}`" @click="pick(() => insertShape(k.id))">{{ k.label.replace(/^流程圖：/, '') }}</button>
+                    <div class="dx-menu-head" role="presentation">{{ tl(g.label) }}</div>
+                    <button v-for="k in g.kinds" :key="k.id" type="button" role="menuitem" tabindex="-1" :title="tl('插入{0}', tl(k.label))" @click="pick(() => insertShape(k.id))">{{ tl(k.label).replace(/^[^:：]*[:：]\s*/, '') }}</button>
                   </template>
                 </div>
               </div>
@@ -1090,7 +1093,7 @@ onBeforeUnmount(() => {
                       role="menuitem"
                       tabindex="-1"
                       class="dx-wm-tile"
-                      :title="`浮水印「${p}」：斜向、半透明，每一頁都有`"
+                      :title="tl('浮水印「{0}」：斜向、半透明，每一頁都有', p)"
                       :aria-label="p"
                       @click="pick(() => presetWatermark(p))"
                     >
@@ -1124,7 +1127,7 @@ onBeforeUnmount(() => {
                     tabindex="-1"
                     :aria-checked="isMargins(cursorPage(), m)"
                     @click="pick(() => setPage(marginsOf(m)))"
-                  ><b>{{ m.label }}</b><small>{{ m.note }}</small></button>
+                  ><b>{{ tl(m.label) }}</b><small>{{ tl(m.note) }}</small></button>
                   <button type="button" role="menuitem" tabindex="-1" @click="pick(() => emit('page-setup'))">{{ tl('自訂邊界…') }}</button>
                 </div>
               </div>
@@ -1150,7 +1153,7 @@ onBeforeUnmount(() => {
                     tabindex="-1"
                     :aria-checked="isPaper(cursorPage(), p)"
                     @click="pick(() => setPaper(p))"
-                  >{{ p.label }}</button>
+                  >{{ tl(p.label) }}</button>
                   <button type="button" role="menuitem" tabindex="-1" @click="pick(() => emit('page-setup'))">{{ tl('其他紙張大小…') }}</button>
                 </div>
               </div>
@@ -1160,7 +1163,7 @@ onBeforeUnmount(() => {
                 </button>
                 <div v-if="menu === 'columns'" class="dx-menu dx-popup" role="menu" :aria-label="tl('欄')" @keydown="onMenuKey">
                   <button
-                    v-for="(label, i) in ['一欄', '二欄', '三欄']"
+                    v-for="(label, i) in [tl('一欄'), tl('二欄'), tl('三欄')]"
                     :key="label"
                     type="button"
                     role="menuitemradio"
@@ -1239,7 +1242,7 @@ onBeforeUnmount(() => {
               <button
                 type="button"
                 class="dx-big"
-                :title="tocCount ? '更新目錄：依目前的標題重建目錄，並重新計算目錄與交互參照的頁碼' : '更新目錄：這份文件沒有目錄或頁碼參照'"
+                :title="tocCount ? tl('更新目錄：依目前的標題重建目錄，並重新計算目錄與交互參照的頁碼') : tl('更新目錄：這份文件沒有目錄或頁碼參照')"
                 :disabled="!tocCount"
                 @click="emit('update-toc')"
               >
@@ -1297,7 +1300,7 @@ onBeforeUnmount(() => {
                 :class="{ on: commentsOpen }"
                 :aria-pressed="commentsOpen"
                 :disabled="!commentCount"
-                :title="commentCount ? `顯示或隱藏留言（共 ${commentCount} 則）` : '這份文件沒有留言'"
+                :title="commentCount ? tl('顯示或隱藏留言（共 {0} 則）', commentCount) : tl('這份文件沒有留言')"
                 @click="emit('toggle-comments')"
               >
                 <svg class="dx-ico" viewBox="0 0 24 24" v-html="ICONS.comments" /><span>{{ tl('顯示留言') }}</span>
@@ -1324,7 +1327,7 @@ onBeforeUnmount(() => {
                 class="dx-big"
                 :class="{ on: rev.show }"
                 :aria-pressed="rev.show"
-                :title="rev.show ? '隱藏修訂標記（顯示接受全部修訂後的樣子）' : '顯示修訂標記'"
+                :title="rev.show ? tl('隱藏修訂標記（顯示接受全部修訂後的樣子）') : tl('顯示修訂標記')"
                 @click="run(toggleRevisionMarks)"
               >
                 <svg class="dx-ico" viewBox="0 0 24 24" v-html="ICONS.markup" /><span>{{ tl('顯示標記') }}</span>
@@ -1358,7 +1361,7 @@ onBeforeUnmount(() => {
                 <button type="button" class="dx-sm" :title="tl('下一個修訂')" :aria-label="tl('下一個修訂')" :disabled="!rev.count" @click="goRevision(1)">
                   <svg class="dx-ico" viewBox="0 0 24 24" v-html="ICONS.next" /><span>{{ tl('下一個') }}</span>
                 </button>
-                <span v-if="rev.count" class="dx-review-label" :title="`這部分有 ${rev.count} 處修訂`">{{ tl('修訂') }} {{ rev.count }}</span>
+                <span v-if="rev.count" class="dx-review-label" :title="tl('這部分有 {0} 處修訂', rev.count)">{{ tl('修訂 {0}', rev.count) }}</span>
                 <span class="dx-sr" aria-live="polite">{{ spoken }}</span>
               </div>
               <div class="dx-stack">
@@ -1440,8 +1443,8 @@ onBeforeUnmount(() => {
               <button
                 type="button"
                 class="dx-sm"
-                :title="canMerge ? '合併選取的儲存格' : '請先選取兩個以上的儲存格'"
-                :aria-description="canMerge ? undefined : '請先選取兩個以上的儲存格'"
+                :title="canMerge ? tl('合併選取的儲存格') : tl('請先選取兩個以上的儲存格')"
+                :aria-description="canMerge ? undefined : tl('請先選取兩個以上的儲存格')"
                 :disabled="!canMerge"
                 @click="run(mergeCells)"
               >{{ tl('合併儲存格') }}</button>

@@ -120,14 +120,14 @@ async function rotateRight() {
   message.value = '';
   if (!src) return;
   if (inWord.value.turned) {
-    message.value = TURNED_IN_WORD;
+    message.value = tl(TURNED_IN_WORD);
     return;
   }
   // Cropped in Word: what Word shows is what is turned.
   const turned = await rotateImageRight(src, inWord.value.crop);
   // Still the same picture selected (the drawing takes a moment).
   if (image.value?.attrs.src !== src) return;
-  if (!turned || !run(rotateImage(turned))) message.value = '這張圖片無法在網頁上旋轉，請用 Word 旋轉。';
+  if (!turned || !run(rotateImage(turned))) message.value = tl('這張圖片無法在網頁上旋轉，請用 Word 旋轉。');
 }
 async function onReplace(e: Event) {
   const input = e.target as HTMLInputElement;
@@ -140,7 +140,7 @@ async function onReplace(e: Event) {
     const { src, width, height } = await readImageFile(file);
     run(replaceImage(src, width, height));
   } catch {
-    message.value = UNSUPPORTED_IMAGE;
+    message.value = tl(UNSUPPORTED_IMAGE);
   }
 }
 </script>
@@ -163,7 +163,7 @@ async function onReplace(e: Event) {
     </label>
     <button
       type="button"
-      :title="inWord.turned ? TURNED_IN_WORD : '把圖片向右轉 90 度（順時針）'"
+      :title="inWord.turned ? tl(TURNED_IN_WORD) : tl('把圖片向右轉 90 度（順時針）')"
       :aria-disabled="inWord.turned ? 'true' : undefined"
       @click="rotateRight"
     >{{ tl('向右旋轉 90°') }}</button>

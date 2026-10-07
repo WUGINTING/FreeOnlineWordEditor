@@ -51,8 +51,7 @@ workspace.append(head, wrap);
 
 const footer = document.createElement('footer');
 footer.className = 'demo-footer';
-for (const text of [t.fictional, lang === 'zh-TW' ? '' : t.editorLanguage, t.local]) {
-  if (!text) continue;
+for (const text of [t.fictional, t.local]) {
   const span = document.createElement('span');
   span.textContent = text;
   footer.append(span);
