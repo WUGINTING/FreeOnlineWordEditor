@@ -2,6 +2,7 @@
 
 [English](README.md) | **繁體中文** | [简体中文](README.zh-CN.md)
 
+[![npm](https://img.shields.io/npm/v/papyrus-docx.svg)](https://www.npmjs.com/package/papyrus-docx)
 [![CI](https://github.com/WUGINTING/FreeOnlineWordEditor/actions/workflows/ci.yml/badge.svg)](https://github.com/WUGINTING/FreeOnlineWordEditor/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
@@ -55,7 +56,7 @@ npm run dev
 npm install papyrus-docx
 ```
 
-發佈到 npm 之前，可以直接從 GitHub 安裝（安裝時會自動建置）：
+想用 main 分支上還沒發佈的最新程式，可以直接從 GitHub 安裝（安裝時會自動建置）：
 
 ```bash
 npm install github:WUGINTING/FreeOnlineWordEditor
@@ -146,11 +147,11 @@ export function WordEditor({ file }: { file: Blob | null }) {
 ### 3. 一行 script（不需要打包工具）
 
 `dist/papyrus-docx.standalone.iife.js` 一個檔案就包含全部（Vue、樣式都在裡面），
-載入後用全域的 `PapyrusDocx`：
+從 CDN 載入（如下），或把檔案放到自己的網站，然後用全域的 `PapyrusDocx`：
 
 ```html
 <div id="editor" style="height: 80vh"></div>
-<script src="papyrus-docx.standalone.iife.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/papyrus-docx@0.1.0/dist/papyrus-docx.standalone.iife.js"></script>
 <script>
   var editor = PapyrusDocx.createDocxEditor('#editor');
   // editor.open(file)、editor.save()、editor.download('文件.docx')
@@ -158,9 +159,7 @@ export function WordEditor({ file }: { file: Blob | null }) {
 ```
 
 完整範例見 [examples/script-tag.html](examples/script-tag.html)（先 `npm run build`，再用瀏覽器打開）。
-想先試試、不想下載任何東西的話，示範網站上放著這個檔案的最新版：
-`https://wuginting.github.io/FreeOnlineWordEditor/dist/papyrus-docx.standalone.iife.js`
-（會跟著 main 分支更新；正式使用請把檔案複製到自己的網站）。
+上面網址裡的 `0.1.0` 是套件的版本：請寫明要用的版本，新版出來時你的頁面才不會跟著變。
 
 偏好 ES 模組的話，用 `papyrus-docx/standalone`（`dist/papyrus-docx.standalone.js`），內容相同。
 

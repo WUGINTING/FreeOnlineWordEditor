@@ -2,6 +2,7 @@
 
 **English** | [繁體中文](README.zh-TW.md) | [简体中文](README.zh-CN.md)
 
+[![npm](https://img.shields.io/npm/v/papyrus-docx.svg)](https://www.npmjs.com/package/papyrus-docx)
 [![CI](https://github.com/WUGINTING/FreeOnlineWordEditor/actions/workflows/ci.yml/badge.svg)](https://github.com/WUGINTING/FreeOnlineWordEditor/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
@@ -58,7 +59,8 @@ Three ways; pick one:
 npm install papyrus-docx
 ```
 
-Until the package is on npm, install it straight from GitHub (it builds itself while installing):
+To use the newest code of the main branch before it is released, install straight from GitHub
+(it builds itself while installing):
 
 ```bash
 npm install github:WUGINTING/FreeOnlineWordEditor
@@ -151,11 +153,12 @@ export function WordEditor({ file }: { file: Blob | null }) {
 ### 3. One script, no build step
 
 `dist/papyrus-docx.standalone.iife.js` is a single file with everything inside (Vue and the
-styles too). Load it and use the global `PapyrusDocx`:
+styles too). Load it, from a CDN as here or from a copy on your own site, and use the global
+`PapyrusDocx`:
 
 ```html
 <div id="editor" style="height: 80vh"></div>
-<script src="papyrus-docx.standalone.iife.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/papyrus-docx@0.1.0/dist/papyrus-docx.standalone.iife.js"></script>
 <script>
   var editor = PapyrusDocx.createDocxEditor('#editor');
   // editor.open(file), editor.save(), editor.download('document.docx')
@@ -163,10 +166,8 @@ styles too). Load it and use the global `PapyrusDocx`:
 ```
 
 A complete page: [examples/script-tag.html](examples/script-tag.html) (run `npm run build`, then
-open it in a browser). To try it without downloading anything, the demo site serves the latest
-build of the file:
-`https://wuginting.github.io/FreeOnlineWordEditor/dist/papyrus-docx.standalone.iife.js`
-(it follows the main branch; for production, copy the file into your site).
+open it in a browser). In the address above, `0.1.0` is the version of the package: name the
+one you want, so that your page keeps working when a newer one comes out.
 
 If you prefer an ES module, `papyrus-docx/standalone` (`dist/papyrus-docx.standalone.js`) has
 the same content.
