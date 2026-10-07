@@ -1,0 +1,229 @@
+/* Text boxes and shapes (editor/shapeView.ts) */
+
+/* Anchored: a mark in the line; the drawing is placed from it (left / top set after layout). */
+.dx-shape-float {
+  position: relative;
+  display: inline;
+  text-indent: 0;
+}
+.dx-shape-at {
+  display: inline;
+  font-size: inherit;
+  line-height: inherit;
+}
+.dx-shape-float > .dx-shape-box {
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+/* A header or footer copy clips its content: not a text box placed from the page (above the header ...). */
+.dx-header:has(.dx-shape-float),
+.dx-footer:has(.dx-shape-float) {
+  overflow: visible;
+}
+/* The room text wraps around (sized by placeShapes). */
+.dx-shape-wrap {
+  display: none;
+  pointer-events: none;
+  user-select: none;
+}
+/* In the line of text: as tall and wide as the drawing (with its effect extent). */
+.dx-shape-inline {
+  position: relative;
+  display: inline-block;
+  vertical-align: baseline;
+  text-indent: 0;
+}
+.dx-shape-inline > .dx-shape-box {
+  position: absolute;
+}
+.dx-shape-box {
+  display: block;
+  line-height: normal;
+  text-align: left;
+  white-space: normal;
+  font-weight: normal;
+  font-style: normal;
+  text-decoration: none;
+}
+.dx-shape-svg {
+  position: absolute;
+  left: 0;
+  top: 0;
+  overflow: visible;
+  pointer-events: visiblePainted;
+}
+/*
+ * Shapes are stacked in Word's order (z-index from relativeHeight); those behind the text have a
+ * negative one. The body is a stacking context of its own, so they stay above the pages and below
+ * the headers, footers and the header editor, whatever their numbers.
+ */
+.dx-host {
+  isolation: isolate;
+}
+.dx-shape-behind .dx-shape-svg {
+  pointer-events: none;
+}
+.dx-shape-textbox {
+  position: absolute;
+  transform-origin: 50% 50%;
+  pointer-events: none;
+}
+.dx-shape-text {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  overflow: visible;
+  pointer-events: auto;
+  cursor: default;
+  white-space: pre-wrap;
+  white-space: break-spaces;
+  text-indent: 0;
+}
+.dx-shape-content {
+  min-width: 0;
+}
+.dx-shape-fixed.ProseMirror-selectednode .dx-shape-box,
+.dx-shape-inline.ProseMirror-selectednode .dx-shape-box {
+  outline: 1px solid var(--dx-accent, #1a73e8);
+}
+.dx-shape-unknown {
+  box-sizing: border-box;
+  border: 1px dashed var(--dx-muted, #80868b);
+  background: rgba(241, 243, 244, 0.6);
+  overflow: hidden;
+}
+.dx-shape-preview {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.dx-shape-note {
+  position: absolute;
+  left: 2px;
+  bottom: 2px;
+  font: 11px/1.3 system-ui, 'Microsoft JhengHei', sans-serif;
+  color: var(--dx-muted, #80868b);
+  background: rgba(255, 255, 255, 0.85);
+  padding: 0 3px;
+  border-radius: 2px;
+}
+/* While its text is edited (editor/shapeEdit.ts), the editor sits over the text box: the drawn text is hidden. */
+.dx-shape-edit-box {
+  position: absolute;
+  pointer-events: auto;
+  box-sizing: border-box;
+  outline: 1px dashed var(--dx-accent, #1a73e8);
+  outline-offset: 2px;
+  display: flex;
+  flex-direction: column;
+}
+.dx-shape-edit-box > .dx-shape-doc {
+  outline: none;
+  min-height: 1em;
+}
+@media print {
+  .dx-shape-edit-box {
+    outline: none;
+  }
+  /* The printout shows the document, not the editor's notes about it. */
+  .dx-shape-note {
+    display: none;
+  }
+  .dx-shape-unknown {
+    border: 0;
+    background: none;
+  }
+}
+/* In a header or footer copy (every page), a shape that can't be drawn is not marked either. */
+.dx-header .dx-shape-note,
+.dx-footer .dx-shape-note {
+  display: none;
+}
+.dx-header .dx-shape-unknown,
+.dx-footer .dx-shape-unknown {
+  border-color: transparent;
+  background: none;
+}
+
+/* Selected shapes (editor/shapeInteract.ts): a frame with handles over the page. */
+.dx-shape-sel-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 3;
+}
+.dx-shape-sel {
+  position: absolute;
+  box-sizing: border-box;
+  outline: 1px solid var(--dx-accent, #1a73e8);
+}
+.dx-shape-sel-parent {
+  outline-style: dashed;
+  outline-color: var(--dx-muted, #80868b);
+}
+.dx-shape-handle {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  margin: -4px 0 0 -4px;
+  box-sizing: border-box;
+  background: #fff;
+  border: 1px solid var(--dx-accent, #1a73e8);
+  pointer-events: auto;
+}
+.dx-shape-end {
+  margin: 0;
+  border-radius: 50%;
+  cursor: crosshair;
+}
+.dx-h-nw { left: 0; top: 0; cursor: nwse-resize; }
+.dx-h-n { left: 50%; top: 0; cursor: ns-resize; }
+.dx-h-ne { left: 100%; top: 0; cursor: nesw-resize; }
+.dx-h-e { left: 100%; top: 50%; cursor: ew-resize; }
+.dx-h-se { left: 100%; top: 100%; cursor: nwse-resize; }
+.dx-h-s { left: 50%; top: 100%; cursor: ns-resize; }
+.dx-h-sw { left: 0; top: 100%; cursor: nesw-resize; }
+.dx-h-w { left: 0; top: 50%; cursor: ew-resize; }
+.dx-shape-ghost {
+  position: absolute;
+  box-sizing: border-box;
+  border: 1px dashed var(--dx-accent, #1a73e8);
+  background: rgba(26, 115, 232, 0.06);
+}
+.dx-shape-ghost-line {
+  background: none;
+}
+.dx-shape-snap {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(26, 115, 232, 0.5);
+}
+.dx-shape-float > .dx-shape-box,
+.dx-shape-inline > .dx-shape-box {
+  cursor: move;
+}
+/* 插入 › 圖案: the page waits for a click or a drag. */
+.dx-shape-place-cover {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  cursor: crosshair;
+}
+.dx-live {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+@media print {
+  .dx-shape-sel-layer,
+  .dx-shape-place-cover {
+    display: none;
+  }
+}

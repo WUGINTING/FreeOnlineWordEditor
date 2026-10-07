@@ -1,0 +1,59 @@
+/* Find and replace (editor/search.ts) */
+.dx-search-hit {
+  background: rgba(255, 213, 0, 0.45);
+  border-radius: 1px;
+}
+.dx-search-hit.dx-search-current {
+  background: #ff9632;
+  box-shadow: 0 0 0 1px #e8710a;
+}
+
+/* Pictures with resize handles (editor/imageView.ts) */
+.dx-img-wrap {
+  position: relative;
+  display: inline-block;
+  max-width: 100%;
+  line-height: 0;
+  vertical-align: bottom;
+  text-indent: 0;
+}
+.dx-img-wrap .dx-img {
+  display: block;
+}
+.dx-img-wrap.ProseMirror-selectednode {
+  outline: 2px solid var(--dx-accent, #1a73e8);
+}
+.dx-img-handle {
+  display: none;
+  position: absolute;
+  width: 9px;
+  height: 9px;
+  background: #fff;
+  border: 1px solid var(--dx-accent, #1a73e8);
+  box-sizing: border-box;
+  z-index: 1;
+  touch-action: none;
+}
+.dx-img-wrap.ProseMirror-selectednode .dx-img-handle {
+  display: block;
+}
+.dx-img-nw { left: -5px; top: -5px; cursor: nwse-resize; }
+.dx-img-ne { right: -5px; top: -5px; cursor: nesw-resize; }
+.dx-img-sw { left: -5px; bottom: -5px; cursor: nesw-resize; }
+.dx-img-se { right: -5px; bottom: -5px; cursor: nwse-resize; }
+.dx-img-e { right: -5px; top: calc(50% - 5px); cursor: ew-resize; }
+.dx-img-s { bottom: -5px; left: calc(50% - 5px); cursor: ns-resize; }
+
+/* Table rows (editor/tableCommands.ts): header rows repeat on each page in Word */
+.dx-doc tr.dx-tr-header > td,
+.dx-doc tr.dx-tr-header > th {
+  box-shadow: inset 3px 0 0 rgba(26, 115, 232, 0.55);
+}
+.dx-doc tr.dx-tr-header > td:not(:first-child),
+.dx-doc tr.dx-tr-header > th:not(:first-child) {
+  box-shadow: none;
+}
+.dx-doc tr.dx-tr-exact > td,
+.dx-doc tr.dx-tr-exact > th {
+  overflow: hidden;
+}

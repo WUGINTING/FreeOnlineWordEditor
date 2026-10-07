@@ -1,0 +1,27 @@
+/*
+ * Text columns (editor/columnLayout.ts). A section's blocks are a column wide: the section's
+ * padding (--dx-cpl / --dx-cpr, sectionColumns) plus what moves a block into another column
+ * (--dx-cdl / --dx-cdr) and up to the column's top (top). While the pages are measured
+ * (.dx-col-measure on the host) the moves up and the spacers pulling the text back up are off,
+ * so the layout is measured on the plain text flow.
+ */
+.dx-doc > .dx-colsec {
+  padding-left: calc(var(--dx-cpl, 0px) + var(--dx-cdl, 0px)) !important;
+  padding-right: calc(var(--dx-cpr, 0px) + var(--dx-cdr, 0px)) !important;
+}
+.dx-host .dx-doc > .dx-col-shift {
+  position: relative;
+}
+.dx-col-measure .dx-doc > .dx-col-shift {
+  top: 0 !important;
+}
+.dx-col-measure .dx-doc > .dx-collapse {
+  margin-top: 0 !important;
+}
+/* The line between columns (w:sep), on the page. */
+.dx-page > .dx-col-rule {
+  position: absolute;
+  width: 0;
+  border-left: 0.75px solid #000;
+  pointer-events: none;
+}

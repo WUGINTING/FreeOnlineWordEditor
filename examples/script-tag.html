@@ -1,0 +1,45 @@
+<!doctype html>
+<!--
+  The editor in a plain page: one <script>, no build step, no framework.
+  Run `npm run build` once, then open this file in a browser (double-click works).
+-->
+<html lang="zh-Hant-TW">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Papyrus DOCX：一行 script 的用法</title>
+    <style>
+      html, body { height: 100%; margin: 0; font-family: "Microsoft JhengHei", system-ui, sans-serif; }
+      body { display: flex; flex-direction: column; }
+      .bar { display: flex; gap: 16px; align-items: center; padding: 8px 16px; background: #17364c; color: #fff; }
+      .bar button { font: inherit; padding: 4px 14px; cursor: pointer; }
+      /* The element decides the editor's size. */
+      #editor { flex: 1; min-height: 0; }
+    </style>
+  </head>
+  <body>
+    <div class="bar">
+      <label>開啟 .docx <input id="file" type="file" accept=".docx" /></label>
+      <button id="download" type="button">下載</button>
+      <span id="status"></span>
+    </div>
+    <div id="editor"></div>
+
+    <script src="../dist/papyrus-docx.standalone.iife.js"></script>
+    <script>
+      var statusEl = document.getElementById('status');
+      var editor = PapyrusDocx.createDocxEditor('#editor', {
+        onReady: function () { statusEl.textContent = '可以開始編輯'; },
+        onChange: function () { statusEl.textContent = '已修改'; },
+        onError: function (error) { statusEl.textContent = '這個檔案打不開：' + error; },
+      });
+      document.getElementById('file').onchange = function (event) {
+        var file = event.target.files[0];
+        if (file) editor.open(file);
+      };
+      document.getElementById('download').onclick = function () {
+        editor.download('edited.docx');
+      };
+    </script>
+  </body>
+</html>

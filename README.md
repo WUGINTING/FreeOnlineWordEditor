@@ -1,2 +1,240 @@
-# FreeOnlineWordEditor
-Vue開源的線上word編輯器
+# Papyrus DOCX
+
+**English** | [繁體中文](README.zh-TW.md) | [简体中文](README.zh-CN.md)
+
+[![CI](https://github.com/WUGINTING/FreeOnlineWordEditor/actions/workflows/ci.yml/badge.svg)](https://github.com/WUGINTING/FreeOnlineWordEditor/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+
+A free, open-source editor that opens, edits and saves Word (.docx) files in the browser,
+**without losing anything on the way from Word to the web and back**.
+Vue 3 + ProseMirror, MIT licensed. Files are handled entirely in the browser; no server is needed.
+
+- **Live demo:** <https://wuginting.github.io/FreeOnlineWordEditor/>
+- **Playground** (every option and event, for trying it before you integrate it):
+  <https://wuginting.github.io/FreeOnlineWordEditor/playground.html>
+
+The editor was written from scratch in a clean room: only SuperDoc's **public feature
+description** and the public Office Open XML standard (ECMA-376) were consulted; SuperDoc's
+source code was **never** read or copied. See [CLEAN_ROOM.md](CLEAN_ROOM.md).
+
+> The editor's own interface (ribbon, dialogs) is in Traditional Chinese for now.
+
+## Try it
+
+Node 20 or newer.
+
+```bash
+npm install
+npm run dev
+```
+
+Open the address the terminal shows. The demo page offers sample documents, or open a .docx of
+your own; 「檔案 › 下載」 (File › Download) in the ribbon saves it back as a Word file.
+`/playground.html` is the test page.
+
+## The principle: nothing is lost
+
+Open → edit → save: **only what the user changed is different**; everything else is the same
+as the original file, element by element.
+
+- Every paragraph, run and table cell keeps Word's own formatting XML (w:pPr / w:rPr / w:tcPr /
+  w:trPr, and attributes such as rsid and paraId); saving patches only the property that was changed.
+- What the editor does not understand (charts, equations, bookmarks, field codes, content
+  controls, tracked changes, comment marks …) is kept exactly as it was.
+
+## Use it in your project
+
+Three ways; pick one:
+
+| Your project | How |
+|---|---|
+| A Vue 3 application | [Install the package, use the Vue component](#1-vue-3) |
+| React, Angular, plain JavaScript … with a bundler | [Install the package, call `createDocxEditor`](#2-any-other-framework-or-plain-javascript) |
+| A page without a bundler (JSP, PHP, static HTML …) | [One `<script>`](#3-one-script-no-build-step) |
+
+### Install
+
+```bash
+npm install papyrus-docx
+```
+
+Until the package is on npm, install it straight from GitHub (it builds itself while installing):
+
+```bash
+npm install github:WUGINTING/FreeOnlineWordEditor
+```
+
+TypeScript declarations are included; no `@types` package is needed.
+
+### 1. Vue 3
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue';
+import { DocxEditorVue } from 'papyrus-docx';
+import 'papyrus-docx/style.css';
+
+const file = ref<Blob | null>(null); // the .docx to open; null is an empty document
+const editor = ref<InstanceType<typeof DocxEditorVue> | null>(null);
+
+async function save() {
+  const blob: Blob = await editor.value!.save(); // the edited .docx
+  // upload it, store it …
+}
+</script>
+
+<template>
+  <div style="height: 80vh">
+    <DocxEditorVue ref="editor" :src="file" @error="console.error" />
+  </div>
+</template>
+```
+
+The editor fills the element around it, so that element needs a height.
+
+| Prop | Meaning |
+|---|---|
+| `src` | The .docx to open (`Blob`, `ArrayBuffer` or `Uint8Array`); an empty document when omitted |
+| `editable` | Whether the document can be edited (default `true`) |
+| `toolbar` | Whether the ribbon is shown (default `true`) |
+| `commenting` | Read-only, but comments can be added, replied to and resolved |
+| `author` | The author of new comments |
+| `fileMenu` | `true` when the page has a File menu of its own: the ribbon's 「檔案」 emits `file` instead |
+
+Events: `ready` (the editor is there), `change` (the content changed), `error` (a file could not
+be opened), `compat` (what in this document the web editor cannot fully show or edit), `size`,
+`fonts`, `file`. The component exposes `save()`, `download(filename)` and `open(file)`.
+
+### 2. Any other framework, or plain JavaScript
+
+`createDocxEditor` puts the whole editor, ribbon included, into an element of yours. No Vue
+knowledge is needed:
+
+```ts
+import { createDocxEditor } from 'papyrus-docx';
+import 'papyrus-docx/style.css';
+
+const editor = createDocxEditor('#editor', {   // an element, or a CSS selector
+  src: file,                                   // the .docx to open; an empty document when omitted
+  onChange: () => {},
+  onError: (error) => console.error(error),
+});
+
+editor.open(anotherFile);               // show another document
+const blob = await editor.save();       // the edited .docx
+await editor.download('document.docx'); // have the browser download it
+editor.destroy();                       // when the page goes away
+```
+
+The options are the props of the table above; the events become `onReady`, `onChange`,
+`onError`, `onCompat`, `onSize`, `onFonts` and `onFile`. `editor.editor` is the editor itself,
+for commands, the selection, undo and so on.
+
+In React:
+
+```tsx
+import { useEffect, useRef } from 'react';
+import { createDocxEditor, type DocxEditorHandle } from 'papyrus-docx';
+import 'papyrus-docx/style.css';
+
+export function WordEditor({ file }: { file: Blob | null }) {
+  const host = useRef<HTMLDivElement>(null);
+  const editor = useRef<DocxEditorHandle | null>(null);
+  useEffect(() => {
+    editor.current = createDocxEditor(host.current!, { src: file });
+    return () => editor.current?.destroy();
+  }, [file]);
+  return <div ref={host} style={{ height: '80vh' }} />;
+}
+```
+
+### 3. One script, no build step
+
+`dist/papyrus-docx.standalone.iife.js` is a single file with everything inside (Vue and the
+styles too). Load it and use the global `PapyrusDocx`:
+
+```html
+<div id="editor" style="height: 80vh"></div>
+<script src="papyrus-docx.standalone.iife.js"></script>
+<script>
+  var editor = PapyrusDocx.createDocxEditor('#editor');
+  // editor.open(file), editor.save(), editor.download('document.docx')
+</script>
+```
+
+A complete page: [examples/script-tag.html](examples/script-tag.html) (run `npm run build`, then
+open it in a browser). To try it without downloading anything, the demo site serves the latest
+build of the file:
+`https://wuginting.github.io/FreeOnlineWordEditor/dist/papyrus-docx.standalone.iife.js`
+(it follows the main branch; for production, copy the file into your site).
+
+If you prefer an ES module, `papyrus-docx/standalone` (`dist/papyrus-docx.standalone.js`) has
+the same content.
+
+### Reading and writing files only, without the interface
+
+```ts
+import { readDocx, writeDocx } from 'papyrus-docx';
+
+const { doc, model } = await readDocx(bytes);   // Uint8Array / ArrayBuffer / Blob
+const saved = await writeDocx(doc, model);      // the .docx again (Uint8Array)
+```
+
+Everything the package exports is listed in [src/papyrus/index.ts](src/papyrus/index.ts).
+
+## Tests
+
+```bash
+npm test             # all tests
+npm run type-check   # the type checker
+```
+
+To compare your own Word files element by element before and after saving (the files are not
+changed):
+
+```bash
+DOCX_SAMPLES=<a folder of .docx files> npm test
+```
+
+The PowerShell scripts in `scripts/` open the saved files in desktop Microsoft Word and compare
+there (Windows and Word are needed). During development 31 real documents were checked this way:
+the same element by element after saving, and 31 of 31 the same in Microsoft Word. Those
+documents are not part of this repository.
+
+## Layout of the project
+
+```
+src/papyrus/
+  docx/reader.ts     .docx package → editor document (parts, styles, numbering, pictures, headers and footers)
+  docx/convert.ts    WordprocessingML → editor content; what is not understood is kept as it is
+  docx/props.ts      paragraph / run / cell formatting: the original kept, only the changed property patched
+  docx/wrappers.ts   content controls, hyperlinks, revisions …: kept as layers and rebuilt
+  docx/writer.ts     editor document → .docx (from the original file; only the text and changed headers / footers are rewritten)
+  docx/styles.ts     styles.xml → CSS
+  docx/numbering.ts  list numbering rules and counters
+  editor/schema.ts   the document's structure (ProseMirror schema)
+  editor/pagination.ts  measures blocks and inserts page-break spacers
+  editor/core.ts     the editor itself, tied to no framework (header and footer editing included)
+  vue/               the Vue component and the ribbon
+  mount.ts           createDocxEditor: the editor in a page without Vue
+demo/                the demo site: demo page and playground (npm run dev)
+examples/            the one-script example
+public/demo-docs/    sample documents (fictional)
+tests/               tests
+scripts/             Microsoft Word checking scripts
+```
+
+## Known limits
+
+- Pages on screen are laid out paragraph by paragraph and table by table; this affects the display only, never the file.
+- Charts, equations, SmartArt and footnote text are kept as they are but cannot be edited in the
+  browser (text boxes and common shapes can be shown, retyped, moved and added).
+- Tracked changes: the screen shows the document as with all changes accepted; the revision
+  records stay in the file untouched.
+- A recent browser is needed: Chrome / Edge 105, Firefox 121, Safari 15.5 or newer.
+- Node 22.12 crashes in a folder whose path has Chinese characters (a Node problem); use an
+  ASCII path or a newer Node.
+
+## License
+
+[MIT](LICENSE)

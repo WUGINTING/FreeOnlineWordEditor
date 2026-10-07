@@ -1,0 +1,81 @@
+/* What an assistant shows in the text without changing it (editor/assistantInline.ts) */
+
+/* A suggestion: what would go */
+.dx-doc .dx-ai-del {
+  background: rgba(217, 48, 37, 0.14);
+  color: #a50e0e;
+  text-decoration: line-through;
+  text-decoration-color: #d93025;
+}
+/* … what would come */
+.dx-doc .dx-ai-ins {
+  background: rgba(24, 128, 56, 0.16);
+  color: #0d652d;
+  text-decoration: none;
+  border-radius: 2px;
+  white-space: pre-wrap;
+  cursor: default;
+  -webkit-user-select: none;
+  user-select: none;
+}
+/* … as a paragraph of its own */
+.dx-doc .dx-ai-ins.dx-ai-ins-block {
+  display: block;
+  margin-top: 2px;
+  padding: 0 2px;
+  text-indent: 0;
+}
+.dx-doc .dx-ai-ins.dx-ai-ins-block:empty {
+  display: none;
+}
+/* … what would be reformatted */
+.dx-doc .dx-ai-fmt {
+  background: rgba(251, 188, 4, 0.3);
+}
+.dx-doc .dx-ai-fmt-block {
+  box-shadow: inset 3px 0 0 #f9ab00;
+  background: rgba(251, 188, 4, 0.12);
+}
+
+/* The text a request is about, while the keyboard is in the request box */
+.dx-doc .dx-ai-target {
+  background: rgba(26, 115, 232, 0.18);
+}
+
+/* A completion: grey text after the cursor */
+.dx-doc .dx-ai-ghost {
+  color: #80868b;
+  opacity: 0.85;
+  white-space: pre-wrap;
+  pointer-events: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+/* … and the key that takes it */
+.dx-doc .dx-ai-ghost::after {
+  content: 'Tab';
+  margin-left: 6px;
+  padding: 0 5px;
+  border: 1px solid #bdc1c6;
+  border-radius: 4px;
+  font: 11px/1.5 system-ui, 'Microsoft JhengHei', sans-serif;
+  color: #5f6368;
+  vertical-align: middle;
+}
+
+/* Never on paper or in a PDF */
+@media print {
+  .dx-ai-ins,
+  .dx-ai-ghost {
+    display: none !important;
+  }
+  .dx-ai-del,
+  .dx-ai-fmt,
+  .dx-ai-target,
+  .dx-ai-fmt-block {
+    background: none !important;
+    color: inherit !important;
+    text-decoration: none !important;
+    box-shadow: none !important;
+  }
+}

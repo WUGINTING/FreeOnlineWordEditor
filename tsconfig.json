@@ -1,0 +1,28 @@
+{
+  "extends": "@vue/tsconfig/tsconfig.dom.json",
+  "include": [
+    "env.d.ts",
+    "src/**/*",
+    "src/**/*.vue",
+    "demo/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "dist-demo"
+  ],
+  "compilerOptions": {
+    "verbatimModuleSyntax": true,
+    "noImplicitAny": false,
+    "moduleResolution": "bundler",
+    "baseUrl": ".",
+    "paths": {
+      "@/*": [
+        "./src/*"
+      ]
+    },
+    "types": [
+      "vite/client"
+    ]
+  }
+}

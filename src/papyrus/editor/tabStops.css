@@ -1,0 +1,13 @@
+/* Right tab stops (editor/tabStops.ts): the tab's width is set on it; the leader fills it. */
+.dx-doc .dx-tab.dx-tab-right {
+  min-width: 0;
+}
+.dx-doc .dx-tab.dx-tab-dot {
+  border-bottom: 0.14em dotted currentColor;
+}
+.dx-doc .dx-tab.dx-tab-hyphen {
+  border-bottom: 0.08em dashed currentColor;
+}
+.dx-doc .dx-tab.dx-tab-line {
+  border-bottom: 0.08em solid currentColor;
+}

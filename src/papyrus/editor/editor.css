@@ -1,0 +1,623 @@
+/* Page chrome */
+.dx-root {
+  --dx-desk: #e8eaed;
+  --dx-page: #ffffff;
+  --dx-ink: #1f1f1f;
+  --dx-accent: #1a73e8;
+  --dx-muted: #80868b;
+  background: var(--dx-desk);
+  padding: 24px 16px 48px;
+  box-sizing: border-box;
+  min-height: 100%;
+}
+/* The stage takes the canvas' size at the current zoom; the canvas itself is scaled. */
+.dx-stage {
+  position: relative;
+  margin: 0 auto;
+}
+.dx-canvas {
+  position: relative;
+  transform-origin: 0 0;
+}
+
+/* Space between two table rows on different pages, and header rows repeated there. */
+.dx-doc tr.dx-row-spacer:not(.dx-repeat-header) > td {
+  border: none !important;
+  padding: 0 !important;
+  background: transparent !important;
+}
+/* A row breaking across pages (pagination.ts): its cells' content starts at the top on each page. */
+.dx-doc tr.dx-row-split > td,
+.dx-doc tr.dx-row-split > th {
+  vertical-align: top !important;
+}
+/* Its own rule: a browser without :has() drops a whole rule it can't read (persona-300). */
+.dx-doc table:has(tr.dx-row-split) :is(td, th)[rowspan]:not([rowspan='1']) {
+  vertical-align: top !important;
+}
+/* Space inside a paragraph that continues on the next page: a full-width line of its own. */
+.dx-doc .dx-line-spacer {
+  display: inline-block;
+  width: 100%;
+  vertical-align: top;
+  line-height: 0;
+  font-size: 0;
+  text-indent: 0;
+  pointer-events: none;
+  user-select: none;
+}
+/* Repeated header rows keep the original row's own cell borders, shading and padding. */
+.dx-doc tr.dx-row-spacer,
+.dx-doc tr.dx-repeat-header {
+  pointer-events: none;
+  user-select: none;
+}
+
+/* A paragraph ending a section: Word's section-break mark, shown like its formatting marks. */
+/* Drawn over the paragraph's bottom edge, so it takes no space and pages stay as in Word. */
+.dx-doc .dx-sect-end {
+  position: relative;
+}
+.dx-doc .dx-sect-end::after {
+  content: attr(data-sect-label);
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -9px;
+  line-height: 8px;
+  border-top: 1px dashed #9aa0a6;
+  font: 10px system-ui, 'Microsoft JhengHei', sans-serif;
+  color: #80868b;
+  text-align: center;
+  text-indent: 0;
+  pointer-events: none;
+}
+@media print {
+  .dx-doc .dx-sect-end::after {
+    display: none;
+  }
+}
+/* A column break (w:br w:type="column"): ends the line and shows Word's 分欄符號 mark. The editor
+   shows one column, so it takes no room (no new page either); in Word the text after it starts
+   the next column. */
+.dx-doc .dx-col-break {
+  display: block;
+  position: relative;
+  height: 0;
+  border-top: 1px dashed #9aa0a6;
+  text-indent: 0;
+  user-select: none;
+}
+.dx-doc .dx-col-break::after {
+  content: attr(data-label);
+  position: absolute;
+  left: 50%;
+  top: -5px;
+  transform: translateX(-50%);
+  padding: 0 4px;
+  line-height: 10px;
+  font: 10px system-ui, 'Microsoft JhengHei', sans-serif;
+  color: #80868b;
+  background: var(--dx-page, #fff);
+  white-space: nowrap;
+  pointer-events: none;
+}
+/* A section Word lays out in columns: a badge in the page's top margin (see renderColumnBadges). */
+.dx-cols-badge {
+  position: absolute;
+  top: 6px;
+  right: 8px;
+  padding: 1px 6px;
+  border: 1px solid #c6dafc;
+  border-radius: 3px;
+  background: #e8f0fe;
+  color: #1967d2;
+  font: 11px/16px system-ui, 'Microsoft JhengHei', sans-serif;
+  white-space: nowrap;
+  pointer-events: none;
+  user-select: none;
+}
+/* Formatting marks and badges are not printed (nor in the PDF made from the printout). */
+.dx-print-root .dx-cols-badge,
+.dx-print-root .dx-col-break::after {
+  display: none;
+}
+.dx-print-root .dx-col-break {
+  border-top-color: transparent;
+}
+@media print {
+  .dx-cols-badge,
+  .dx-doc .dx-col-break::after {
+    display: none;
+  }
+  .dx-doc .dx-col-break {
+    border-top-color: transparent;
+  }
+}
+/* 顯示／隱藏編輯標記 (formattingMarks.ts): Word's non-printing marks, shown under .dx-show-marks.
+   Each glyph is absolutely positioned generated content over the text (¶ and ↵ on an empty
+   zero-width span, · ° □ over the space they stand for, → over the tab), so it takes no room:
+   lines break and pages end exactly as with the marks hidden. The empty alternative text
+   (content: '…' / '') keeps screen readers from reading the glyphs; browsers without it use the
+   plain declaration before it. Generated content is never copied with the text. */
+.dx-show-marks .dx-mk,
+.dx-show-marks .dx-mk-sp,
+.dx-show-marks .dx-mk-nbsp,
+.dx-show-marks .dx-mk-idsp,
+.dx-show-marks .dx-tab.dx-mk-tab {
+  position: relative;
+}
+.dx-show-marks .dx-mk::after,
+.dx-show-marks .dx-mk-sp::after,
+.dx-show-marks .dx-mk-nbsp::after,
+.dx-show-marks .dx-mk-idsp::after,
+.dx-show-marks .dx-mk-tab::after {
+  position: absolute;
+  top: 0;
+  line-height: normal;
+  color: #4f78c0;
+  font-style: normal;
+  font-weight: normal;
+  text-indent: 0;
+  white-space: nowrap;
+  pointer-events: none;
+  user-select: none;
+}
+/* ¶ right after the paragraph's last character, ↵ where the line breaks. */
+.dx-show-marks .dx-mk-p::after {
+  left: 1px;
+  content: '\b6';
+  content: '\b6' / '';
+}
+.dx-show-marks .dx-mk-br::after {
+  left: 1px;
+  content: '\21b5';
+  content: '\21b5' / '';
+}
+/* Spaces and tabs: the glyph centred over the space it stands for. */
+.dx-show-marks .dx-mk-sp::after,
+.dx-show-marks .dx-mk-nbsp::after,
+.dx-show-marks .dx-mk-idsp::after,
+.dx-show-marks .dx-mk-tab::after {
+  left: 0;
+  right: 0;
+  text-align: center;
+}
+.dx-show-marks .dx-mk-sp::after {
+  content: '\b7';
+  content: '\b7' / '';
+}
+.dx-show-marks .dx-mk-nbsp::after {
+  content: '\b0';
+  content: '\b0' / '';
+}
+/* A full-width space is a light box, as in Word. */
+.dx-show-marks .dx-mk-idsp::after {
+  content: '\25a1';
+  content: '\25a1' / '';
+  color: #9fb6de;
+}
+.dx-show-marks .dx-mk-tab::after {
+  content: '\2192';
+  content: '\2192' / '';
+}
+/* Never printed (print.ts also takes them out of the printout and the PDF). */
+@media print {
+  .dx-mk {
+    display: none;
+  }
+  .dx-show-marks :is(.dx-mk-sp, .dx-mk-nbsp, .dx-mk-idsp, .dx-mk-tab)::after {
+    content: none;
+  }
+}
+.dx-pages {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.dx-page {
+  position: absolute;
+  left: 0;
+  background: var(--dx-page);
+  box-shadow: 0 1px 3px rgba(60, 64, 67, 0.3), 0 4px 8px 3px rgba(60, 64, 67, 0.15);
+}
+.dx-header,
+.dx-footer {
+  position: absolute;
+  /* Above the body and the row-break covers (.dx-cuts), below the header/footer editor. */
+  z-index: 1;
+  color: var(--dx-ink);
+  opacity: 0.75;
+  overflow: hidden;
+}
+/* 浮水印: drawn on the page behind the header, the footer and the text (editor/watermark.ts),
+   clipped at the paper's edge; printed as it is. */
+.dx-wm-layer {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  user-select: none;
+}
+.dx-wm {
+  position: absolute;
+  transform-origin: 50% 50%;
+}
+.dx-wm svg {
+  display: block;
+  overflow: visible;
+}
+.dx-wm-img {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+/* 刷淡 (washout): Word's light version of the picture. Its v:imagedata gain 0.3 and blacklevel
+   0.35 make each colour 0.3 × itself + 0.7 of white, which is 30 % opacity on a white page. */
+.dx-wm-washout {
+  opacity: 0.3;
+}
+/* The watermark's place in the header takes no room on the page (Word draws it on the page). */
+.dx-header .dx-wm-chip,
+.dx-footer .dx-wm-chip {
+  display: none;
+}
+.dx-cuts {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.dx-cut {
+  position: absolute;
+  box-sizing: border-box;
+}
+.dx-cut-header {
+  position: absolute;
+  margin: 0;
+  padding: 0;
+}
+.dx-host {
+  position: relative;
+}
+
+/* Header / footer editing (double-click the top or bottom margin) */
+.dx-hf-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2;
+}
+.dx-hf-box {
+  position: absolute;
+  left: 0;
+}
+.dx-hf-area {
+  position: absolute;
+  pointer-events: auto;
+}
+.dx-hf-doc {
+  min-height: 1.2em;
+  outline: none;
+}
+.dx-hf-bar {
+  position: absolute;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 2px 8px;
+  border-top: 1px dashed var(--dx-accent);
+  font: 12px system-ui, 'Microsoft JhengHei', sans-serif;
+  color: var(--dx-ink);
+  pointer-events: auto;
+}
+.dx-hf-footer .dx-hf-bar {
+  border-top: 0;
+  border-bottom: 1px dashed var(--dx-accent);
+}
+.dx-hf-label {
+  background: var(--dx-accent);
+  color: #fff;
+  border-radius: 3px;
+  padding: 1px 6px;
+}
+.dx-hf-check {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  cursor: pointer;
+}
+.dx-hf-bar button {
+  font: inherit;
+  padding: 1px 8px;
+  border: 1px solid #dadce0;
+  border-radius: 3px;
+  background: #fff;
+  cursor: pointer;
+}
+.dx-hf-bar button:hover {
+  background: #f1f3f4;
+}
+.dx-hf-bar button:last-child {
+  margin-left: auto;
+}
+.dx-root.dx-hf-mode .dx-host {
+  opacity: 0.45;
+  pointer-events: none;
+}
+.dx-root.dx-hf-mode .dx-header,
+.dx-root.dx-hf-mode .dx-footer {
+  opacity: 1;
+}
+/* 複製格式 is painting: Word's paintbrush cursor over the text (the browser's copy cursor as fallback). */
+.dx-root.dx-format-painting .ProseMirror {
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath d='M4 2v14M1 2h6M1 16h6' stroke='%23000' stroke-width='1.5' fill='none'/%3E%3Crect x='10' y='3' width='11' height='6' rx='1' fill='%23fff' stroke='%23000'/%3E%3Cpath d='M21 6h2v5h-7v3' stroke='%23000' fill='none'/%3E%3Crect x='14.5' y='14' width='3' height='8' fill='%23000'/%3E%3C/svg%3E") 4 9, copy;
+}
+
+/* Document body */
+.dx-doc {
+  color: var(--dx-ink);
+  outline: none;
+  box-sizing: border-box;
+  word-wrap: break-word;
+  white-space: pre-wrap;
+  white-space: break-spaces;
+  font-variant-ligatures: none;
+  caret-color: var(--dx-ink);
+}
+.dx-doc .dx-p {
+  min-height: 1em;
+}
+.dx-doc a {
+  color: #0563c1;
+  text-decoration: underline;
+}
+.dx-doc sup,
+.dx-doc sub {
+  font-size: 0.7em;
+}
+.dx-tab {
+  display: inline-block;
+  min-width: 0.5em;
+  width: 48px;
+  white-space: pre;
+}
+.dx-marker {
+  display: inline-block;
+  text-indent: 0;
+  white-space: nowrap;
+  padding-right: 0.3em;
+  box-sizing: border-box;
+}
+/* w:suff "nothing" / "space": the text follows the number (and its space) right away, as in Word. */
+.dx-marker-nothing,
+.dx-marker-space {
+  padding-right: 0;
+  white-space: pre;
+}
+.dx-img {
+  max-width: 100%;
+  /* An image can never be taller than the writable part of a page. */
+  max-height: var(--dx-content-h, none);
+  object-fit: contain;
+  vertical-align: bottom;
+}
+.dx-img.ProseMirror-selectednode {
+  outline: 2px solid var(--dx-accent);
+}
+.dx-field {
+  background: rgba(0, 0, 0, 0.06);
+  border-radius: 2px;
+}
+.dx-page-break {
+  height: 0;
+  margin: 0;
+  border-top: 1px dashed transparent;
+  position: relative;
+}
+.dx-page-break.ProseMirror-selectednode {
+  border-top-color: var(--dx-accent);
+}
+.dx-spacer {
+  pointer-events: none;
+  user-select: none;
+}
+.dx-raw-inline {
+  display: inline-block;
+  font-size: 0.75em;
+  line-height: 1.2;
+  padding: 0 4px;
+  border: 1px dashed var(--dx-muted);
+  border-radius: 3px;
+  color: var(--dx-muted);
+  vertical-align: super;
+  text-indent: 0;
+}
+.dx-hidden-mark {
+  display: inline;
+}
+.dx-raw-hidden {
+  height: 0;
+  overflow: hidden;
+}
+.dx-raw-plain {
+  white-space: pre;
+}
+.dx-raw {
+  color: var(--dx-muted);
+  font-size: 0.85em;
+  border: 1px dashed var(--dx-muted);
+  padding: 2px 6px;
+  margin: 4px 0;
+}
+
+/* Tables */
+.dx-doc table {
+  border-collapse: collapse;
+  table-layout: fixed;
+  margin: 0;
+}
+.dx-doc td,
+.dx-doc th {
+  border: 1px solid #000;
+  /* Cell margins: Word's defaults, a table style's or the table's own (docx/cellMargins.ts). */
+  padding: var(--dx-cm-t, 0) var(--dx-cm-r, 7.2px) var(--dx-cm-b, 0) var(--dx-cm-l, 7.2px);
+  vertical-align: top;
+  position: relative;
+  box-sizing: border-box;
+}
+.dx-doc .selectedCell::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(26, 115, 232, 0.18);
+  pointer-events: none;
+}
+.dx-doc .column-resize-handle {
+  position: absolute;
+  right: -2px;
+  top: 0;
+  bottom: -2px;
+  width: 4px;
+  background: var(--dx-accent);
+  pointer-events: none;
+}
+.dx-doc.resize-cursor {
+  cursor: col-resize;
+}
+
+/* Editing helpers from ProseMirror */
+.ProseMirror-gapcursor {
+  display: none;
+  pointer-events: none;
+  position: relative;
+}
+.ProseMirror-gapcursor::after {
+  content: '';
+  display: block;
+  position: absolute;
+  top: -2px;
+  width: 20px;
+  border-top: 1px solid var(--dx-ink);
+  animation: dx-blink 1.1s steps(2, start) infinite;
+}
+@keyframes dx-blink {
+  to {
+    visibility: hidden;
+  }
+}
+.ProseMirror-focused .ProseMirror-gapcursor {
+  display: block;
+}
+.ProseMirror-hideselection *::selection {
+  background: transparent;
+}
+
+/* Review: tracked changes (editor/review.ts, docx/revisions.ts) */
+.dx-rev-ins {
+  color: var(--dx-rev, #c62828);
+  text-decoration: underline;
+  text-decoration-color: var(--dx-rev, #c62828);
+}
+.dx-rev-moveTo {
+  text-decoration-style: double;
+}
+/* The deleted text is in the page (docx/revisions.ts deletionDOM), for screen readers too. */
+.dx-rev-del-text {
+  color: var(--dx-rev, #c62828);
+  text-decoration: line-through;
+  text-decoration-color: var(--dx-rev, #c62828);
+  white-space: pre-wrap;
+  user-select: none;
+}
+.dx-rev-moveFrom .dx-rev-del-text {
+  text-decoration-style: double;
+}
+/* Read by screen readers only. */
+.dx-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+.dx-rev-del.ProseMirror-selectednode {
+  outline: 2px solid var(--dx-accent);
+  outline-offset: 1px;
+}
+.dx-rev-fmt {
+  text-decoration: underline dotted;
+  text-decoration-color: var(--dx-rev, #c62828);
+}
+.dx-rev-pmark {
+  color: var(--dx-rev, #c62828);
+  font-weight: bold;
+  user-select: none;
+}
+.dx-rev-pmark-del {
+  text-decoration: line-through;
+}
+/* Change bar: paragraph revisions carry the class; paragraphs holding a marked revision get it by :has
+   (review.ts). Drawn with ::before, as ::after shows a section break's label. */
+/* The :has() selectors in rules of their own: a browser without :has() drops a whole rule it
+   can't read, and .dx-rev-bar must still work there (persona-300). */
+.dx-doc .dx-rev-bar {
+  position: relative;
+}
+.dx-doc .dx-p:has(.dx-rev-ins, .dx-rev-del, .dx-rev-fmt, .dx-rev-pmark) {
+  position: relative;
+}
+.dx-doc .dx-rev-bar::before {
+  content: '';
+  position: absolute;
+  left: -12px;
+  top: 0;
+  bottom: 0;
+  border-left: 2px solid var(--dx-muted);
+  pointer-events: none;
+}
+.dx-doc .dx-p:has(.dx-rev-ins, .dx-rev-del, .dx-rev-fmt, .dx-rev-pmark)::before {
+  content: '';
+  position: absolute;
+  left: -12px;
+  top: 0;
+  bottom: 0;
+  border-left: 2px solid var(--dx-muted);
+  pointer-events: none;
+}
+/* 隱藏修訂標記: the document as if every change were accepted. */
+.dx-rev-off .dx-rev-del,
+.dx-rev-off .dx-rev-pmark-del,
+.dx-rev-off .dx-rev-pmark-ins {
+  display: none;
+}
+.dx-rev-off .dx-rev-ins,
+.dx-rev-off .dx-rev-fmt {
+  color: inherit;
+  text-decoration: inherit;
+}
+.dx-rev-off .dx-rev-bar::before {
+  display: none;
+}
+.dx-rev-off .dx-p:has(.dx-rev-ins, .dx-rev-del, .dx-rev-fmt, .dx-rev-pmark)::before {
+  display: none;
+}
+
+/* Review: comments */
+.dx-comment {
+  background: rgba(255, 213, 79, 0.35);
+  border-bottom: 1px solid rgba(240, 180, 0, 0.9);
+}
+.dx-comment .dx-comment {
+  background: rgba(255, 193, 7, 0.45);
+}
+.dx-comment-ref.dx-raw-inline {
+  cursor: pointer;
+  border-color: #f0b400;
+  color: #8a6d00;
+}

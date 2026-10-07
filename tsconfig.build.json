@@ -1,0 +1,15 @@
+{
+  "extends": "./tsconfig.json",
+  "include": [
+    "env.d.ts",
+    "src/papyrus/**/*",
+    "src/papyrus/**/*.vue"
+  ],
+  "compilerOptions": {
+    "noEmit": false,
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "rootDir": "src/papyrus",
+    "outDir": "dist/types"
+  }
+}

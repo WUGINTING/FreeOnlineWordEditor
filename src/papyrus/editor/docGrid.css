@@ -1,0 +1,19 @@
+/*
+ * Word's line grid (editor/docGrid.ts): each line of a snapped paragraph is a whole number of grid
+ * lines (--dx-pitch) tall, times "auto" spacing, at least an "at least" height; an exact height
+ * stays. Set on the paragraph and on every run in it, so the tallest text of a line decides, as in
+ * Word. !important: it takes the place of the paragraph's own line-height (from the same values).
+ * Only where CSS round() works: elsewhere (Chrome before 125, old Edge) the declaration would be
+ * invalid when computed and the text would lose its own line spacing, so it keeps that instead,
+ * without the grid. The text of a text box or shape in the paragraph is not snapped (Word
+ * doesn't either).
+ */
+@supports (line-height: round(up, 1px, 1px)) {
+  .dx-doc .dx-p.dx-grid,
+  .dx-doc .dx-p.dx-grid :not(.dx-shape, .dx-shape *) {
+    line-height: var(
+      --dx-lfix,
+      max(var(--dx-lmin, 0px), round(up, calc(var(--dx-lh, 1.15) * 1em), var(--dx-pitch)), calc(var(--dx-lm, 1) * var(--dx-pitch)))
+    ) !important;
+  }
+}

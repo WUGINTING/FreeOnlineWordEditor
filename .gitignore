@@ -1,0 +1,14 @@
+node_modules
+dist
+dist-demo
+*.tgz
+
+# Editors
+.idea
+.vscode
+
+# Runtime output
+logs
+*.log
+# Scratch files some tests write next to themselves
+tests/**/.*.tmp.js
