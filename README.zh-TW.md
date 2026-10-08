@@ -6,16 +6,28 @@
 [![CI](https://github.com/WUGINTING/FreeOnlineWordEditor/actions/workflows/ci.yml/badge.svg)](https://github.com/WUGINTING/FreeOnlineWordEditor/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-免費、開源，在瀏覽器裡開啟、編輯、儲存 Word（.docx）的編輯器，**Word ⇄ 線上編輯無損轉換**。
+免費、開源，在瀏覽器裡開啟、編輯、儲存 Word（.docx）的編輯器。**設計目標是存檔時只改動你編輯過的地方**，
+其餘部分維持 Word 原本寫出來的樣子。
 Vue 3 + ProseMirror，MIT 授權。檔案全程在瀏覽器裡處理，不需要伺服器。
+
+![在瀏覽器裡開啟示範文件的編輯器](docs/screenshot-zh-TW.png)
 
 - **線上示範：** <https://wuginting.github.io/FreeOnlineWordEditor/>
 - **測試畫面**（所有選項與事件都能試，適合整合前先玩玩看）：
   <https://wuginting.github.io/FreeOnlineWordEditor/playground.html>
 
-這個編輯器是用「無塵室」方式從零寫的：只參考了 SuperDoc 的**公開功能介紹**和
-Office Open XML（ECMA-376）公開標準，**沒有**看過或複製 SuperDoc 的原始碼。
-紀錄在 [CLEAN_ROOM.md](CLEAN_ROOM.md)。
+這個編輯器是從零寫的，程式碼大部分由 AI 程式助理（Claude）撰寫。設計依據是 Office Open XML（ECMA-376）
+公開標準；功能清單參考過 SuperDoc 的公開功能介紹，沒有參考它的原始碼。
+參考過哪些資料記錄在 [CLEAN_ROOM.md](CLEAN_ROOM.md)。
+
+## 專案狀態
+
+- **早期版本（0.x）。** 1.0 之前，選項與匯出的名稱還可能調整。
+- **一個人維護。** 歡迎回報問題與送 pull request，回覆可能需要一些時間。
+- **翻譯是機器產生的，還沒有經過母語人士校對**：英文與簡體中文的介面
+  （[src/papyrus/locales](src/papyrus/locales)）以及英文、簡體中文的 README。歡迎指正。
+- **發現某份文件存檔後跟原本不一樣？** 這是這個專案最想知道的問題：請附上檔案（或仍能重現的精簡版）
+  [回報](https://github.com/WUGINTING/FreeOnlineWordEditor/issues)。
 
 ## 馬上試試看
 
@@ -29,9 +41,10 @@ npm run dev
 打開終端機顯示的網址，就會看到示範頁：可以選一份示範文件，或開啟自己電腦裡的 .docx，
 編輯後用工具列的「檔案 › 下載」存回 Word 檔。`/playground.html` 是測試畫面。
 
-## 核心原則：無損轉換
+## 設計原則：只改動編輯過的地方
 
-打開 → 編輯 → 存檔，**只有使用者改的地方會變**，其餘部分與原檔逐元素相同：
+打開 → 編輯 → 存檔，設計上只有使用者改的地方會變，其餘部分與原檔逐元素相同。
+這是編輯器的做法，不是對每一份文件的保證：驗證過哪些情況見[測試](#測試)，做不到的事見[已知限制](#已知限制)。
 
 - 每個段落、文字、表格格子都保留 Word 原本的格式設定原稿（w:pPr / w:rPr / w:tcPr / w:trPr，
   以及 rsid、paraId 等屬性），存檔時只修補使用者改過的那一項。
@@ -205,7 +218,8 @@ DOCX_SAMPLES=<放 .docx 的資料夾> npm test
 
 `scripts/` 裡的 PowerShell 腳本會用桌面版 Microsoft Word 開啟存檔後的檔案做比對
 （需要 Windows 與 Word）。開發期間以 31 份真實文件驗證過：存檔前後逐元素相同、
-Microsoft Word 比對 31/31 相同。那些文件不屬於這個儲存庫，所以沒有附上。
+Microsoft Word 比對 31/31 相同。那些文件不屬於這個儲存庫，所以沒有附上，這項驗證無法從這裡重做；
+上面的指令可以對你自己的文件做逐元素比對。
 
 ## 專案結構
 
@@ -236,6 +250,9 @@ scripts/             Microsoft Word 驗證腳本
 - 圖表、公式、SmartArt、註腳內容只能原樣保留，不能在網頁上編輯（文字方塊與常見圖案可以顯示、改字、移動與新增）。
 - 追蹤修訂：畫面顯示「接受所有修訂」後的樣子；修訂記錄原樣保留在檔案裡。
 - 需要較新的瀏覽器：Chrome / Edge 105、Firefox 121、Safari 15.5 以上。
+- 大小：套件本身的程式約 1.1 MB（gzip 後 330 kB），打包時還會加上 Vue、ProseMirror 與 JSZip；
+  單一檔案版約 1.2 MB（gzip 後 430 kB）。
+- 新插入的圖案名稱（「矩形 1」）與浮水印的預設字，在任何介面語言下都是中文：兩者都會寫進文件。
 - Node 22.12 在含中文字的資料夾路徑下會當掉（Node 本身的問題），請放在英文路徑或升級 Node。
 
 ## 授權

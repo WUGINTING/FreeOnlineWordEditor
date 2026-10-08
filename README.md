@@ -6,17 +6,31 @@
 [![CI](https://github.com/WUGINTING/FreeOnlineWordEditor/actions/workflows/ci.yml/badge.svg)](https://github.com/WUGINTING/FreeOnlineWordEditor/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-A free, open-source editor that opens, edits and saves Word (.docx) files in the browser,
-**without losing anything on the way from Word to the web and back**.
+A free, open-source editor that opens, edits and saves Word (.docx) files in the browser. It is
+**designed so that saving changes only what you edited**, and leaves the rest of the file as Word wrote it.
 Vue 3 + ProseMirror, MIT licensed. Files are handled entirely in the browser; no server is needed.
+
+![The editor in a browser, with a sample document open](docs/screenshot-en.png)
 
 - **Live demo:** <https://wuginting.github.io/FreeOnlineWordEditor/>
 - **Playground** (every option and event, for trying it before you integrate it):
   <https://wuginting.github.io/FreeOnlineWordEditor/playground.html>
 
-The editor was written from scratch in a clean room: only SuperDoc's **public feature
-description** and the public Office Open XML standard (ECMA-376) were consulted; SuperDoc's
-source code was **never** read or copied. See [CLEAN_ROOM.md](CLEAN_ROOM.md).
+The editor was written from scratch, with an AI coding assistant (Claude) doing much of the
+writing. It was designed from the public Office Open XML standard (ECMA-376); SuperDoc's public
+feature description was read for the list of features, and its source code was not consulted.
+What was consulted is recorded in [CLEAN_ROOM.md](CLEAN_ROOM.md).
+
+## Status
+
+- **Early (0.x).** Options and exported names may still change before 1.0.
+- **One maintainer.** Issues and pull requests are welcome; answers may take a while.
+- **The translations are machine-made and not yet reviewed by native speakers**: the English and
+  Simplified Chinese interface ([src/papyrus/locales](src/papyrus/locales)) and this README.
+  Corrections are welcome.
+- **Found a document that comes back different after saving?** That is the bug this project most
+  wants to hear about: please [open an issue](https://github.com/WUGINTING/FreeOnlineWordEditor/issues)
+  with the file, or a cut-down copy that still shows it.
 
 ## Try it
 
@@ -28,13 +42,15 @@ npm run dev
 ```
 
 Open the address the terminal shows. The demo page offers sample documents, or open a .docx of
-your own; 「檔案 › 下載」 (File › Download) in the ribbon saves it back as a Word file.
+your own; File › Download in the ribbon saves it back as a Word file.
 `/playground.html` is the test page.
 
-## The principle: nothing is lost
+## The design principle: change only what was edited
 
-Open → edit → save: **only what the user changed is different**; everything else is the same
-as the original file, element by element.
+Open → edit → save: only what the user changed is meant to be different; everything else is
+meant to stay the same as the original file, element by element. This is how the editor is
+built, not a guarantee for every document: see [Tests](#tests) for what it has been checked
+against, and [Known limits](#known-limits).
 
 - Every paragraph, run and table cell keeps Word's own formatting XML (w:pPr / w:rPr / w:tcPr /
   w:trPr, and attributes such as rsid and paraId); saving patches only the property that was changed.
@@ -219,7 +235,8 @@ DOCX_SAMPLES=<a folder of .docx files> npm test
 The PowerShell scripts in `scripts/` open the saved files in desktop Microsoft Word and compare
 there (Windows and Word are needed). During development 31 real documents were checked this way:
 the same element by element after saving, and 31 of 31 the same in Microsoft Word. Those
-documents are not part of this repository.
+documents are not part of this repository, so that check cannot be repeated from here; the
+command above runs the element-by-element comparison on documents of your own.
 
 ## Layout of the project
 
@@ -252,6 +269,10 @@ scripts/             Microsoft Word checking scripts
 - Tracked changes: the screen shows the document as with all changes accepted; the revision
   records stay in the file untouched.
 - A recent browser is needed: Chrome / Edge 105, Firefox 121, Safari 15.5 or newer.
+- Size: the package's script is about 1.1 MB (330 kB gzipped), to which your bundler adds Vue,
+  ProseMirror and JSZip; the standalone single file is about 1.2 MB (430 kB gzipped).
+- New shapes get a Chinese name (「矩形 1」) and the watermark presets are Chinese words in every
+  interface language: both are written into the document.
 - Node 22.12 crashes in a folder whose path has Chinese characters (a Node problem); use an
   ASCII path or a newer Node.
 

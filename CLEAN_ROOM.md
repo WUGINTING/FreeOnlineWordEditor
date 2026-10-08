@@ -3,6 +3,12 @@
 This project was written from scratch. It is **not** derived from the source code
 of SuperDoc (AGPL-3.0) or any other copyleft DOCX editor.
 
+## How it was written
+The code was written by the author with an AI coding assistant (Anthropic's Claude), which did
+much of the writing, working from the materials listed below. What an AI model learned from
+before this project cannot be audited by the author; this record covers what was consulted
+during the work.
+
 ## What was consulted
 - The public README / product description of SuperDoc, only to learn its
   *user-facing feature list* (open, edit, save DOCX in the browser; paginated view).

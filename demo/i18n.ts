@@ -121,7 +121,7 @@ const WORDS: Record<Lang, Words> = { en, 'zh-TW': zhTW, 'zh-CN': zhCN };
 
 /** The sample documents (public/demo-docs) and their titles in English; the file name carries the Chinese one. */
 export const SAMPLES: { file: string; en: string }[] = [
-  { file: '01_民眾陳情案件回復函.docx', en: 'Reply to a citizen’s petition' },
+  { file: '01_民眾陳情案件回復函.docx', en: "Reply to a citizen's petition" },
   { file: '02_行政業務簽呈.docx', en: 'Internal memo for approval' },
   { file: '03_跨單位會議通知.docx', en: 'Notice of an inter-office meeting' },
   { file: '04_專案工作會議紀錄.docx', en: 'Minutes of a project meeting' },

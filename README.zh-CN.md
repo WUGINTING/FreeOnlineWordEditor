@@ -6,16 +6,28 @@
 [![CI](https://github.com/WUGINTING/FreeOnlineWordEditor/actions/workflows/ci.yml/badge.svg)](https://github.com/WUGINTING/FreeOnlineWordEditor/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-免费、开源，在浏览器里打开、编辑、保存 Word（.docx）的编辑器，**Word ⇄ 在线编辑无损转换**。
+免费、开源，在浏览器里打开、编辑、保存 Word（.docx）的编辑器。**设计目标是保存时只改动你编辑过的地方**，
+其余部分保持 Word 原本写出来的样子。
 Vue 3 + ProseMirror，MIT 许可。文件全程在浏览器里处理，不需要服务器。
+
+![在浏览器里打开示例文档的编辑器](docs/screenshot-zh-CN.png)
 
 - **在线演示：** <https://wuginting.github.io/FreeOnlineWordEditor/>
 - **测试页面**（所有选项与事件都能试，适合集成前先体验）：
   <https://wuginting.github.io/FreeOnlineWordEditor/playground.html>
 
-这个编辑器是用“净室”方式从零编写的：只参考了 SuperDoc 的**公开功能介绍**和
-Office Open XML（ECMA-376）公开标准，**没有**看过或复制 SuperDoc 的源代码。
-记录在 [CLEAN_ROOM.md](CLEAN_ROOM.md)。
+这个编辑器是从零编写的，代码大部分由 AI 编程助手（Claude）撰写。设计依据是 Office Open XML（ECMA-376）
+公开标准；功能清单参考过 SuperDoc 的公开功能介绍，没有参考它的源代码。
+参考过哪些资料记录在 [CLEAN_ROOM.md](CLEAN_ROOM.md)。
+
+## 项目状态
+
+- **早期版本（0.x）。** 1.0 之前，选项与导出的名称还可能调整。
+- **一个人维护。** 欢迎提交问题与 pull request，回复可能需要一些时间。
+- **翻译是机器生成的，还没有经过母语人士校对**：英文与简体中文的界面
+  （[src/papyrus/locales](src/papyrus/locales)）以及英文、简体中文的 README。欢迎指正。
+- **发现某份文档保存后跟原来不一样？** 这是这个项目最想知道的问题：请附上文件（或仍能重现的精简版）
+  [提交问题](https://github.com/WUGINTING/FreeOnlineWordEditor/issues)。
 
 ## 马上试试
 
@@ -27,11 +39,12 @@ npm run dev
 ```
 
 打开终端显示的地址，就会看到演示页：可以选一份示例文档，或打开自己电脑里的 .docx，
-编辑后用工具栏的「檔案 › 下載」（文件 › 下载）存回 Word 文件。`/playground.html` 是测试页面。
+编辑后用工具栏的「文件 › 下载」存回 Word 文件。`/playground.html` 是测试页面。
 
-## 核心原则：无损转换
+## 设计原则：只改动编辑过的地方
 
-打开 → 编辑 → 保存，**只有用户改的地方会变**，其余部分与原文件逐元素相同：
+打开 → 编辑 → 保存，设计上只有用户改的地方会变，其余部分与原文件逐元素相同。
+这是编辑器的做法，不是对每一份文档的保证：验证过哪些情况见[测试](#测试)，做不到的事见[已知限制](#已知限制)。
 
 - 每个段落、文字、表格单元格都保留 Word 原本的格式 XML（w:pPr / w:rPr / w:tcPr / w:trPr，
   以及 rsid、paraId 等属性），保存时只修补用户改过的那一项。
@@ -205,7 +218,8 @@ DOCX_SAMPLES=<放 .docx 的文件夹> npm test
 
 `scripts/` 里的 PowerShell 脚本会用桌面版 Microsoft Word 打开保存后的文件做比对
 （需要 Windows 与 Word）。开发期间以 31 份真实文档验证过：保存前后逐元素相同、
-Microsoft Word 比对 31/31 相同。那些文档不属于这个仓库，所以没有附上。
+Microsoft Word 比对 31/31 相同。那些文档不属于这个仓库，所以没有附上，这项验证无法从这里重做；
+上面的命令可以对你自己的文档做逐元素比对。
 
 ## 项目结构
 
@@ -236,6 +250,9 @@ scripts/             Microsoft Word 验证脚本
 - 图表、公式、SmartArt、脚注内容只能原样保留，不能在网页上编辑（文本框与常见形状可以显示、改字、移动与新增）。
 - 修订：屏幕显示“接受所有修订”后的样子；修订记录原样保留在文件里。
 - 需要较新的浏览器：Chrome / Edge 105、Firefox 121、Safari 15.5 以上。
+- 大小：包本身的脚本约 1.1 MB（gzip 后 330 kB），打包时还会加上 Vue、ProseMirror 与 JSZip；
+  单文件版约 1.2 MB（gzip 后 430 kB）。
+- 新插入的形状名称（「矩形 1」）与水印的预设文字，在任何界面语言下都是中文：两者都会写进文档。
 - Node 22.12 在含中文字符的文件夹路径下会崩溃（Node 本身的问题），请放在英文路径或升级 Node。
 
 ## 许可
