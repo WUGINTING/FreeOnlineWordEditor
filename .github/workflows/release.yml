@@ -1,0 +1,43 @@
+# Publishes GitHub Releases from the notes in releases/.
+# To release vX.Y.Z: tag the commit the package was published from (git tag -a vX.Y.Z), push the
+# tag, then add releases/vX.Y.Z.md (first line "# title", the rest the notes) and push main.
+name: Release
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "releases/*.md"
+      - ".github/workflows/release.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # All history, so that the tags are there.
+          fetch-depth: 0
+      - name: Publish the releases that have notes and a tag but are not on GitHub yet
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          for notes in releases/v*.md; do
+            tag=$(basename "$notes" .md)
+            if ! git rev-parse -q --verify "refs/tags/$tag" >/dev/null; then
+              echo "$tag: no such tag yet, skipped"
+              continue
+            fi
+            if gh release view "$tag" >/dev/null 2>&1; then
+              echo "$tag: already released"
+              continue
+            fi
+            title=$(head -n 1 "$notes" | sed 's/^# *//')
+            tail -n +2 "$notes" > /tmp/notes.md
+            gh release create "$tag" --verify-tag --title "$title" --notes-file /tmp/notes.md
+            echo "$tag: released"
+          done
