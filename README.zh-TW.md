@@ -16,10 +16,6 @@ Vue 3 + ProseMirror，MIT 授權。檔案全程在瀏覽器裡處理，不需要
 - **測試畫面**（所有選項與事件都能試，適合整合前先玩玩看）：
   <https://wuginting.github.io/FreeOnlineWordEditor/playground.html>
 
-這個編輯器是從零寫的，程式碼大部分由 AI 程式助理（Claude）撰寫。設計依據是 Office Open XML（ECMA-376）
-公開標準；功能清單參考過 SuperDoc 的公開功能介紹，沒有參考它的原始碼。
-參考過哪些資料記錄在 [CLEAN_ROOM.md](CLEAN_ROOM.md)。
-
 ## 專案狀態
 
 - **早期版本（0.x）。** 1.0 之前，選項與匯出的名稱還可能調整。

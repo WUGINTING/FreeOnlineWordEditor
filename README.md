@@ -16,11 +16,6 @@ Vue 3 + ProseMirror, MIT licensed. Files are handled entirely in the browser; no
 - **Playground** (every option and event, for trying it before you integrate it):
   <https://wuginting.github.io/FreeOnlineWordEditor/playground.html>
 
-The editor was written from scratch, with an AI coding assistant (Claude) doing much of the
-writing. It was designed from the public Office Open XML standard (ECMA-376); SuperDoc's public
-feature description was read for the list of features, and its source code was not consulted.
-What was consulted is recorded in [CLEAN_ROOM.md](CLEAN_ROOM.md).
-
 ## Status
 
 - **Early (0.x).** Options and exported names may still change before 1.0.
